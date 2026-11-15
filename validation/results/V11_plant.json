@@ -1,0 +1,226 @@
+[
+ {
+  "T_in_C": 100,
+  "kind": "binary",
+  "eta_u_cycle": 0.19626899076525445,
+  "eta_u_geophires_sub": 0.17945899999999998,
+  "eta_u_geophires_super": 0.21363,
+  "fluid": "R245fa",
+  "recuperator": true,
+  "W_per_kg_kJ": 8.66903491947248
+ },
+ {
+  "T_in_C": 120,
+  "kind": "binary",
+  "eta_u_cycle": 0.2592834150380618,
+  "eta_u_geophires_sub": 0.233719,
+  "eta_u_geophires_super": 0.29621,
+  "fluid": "IsoButane",
+  "recuperator": true,
+  "W_per_kg_kJ": 16.787864722882855
+ },
+ {
+  "T_in_C": 150,
+  "kind": "binary",
+  "eta_u_cycle": 0.35022202622849186,
+  "eta_u_geophires_sub": 0.31510900000000003,
+  "eta_u_geophires_super": 0.39759500000000003,
+  "fluid": "IsoButane",
+  "recuperator": true,
+  "W_per_kg_kJ": 35.61572301975274
+ },
+ {
+  "T_in_C": 175,
+  "kind": "binary",
+  "eta_u_cycle": 0.4229617020220251,
+  "eta_u_geophires_sub": 0.382934,
+  "eta_u_geophires_super": 0.46147125,
+  "fluid": "n-Butane",
+  "recuperator": true,
+  "W_per_kg_kJ": 58.35875356158681
+ },
+ {
+  "T_in_C": 200,
+  "kind": "binary",
+  "eta_u_cycle": 0.44850012486787927,
+  "eta_u_geophires_sub": 0.45075899999999997,
+  "eta_u_geophires_super": 0.50661,
+  "fluid": "Isopentane",
+  "recuperator": true,
+  "W_per_kg_kJ": 80.45540726688324
+ },
+ {
+  "T_in_C": 225,
+  "kind": "binary",
+  "eta_u_cycle": 0.5318951477337345,
+  "eta_u_geophires_sub": 0.5185839999999999,
+  "eta_u_geophires_super": 0.53301125,
+  "fluid": "n-Pentane",
+  "recuperator": true,
+  "W_per_kg_kJ": 120.32810319944363
+ },
+ {
+  "T_in_C": 250,
+  "kind": "binary",
+  "eta_u_cycle": 0.5075323031650689,
+  "eta_u_geophires_sub": 0.586409,
+  "eta_u_geophires_super": 0.540675,
+  "fluid": "n-Pentane",
+  "recuperator": true,
+  "W_per_kg_kJ": 141.5576978055209
+ },
+ {
+  "T_in_C": 150,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.26551127772978284,
+  "eta_u_double": 0.29823863766657976,
+  "eta_u_geophires_single": 0.29013703,
+  "eta_u_geophires_double": 0.373434875,
+  "p_sep_bar": 1.2,
+  "W_single_per_kg_kJ": 27.001089075063092,
+  "W_double_per_kg_kJ": 30.329288044239995
+ },
+ {
+  "T_in_C": 150,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.24446812240812318,
+  "eta_u_double": 0.2779642387048424,
+  "eta_u_geophires_single": 0.29013703,
+  "eta_u_geophires_double": 0.373434875,
+  "p_sep_bar": 1.2,
+  "W_single_per_kg_kJ": 24.861111759904457,
+  "W_double_per_kg_kJ": 28.267489174564968
+ },
+ {
+  "T_in_C": 175,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.3061569019706887,
+  "eta_u_double": 0.3637181705812421,
+  "eta_u_geophires_single": 0.3095893575,
+  "eta_u_geophires_double": 0.39614646875000004,
+  "p_sep_bar": 1.2,
+  "W_single_per_kg_kJ": 42.24244206478041,
+  "W_double_per_kg_kJ": 50.18454148767489
+ },
+ {
+  "T_in_C": 175,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.28196533210156755,
+  "eta_u_double": 0.34079866491569366,
+  "eta_u_geophires_single": 0.3095893575,
+  "eta_u_geophires_double": 0.39614646875000004,
+  "p_sep_bar": 1.2627047931293367,
+  "W_single_per_kg_kJ": 38.90457516687761,
+  "W_double_per_kg_kJ": 47.02218949104073
+ },
+ {
+  "T_in_C": 200,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.3269977655412741,
+  "eta_u_double": 0.4032498793263907,
+  "eta_u_geophires_single": 0.32830992000000003,
+  "eta_u_geophires_double": 0.41708100000000004,
+  "p_sep_bar": 1.6622192531408537,
+  "W_single_per_kg_kJ": 58.65937809880014,
+  "W_double_per_kg_kJ": 72.33806965178358
+ },
+ {
+  "T_in_C": 200,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.3046842575215919,
+  "eta_u_double": 0.3795850702893855,
+  "eta_u_geophires_single": 0.32830992000000003,
+  "eta_u_geophires_double": 0.41708100000000004,
+  "p_sep_bar": 1.7741474885956385,
+  "W_single_per_kg_kJ": 54.656609145714015,
+  "W_double_per_kg_kJ": 68.09289391292253
+ },
+ {
+  "T_in_C": 225,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.344417109752655,
+  "eta_u_double": 0.4288431386648088,
+  "eta_u_geophires_single": 0.34629871749999996,
+  "eta_u_geophires_double": 0.43623846875,
+  "p_sep_bar": 2.418016425120785,
+  "W_single_per_kg_kJ": 77.9158405609631,
+  "W_double_per_kg_kJ": 97.01513853904193
+ },
+ {
+  "T_in_C": 225,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.3239122637581316,
+  "eta_u_double": 0.40533851909095076,
+  "eta_u_geophires_single": 0.34629871749999996,
+  "eta_u_geophires_double": 0.43623846875,
+  "p_sep_bar": 2.6137732763007966,
+  "W_single_per_kg_kJ": 73.27712701858493,
+  "W_double_per_kg_kJ": 91.69780052271041
+ },
+ {
+  "T_in_C": 250,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.35987320579329873,
+  "eta_u_double": 0.4464496676212354,
+  "eta_u_geophires_single": 0.36355575,
+  "eta_u_geophires_double": 0.453618875,
+  "p_sep_bar": 3.501558143228263,
+  "W_single_per_kg_kJ": 100.37355690722066,
+  "W_double_per_kg_kJ": 124.52091569420271
+ },
+ {
+  "T_in_C": 250,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.3408471138358096,
+  "eta_u_double": 0.42364489355807394,
+  "eta_u_geophires_single": 0.36355575,
+  "eta_u_geophires_double": 0.453618875,
+  "p_sep_bar": 3.8284062526948466,
+  "W_single_per_kg_kJ": 95.06691975537353,
+  "W_double_per_kg_kJ": 118.16035244487934
+ },
+ {
+  "T_in_C": 275,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.374611254731162,
+  "eta_u_double": 0.4604935496342205,
+  "eta_u_geophires_single": 0.3800810175,
+  "eta_u_geophires_double": 0.46922221875,
+  "p_sep_bar": 4.836365908361562,
+  "W_single_per_kg_kJ": 126.61172082987109,
+  "W_double_per_kg_kJ": 155.63835846866323
+ },
+ {
+  "T_in_C": 275,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.35684004929695123,
+  "eta_u_double": 0.4393013344095378,
+  "eta_u_geophires_single": 0.3800810175,
+  "eta_u_geophires_double": 0.46922221875,
+  "p_sep_bar": 5.342660440773778,
+  "W_single_per_kg_kJ": 120.60537992892482,
+  "W_double_per_kg_kJ": 148.47577911765137
+ },
+ {
+  "T_in_C": 300,
+  "kind": "flash, condenser 35 C",
+  "eta_u_single": 0.39012142452806137,
+  "eta_u_double": 0.47465046044206083,
+  "eta_u_geophires_single": 0.39587452,
+  "eta_u_geophires_double": 0.4830485,
+  "p_sep_bar": 6.862568698062069,
+  "W_single_per_kg_kJ": 157.62587353303059,
+  "W_double_per_kg_kJ": 191.77924806499172
+ },
+ {
+  "T_in_C": 300,
+  "kind": "flash, condenser 40 C",
+  "eta_u_single": 0.3733710389976433,
+  "eta_u_double": 0.45488973125780513,
+  "eta_u_geophires_single": 0.39587452,
+  "eta_u_geophires_double": 0.4830485,
+  "p_sep_bar": 7.652763571060538,
+  "W_single_per_kg_kJ": 150.8579956743839,
+  "W_double_per_kg_kJ": 183.79506159513554
+ }
+]

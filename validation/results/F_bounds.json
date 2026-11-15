@@ -1,0 +1,12 @@
+{
+ "xian": {
+  "bound_kW_day30": 177.1011571212229,
+  "bound_kW_mean": 206.37230291151607,
+  "measured_mean_kW": 286.4
+ },
+ "songyuan": {
+  "bound_W_m_day60": 99.7153482161664,
+  "bound_W_m_day1": 185.23134104466487,
+  "measured_W_m_day60": 238.0
+ }
+}
