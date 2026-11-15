@@ -1,0 +1,70 @@
+# aharrsim case file - 8 km vertical coaxial closed loop (template, all options shown)
+#
+# Units are given by key suffixes: _m (metres), _in (inches), _C, _MPa, _kg_s, _days, _s.
+# Diameters (id_/od_) are full diameters.  Depths for casing/tubing are measured depth (MD);
+# depths for rock layers are true vertical depth (TVD).
+
+name: "8 km coaxial, VIT to TD, 10 kg/s"
+
+fluid: iapws                      # IAPWS-95 water/steam.  For checks: {constant: {rho: 1000, cp: 4180, mu: 1.0e-3, k: 0.6}}
+
+well:
+  flow_direction: annulus_down   # 'annulus_down' (inject down the annulus, return up the tubing; default)
+                                 # or 'tubing_down' (inject down the tubing, return up the annulus)
+  depth_m: 8000                   # vertical well.  Deviated: survey: {md_m: [...], tvd_m: [...]}
+  # lateral_m: 0                  # optional horizontal section at TD (L-shaped well)
+  roughness_m: 4.6e-5
+  turn_loss_K: 1.0                # loss coefficient at the bottom turnaround (x rho v^2/2 of the tubing)
+  casing:                         # from the annulus outwards; last od = borehole diameter
+    - top_m: 0
+      bottom_m: 3000
+      id_in: 8.535                # 9-5/8" 53.5 ppf
+      layers:
+        - {od_in: 9.625, material: steel}
+        - {od_in: 12.25, material: cement}
+    - top_m: 3000
+      bottom_m: 8000
+      id_in: 6.094                # 7" 32 ppf liner
+      layers:
+        - {od_in: 7.0, material: steel}
+        - {od_in: 8.5, material: cement}
+    # open hole: {top_m: .., bottom_m: .., id_in: 8.5, layers: []}
+  tubing:                         # centre (return) pipe, must run to TD
+    - top_m: 0
+      bottom_m: 8000
+      id_in: 2.992                # 3-1/2" x 4-1/2" vacuum-insulated tubing
+      layers:
+        - {od_in: 3.5, k: 45}     # inner tube (steel)
+        - {od_in: 4.0, k: 0.03}   # insulation, apparent conductivity [W/m/K]
+        - {od_in: 4.5, k: 45}     # outer tube (steel)
+      # R_wall_K_m_W: 0.5         # optional: override the wall resistance per unit length
+
+materials:
+  steel:  {k: 45,  rho: 7850, cp: 490}
+  cement: {k: 1.0, rho: 1900, cp: 1000}
+
+rock:
+  layers:                         # TVD intervals; the last layer extends below TD
+    - {top_m: 0,    bottom_m: 3000,   k: 2.4, rho: 2550, cp: 900}
+    - {top_m: 3000, bottom_m: 100000, k: 3.0, rho: 2700, cp: 850}
+  surface_T_C: 15
+  geotherm:
+    gradient_C_per_km: 30
+    # segments: [[0, 25], [2000, 32]]        # [top_m, gradient C/km]
+    # heat_flow_mW_m2: 75                     # conductive geotherm through the rock layers
+    # table: [[0, 15], [4000, 135], [8000, 260]]   # [TVD m, T C]
+
+operation:
+  pressure_bc: {outlet_MPa: 5.0}  # tubing outlet (wellhead) pressure; or {inlet_MPa: ..}
+  schedule:                       # consecutive periods; mdot 0 = shut-in
+    - {duration_days: 10957, mdot_kg_s: 10, T_in_C: 40}
+
+numerics:
+  dz_m: 50                        # target axial cell size (refined automatically where needed)
+  radial_growth: 1.15
+  r_far_m: auto                   # outer radius of the rock grid (auto ~ 4 sqrt(alpha t))
+  dt_initial_s: 300
+  dt_growth: 1.3
+  dt_max_days: 60
+  two_phase_model: drift_flux     # or hem
+  output_times_days: [1, 30, 365, 3653, 10957]

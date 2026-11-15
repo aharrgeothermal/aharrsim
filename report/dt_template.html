@@ -1,0 +1,417 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twenty Geothermal Development Types</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one reading column (70ch prose) with full-width figure rows; each development type is a card: schematic + description, then its charts. Same identity as the aharrsim report. */
+:root {
+  --bg: #f5f6f6; --surface: #fcfcfb; --surface-2: #eef0ef; --ink: #111417; --ink-2: #4c5258; --muted: #7b8187; --rule: #dcdfe1;
+  --grid: #e3e4de; --axis: #c3c2b7; --accent: #1c5cab; --heat: #c4471b; --good: #0a7d0a; --warn: #9a6400; --bad: #c03434;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #7a5cc4; --s7: #5c8a1e;
+  --q1: #86b6ef; --q2: #5598e7; --q3: #2a78d6; --q4: #1c5cab; --q5: #104281; --ref: #898781;
+  --rock: #ebe6dc; --rock-2: #dcd3c2; --water: #cfe3f7; --steam: #f7e0d3; --store: #f3d9c6;
+  --f-head: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1112; --surface: #1a1a19; --surface-2: #232423; --ink: #f3f4f4; --ink-2: #c3c2b7; --muted: #8d9297; --rule: #2d3033;
+    --grid: #2c2c2a; --axis: #45454a; --accent: #6da7ec; --heat: #f07a4a; --good: #3cc23c; --warn: #e2a43a; --bad: #ef6b6b;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #8a70d4; --s7: #7aa52c;
+    --q1: #9ec5f4; --q2: #6da7ec; --q3: #3987e5; --q4: #256abf; --q5: #184f95; --ref: #8d9297;
+    --rock: #2a2823; --rock-2: #3a362d; --water: #1f3a55; --steam: #4a2e22; --store: #4d3524;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1112; --surface: #1a1a19; --surface-2: #232423; --ink: #f3f4f4; --ink-2: #c3c2b7; --muted: #8d9297; --rule: #2d3033;
+  --grid: #2c2c2a; --axis: #45454a; --accent: #6da7ec; --heat: #f07a4a; --good: #3cc23c; --warn: #e2a43a; --bad: #ef6b6b;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #8a70d4; --s7: #7aa52c;
+  --q1: #9ec5f4; --q2: #6da7ec; --q3: #3987e5; --q4: #256abf; --q5: #184f95; --ref: #8d9297;
+  --rock: #2a2823; --rock-2: #3a362d; --water: #1f3a55; --steam: #4a2e22; --store: #4d3524;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15.5px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; }
+.prose { max-width: 72ch; }
+.prose.wide { max-width: 100ch; }
+h1, h2, h3, h4 { font-family: var(--f-head); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); font-weight: 600; letter-spacing: -0.01em; }
+h2 { font-size: 1.75rem; font-weight: 600; margin-top: 3.2rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.22rem; font-weight: 600; margin-top: 2rem; }
+h4 { font-size: 1.02rem; font-weight: 600; margin-top: 1.2rem; }
+p { margin: 0.7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.12rem; color: var(--ink-2); max-width: 70ch; margin-top: 0.9rem; }
+code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+pre { font-family: var(--f-mono); font-size: 0.82rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+      padding: 12px 14px; overflow-x: auto; line-height: 1.5; margin: 0.8rem 0; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 1.4rem; padding-block: 10px; border-block: 1px solid var(--rule); font-size: 0.9rem; }
+nav.toc a { color: var(--ink-2); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 1.4rem; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .k { font-family: var(--f-mono); font-size: 0.76rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.tile .v { font-family: var(--f-head); font-size: clamp(1.7rem, 3.4vw, 2.3rem); font-weight: 600; line-height: 1.1; margin-top: 4px; }
+.tile .v small { font-size: 0.5em; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+.tile .s { font-size: 0.86rem; color: var(--ink-2); margin-top: 2px; }
+@media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .tiles { grid-template-columns: 1fr; } }
+
+.figrow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 1.2rem; align-items: start; }
+.figrow.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.figrow.one { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 980px) { .figrow.three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .figrow, .figrow.three { grid-template-columns: minmax(0, 1fr); } }
+figure.fig { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 14px 10px; min-width: 0; }
+figure.fig .ft { font-weight: 600; font-size: 0.98rem; }
+figure.fig .fs { font-size: 0.85rem; color: var(--ink-2); margin-top: 2px; }
+.chart { width: 100%; height: 320px; margin-top: 6px; }
+.chart.tall { height: 400px; }
+.chart.short { height: 260px; }
+.figfoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.figfoot .src { font-size: 0.78rem; color: var(--muted); }
+.tbtn { font: inherit; font-size: 0.8rem; padding: 4px 10px; background: transparent; color: var(--ink-2); border: 1px solid var(--rule); border-radius: 6px; cursor: pointer; }
+.tbtn:hover { color: var(--accent); }
+.dtable { margin-top: 8px; max-height: 260px; overflow: auto; border: 1px solid var(--rule); border-radius: 6px; }
+.dtable table { font-size: 0.78rem; }
+
+.tbl { overflow-x: auto; margin-top: 1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; color: var(--ink-2); background: var(--surface); position: sticky; top: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+.num td { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.82rem; white-space: nowrap; }
+.num td:first-child { font-family: var(--f-body); font-size: 0.86rem; }
+td:first-child { white-space: nowrap; }
+.wrapfirst td:first-child, .wrapfirst td:nth-child(2) { white-space: normal; min-width: 14ch; }
+.small td { font-size: 0.83rem; }
+.tnote { font-size: 0.82rem; color: var(--muted); margin-top: 6px; max-width: 110ch; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 0.74rem; font-weight: 500; padding: 2px 8px;
+        border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.ok { color: var(--good); } .pill.mid { color: var(--warn); } .pill.no { color: var(--bad); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.callout { border-left: 3px solid var(--heat); padding: 4px 0 4px 14px; margin: 1rem 0; color: var(--ink-2); max-width: 78ch; }
+ul.tight { margin: 0.4rem 0; padding-left: 1.2rem; } ul.tight li { margin: 0.3rem 0; }
+.sources li { margin: 0.35rem 0; font-size: 0.9rem; }
+footer { margin-top: 3rem; font-size: 0.82rem; color: var(--muted); }
+dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; margin: 0.6rem 0 0; font-size: 0.86rem; }
+dl.kv dt { color: var(--muted); font-family: var(--f-mono); font-size: 0.76rem; padding-top: 2px; }
+dl.kv dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+/* development-type cards */
+.group-head { margin-top: 2.6rem; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.group-head h3 { margin: 0; }
+.group-head .gcount { font-size: 0.86rem; color: var(--muted); }
+article.case { margin-top: 1.6rem; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); padding: 18px 18px 14px; }
+article.case > header { display: flex; flex-direction: column; gap: 4px; }
+article.case h4 { font-size: 1.2rem; margin: 0; }
+.case-grid { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 18px 24px; margin-top: 12px; align-items: start; }
+@media (max-width: 860px) { .case-grid { grid-template-columns: minmax(0, 1fr); } }
+figure.schem { margin: 0; background: var(--surface-2); border-radius: 8px; padding: 8px; }
+figure.schem svg { display: block; width: 100%; height: auto; max-width: 100%; color: var(--ink-2); font-family: var(--f-body); }
+figure.schem figcaption { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+.desc p { margin: 0.45rem 0; font-size: 0.95rem; }
+.desc p b { font-weight: 600; }
+.keys { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule); }
+.keys .kk { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.keys .kv { font-family: var(--f-head); font-size: 1.12rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.keys .kv small { font-size: 0.72rem; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+.case .figrow { margin-top: 14px; }
+.case figure.fig { background: var(--bg); }
+.case .chart { height: 250px; }
+.verdict { margin-top: 12px; font-size: 0.92rem; color: var(--ink-2); max-width: 100ch; }
+
+/* ladder */
+.ladder { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 1rem; }
+@media (max-width: 860px) { .ladder { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .ladder { grid-template-columns: 1fr; } }
+.rung { border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); padding: 12px 14px; min-width: 0; }
+.rung .rt { font-family: var(--f-head); font-weight: 600; font-size: 1.05rem; }
+.rung .rs { font-size: 0.84rem; color: var(--ink-2); margin-top: 2px; }
+.rung ul { margin: 8px 0 0; padding-left: 1.1rem; font-size: 0.86rem; }
+.rung li { margin: 3px 0; }
+.rung.r0 { border-top: 3px solid var(--q1); } .rung.r1 { border-top: 3px solid var(--q3); } .rung.r2 { border-top: 3px solid var(--s2); } .rung.r3 { border-top: 3px solid var(--heat); }
+.legend-inline { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--ink-2); margin-top: 8px; }
+.legend-inline span::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -2px; background: var(--c); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">aharrsim 2.0 · development-type study · {{date}}</div>
+  <h1>Twenty geothermal development types, simulated</h1>
+  <p class="lede">The coaxial closed-loop simulator was extended to run every development type in Khodayar &amp; Björnsson's classification,
+  each extension was benchmarked against a public reference, and one representative example of each type was run for its design life.
+  This report records the code changes, the benchmarks, the cases, the produced water temperature over time and the electricity it allows.</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#summary">Summary</a><a href="#types">The twenty types</a><a href="#code">Code changes</a><a href="#bench">Benchmarks</a>
+    <a href="#cases">Cases and results</a><a href="#overview">Results across types</a><a href="#discussion">Discussion</a><a href="#repro">Reproduce</a>
+  </nav>
+</header>
+
+<section id="summary">
+  <h2>Summary</h2>
+  <div class="tiles">
+    <div class="tile"><div class="k">Examples run</div><div class="v">{{n_cases}}</div><div class="s">20 types, with a dry-steam variant of type 3</div></div>
+    <div class="tile"><div class="k">Produced water</div><div class="v">{{T_min}}<small>to {{T_max}} °C</small></div><div class="s">at the design horizon, from the 150 m U-tube to the supercritical well</div></div>
+    <div class="tile"><div class="k">Electricity per well</div><div class="v">0<small>to {{P_max}} MWe</small></div><div class="s">net at the horizon; nine of the examples make none</div></div>
+    <div class="tile"><div class="k">Benchmarks</div><div class="v">{{n_bench}}<small>checks</small></div><div class="s">all within their stated tolerance</div></div>
+  </div>
+  <div class="prose">
+    <p><b>What was done.</b> Three well configurations were added to the solver (single-channel production and injection wells with a
+    feed zone, pump and flashing riser; a U-tube borehole exchanger; a reservoir element in series at the toe of a coaxial well), together
+    with a chaining layer for injector → laterals → producer systems, five reservoir models and a set of surface-plant models. Each was
+    checked against an independent reference: exact steady solutions, Ramey, measured flowing two-phase wells, pygfunction, the GeoCLUSTER
+    database, closed-form reservoir limits and the GEOPHIRES plant correlations. One example per type was then run with the parameters of
+    the source table's named examples, and the produced water was passed through the plant suited to it under one set of reference
+    conditions (15 °C ambient, 40 °C condenser, 70 % pumps).</p>
+    <p><b>What came out.</b> The produced water temperature sorts the twenty types into four rungs. Below about 80 °C (hot sedimentary
+    doublets, abandoned-well and short closed loops, the heat-pump sources) there is heat and no electricity. From 80 to 120 °C a binary
+    plant converts 10–20 % of a small exergy: co-produced oil-field water, surface waste heat, the cyclic fractures. From 120 to 200 °C
+    electricity is the product: pumped medium-temperature wells, EGS doublets, the long multilateral loop. Above 200 °C flash and steam
+    plants take over: the Wairakei and Geysers wells, the superhot EGS doublet and the supercritical well, which gives {{P18}} MWe from
+    20 kg/s. What sets the scale is where the heat comes from: anything that sweeps a convecting or fractured reservoir reaches megawatts
+    per well; anything that depends on conduction through a borehole wall stays at about a megawatt or less, however deep the hole. The
+    conventional and EGS capacities quoted in the source table agree with the model; the closed-loop claims do not.</p>
+  </div>
+</section>
+
+<section id="types">
+  <h2>The twenty types</h2>
+  <div class="prose"><p>The source table groups the types by resource and technology. The example chosen for each is the named case in the
+  table where there is one (Paris Basin, Wairakei, The Geysers, Eavor-Loop 1, Soultz, Eden, Project Red, IDDP-2) and a representative
+  design from the stated ranges where there is not; two cases (the Chevron-type closed doublet and the Sage cyclic systems) use assumed
+  geometries because none is published.</p></div>
+  {{T_source}}
+</section>
+
+<section id="code">
+  <h2>Code changes (v1.2 → v2.0)</h2>
+  <div class="prose">
+    <p>The 1.2 solver handled one object: a coaxial loop with a feed stream and a riser, solved monolithically with the rock. Version 2.0
+    keeps that core and adds the configurations below without a second code path for the rock: the same axisymmetric grid, the same BDF2
+    time stepping and the same monolithic fluid–rock solve serve every mode. The additions are in the fluid part (what flows where, and what
+    it is coupled to at the ends) and in two new modules for what happens beyond the well.</p>
+  </div>
+  <figure class="fig" style="margin-top:1rem">
+    <div class="ft">How the pieces fit</div><div class="fs">A well model solves one hole; <code>systems</code> chains several with transient hand-over; reservoir and plant models sit at the ends</div>
+    {{svg_modules}}
+    <figcaption class="src" style="font-size:0.8rem;color:var(--muted);margin-top:6px">Solid arrows carry a fluid state (ṁ, h, p); dashed arrows carry a temperature history T(t) that the next segment reads at every time step.</figcaption>
+  </figure>
+  <h3>What changed in the solver</h3>
+  <div class="prose wide">
+    <ul class="tight">
+      <li><b>Well modes.</b> <code>mode: production</code> and <code>injection</code> run one flow channel (the casing, or a tubing with a static
+      annulus treated as a conducting layer). A production well is fed at TD by temperature or enthalpy; the feed enthalpy is evaluated at
+      reservoir pressure (p<sub>res</sub> − ṁ/PI, and at least 1.02 p<sub>sat</sub>) so a liquid feed stays liquid until the riser lets it flash.
+      The boundary condition is a wellhead pressure or a bottom pressure. A downhole pump splits the pressure march at the pump depth: the
+      flowing bottom-hole pressure p<sub>wf</sub> = p<sub>res</sub> − ṁ/PI is marched up to the pump, the wellhead pressure is marched down to it,
+      and the difference is the pump head; a suction pressure floor of 1 bar flags a pump set above the fluid level. Two-phase flow in the
+      riser uses the 1.2 drift-flux model unchanged. The fluid heat-storage term is off for single channels (steady-flow fluid energy), which
+      removes a stiff term that added nothing at the time scales of interest.</li>
+      <li><b>U-tube.</b> <code>mode: utube</code> couples both legs to the borehole wall through the Hellström delta circuit built from the
+      multipole borehole resistance (R<sub>b</sub>) and the internal resistance (R<sub>a</sub>): leg-to-wall R<sub>lw</sub> = 2R<sub>b</sub>,
+      leg-to-leg R<sub>ll</sub> = 4R<sub>b</sub>R<sub>a</sub>/(4R<sub>b</sub> − R<sub>a</sub>). The rock grid starts at the borehole wall.</li>
+      <li><b>Far field.</b> <code>far_field: adiabatic</code> makes the outer radial boundary a symmetry plane, so a well in an array or a lateral
+      in a stack is a unit cell of radius r<sub>far</sub>.</li>
+      <li><b>Reservoir element at TD.</b> <code>bottom_element</code> places any object with <code>T_out(T_in, t)</code> in series at the toe of
+      a coaxial well: the feed stream's enthalpy is raised by the element before it enters the riser, and the heat added, Q<sub>res</sub>,
+      enters the energy balance.</li>
+      <li><b>Energy balance.</b> Every record now closes Q<sub>wellhead</sub> = Q<sub>rock</sub> + Q<sub>res</sub> − dE<sub>fluid</sub> − Q<sub>ke</sub> − Q<sub>pe</sub>,
+      with the potential-energy term Q<sub>pe</sub> = ṁ g TVD (positive for production, negative for injection, zero for a loop); the
+      residual is reported per run and is at round-off for every case in this report.</li>
+      <li><b>Safeguards for hot wells.</b> A production well starts from the flowing state (warm start) rather than a static column; the
+      enthalpy change per iteration is capped at 300 kJ/kg; under-relaxation (ω from 0.6, halved on a reversal, floor 0.25) is switched on
+      while steam is present; enthalpies are clipped at the 1 °C liquid value. These fixed the stalls met on the Wairakei and IDDP cases.</li>
+      <li><b>Input.</b> New YAML keys <code>mode</code>, <code>inflow</code> (T_C | T_K | h_J_kg, p_res_MPa, PI_kg_s_per_MPa), <code>pump</code>
+      (md_m, efficiency), <code>utube</code> (pipe_id/pipe_od/shank_spacing in m, mm or in, k_pipe, k_grout), <code>pressure_bc.bottom_MPa</code>,
+      <code>far_field</code>; <code>tubing</code> is optional; radii accept <code>_mm</code>. Validation rejects inconsistent combinations
+      (a pump without a productivity index, a bottom element on anything but an annulus-down coaxial well).</li>
+    </ul>
+  </div>
+  <h3>New modules</h3>
+  {{T_modules}}
+  <div class="figrow">
+    <figure class="fig"><div class="ft">A production well in YAML</div><div class="fs">The Nevada-type pumped well (type 2)</div>
+<pre>name: MT pumped well
+fluid: iapws
+well:
+  mode: production
+  depth_m: 2000
+  casing: [{id_in: 8.535, layers: [{od_in: 9.625, material: steel},
+                                  {od_in: 12.25, material: cement}]}]
+  inflow: {T_C: 165, p_res_MPa: 18, PI_kg_s_per_MPa: 40}
+  pump: {md_m: 450, efficiency: 0.7}
+rock:
+  layers: [{k: 2.5, rho: 2600, cp: 900}]
+  surface_T_C: 15
+  geotherm: {gradient_C_per_km: 75}
+operation:
+  pressure_bc: {outlet_MPa: 1.2}
+  schedule: [{duration_days: 10957, mdot_kg_s: 75, T_in_C: 40}]
+numerics: {dz_m: 50, dt_max_days: 60}</pre></figure>
+    <figure class="fig"><div class="ft">A doublet through a fractured reservoir in Python</div><div class="fs">The Soultz-type EGS (type 10)</div>
+<pre>from aharrsim.systems import doublet
+from aharrsim.reservoir import ParallelFractures
+from aharrsim import plant
+
+# 20 fractures, 600 m path, 400 m breadth, 50 m apart,
+# fed with the injector's bottom-hole temperature
+fac = lambda T_bot: ParallelFractures(
+    Q=30 / 900, N=20, L_flow=600, B=400, S=50,
+    k_r=3.0, rhoc_r=2650 * 850, T_rock_C=200,
+    T_inj_C=lambda t: T_bot(t) - 273.15)
+
+ch = doublet("EGS", fac, depth=5000, d_in=0.155, mdot=30,
+             T_inj_C=60, rock=[dict(k=3.0, rho=2650, cp=850)],
+             surface_T_C=15, geotherm=dict(gradient_C_per_km=37),
+             years=30, p_inj=1e6, p_wh=2e6,
+             pump=dict(md_m=500, efficiency=0.7),
+             p_res=49e6, PI=20e-6)
+
+res = ch["producer"][1]            # Results of the producer
+W = plant.orc_practical(30, res.ts["h_out"][-1],
+                        res.ts["p_out"][-1], T_amb_C=15)
+print(W["W_net"] / 1e6, "MWe")</pre></figure>
+  </div>
+  <div class="prose"><p>The 1.2 behaviour is unchanged: the coaxial regression tests pass and the 12 km reference case reproduces to the
+  last digit. {{n_tests}} quick tests, the analytical checks and the benchmarks below are the test set.</p></div>
+</section>
+
+<section id="bench">
+  <h2>Benchmarks of the extensions</h2>
+  <div class="prose"><p>Each extension was checked against an independent public reference before the cases were run. The checks are
+  independent in kind: an exact solution for the discretisation, a classical analytical model for the transient, measured wells for the
+  two-phase hydraulics, a reference implementation for the U-tube and the chains, closed-form limits for the reservoir elements and the
+  Aspen-derived GEOPHIRES correlations for the plants.</p></div>
+
+  <h3>Production and injection wells</h3>
+  <div class="figrow three">
+    <figure class="fig"><div class="ft">Exact steady solution</div><div class="fs">Maximum error against the closed-form steady profile as the cell size is refined</div>
+      <div class="chart short" id="b-steady"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v9: production 3 km / 20 kg/s, 2 km / 5 kg/s; injection 3 km</span><button class="tbtn" data-table="b-steady">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Ramey's transient wellhead temperature</div><div class="fs">3 km producer, 20 kg/s, 160 °C feed; aharrsim with IAPWS water and with constant properties against Ramey / Hasan–Kabir</div>
+      <div class="chart short" id="b-ramey"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v9; Ramey assumes constant properties, so the IAPWS run sits 2 K lower (expansion cooling)</span><button class="tbtn" data-table="b-ramey">Table</button></div></figure>
+    <figure class="fig"><div class="ft">U-tube against pygfunction</div><div class="fs">150 m single U-tube, 0.3 kg/s at 2 °C, five years: borehole-wall and outlet temperature</div>
+      <div class="chart short" id="b-utube"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v8; pygfunction g-function with the multipole borehole resistance</span><button class="tbtn" data-table="b-utube">Table</button></div></figure>
+  </div>
+  <h3>Flowing two-phase wells</h3>
+  <div class="prose"><p>The production-mode riser was run against the published pressure surveys of flowing geothermal wells (the same wells
+  as the 1.2 two-phase check, now as production wells with a feed zone rather than a stand-alone march). Pressure against depth, measured
+  points and the model line:</p></div>
+  <div class="figrow three" id="b-twophase-row">{{twophase_figs}}</div>
+  {{T_twophase}}
+  <h3>Closed-loop chains against GeoCLUSTER</h3>
+  <div class="figrow">
+    <figure class="fig"><div class="ft">U-loop outlet temperature, 1–40 years</div><div class="fs">Injector → lateral → producer chains against the GeoCLUSTER <code>utube</code> database (Sandia SBT), six geometries</div>
+      <div class="chart tall" id="b-uloop"></div>
+      <div class="figfoot"><span class="src">verify_ext.py b4; lines aharrsim, markers GeoCLUSTER; max difference {{b4_max}} K</span><button class="tbtn" data-table="b-uloop">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Parity</div><div class="fs">aharrsim against GeoCLUSTER at every tabulated time, 42 points</div>
+      <div class="chart tall" id="b-uloop-par"></div>
+      <div class="figfoot"><span class="src">verify_ext.py b4</span><button class="tbtn" data-table="b-uloop-par">Table</button></div></figure>
+  </div>
+  <h3>Reservoir elements and plants</h3>
+  <div class="figrow three">
+    <figure class="fig"><div class="ft">Doublet thermal breakthrough</div><div class="fs">Gringarten–Sauty dimensionless cooling of the producer: loss-free limit against the arrived streamline fraction, and with caprock loss</div>
+      <div class="chart short" id="b-doublet"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v10; breakthrough time {{bt_model}} yr against the formula's {{bt_formula}} yr</span><button class="tbtn" data-table="b-doublet">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Cyclic fracture against Lauwerier</div><div class="fs">Continuous injection into a single fracture: produced temperature against the Lauwerier solution</div>
+      <div class="chart short" id="b-lauw"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v10; max difference {{lauw_max}} K; Stehfest inversion within {{steh}} of mpmath</span><button class="tbtn" data-table="b-lauw">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Plant models against GEOPHIRES v3</div><div class="fs">Utilisation efficiency of the ORC cycle and the flash plants against the Aspen-derived correlations</div>
+      <div class="chart" id="b-plant"></div>
+      <div class="figfoot"><span class="src">verify_ext.py v11; flash at a 35 °C condenser (GEOPHIRES basis) and at 40 °C (this report)</span><button class="tbtn" data-table="b-plant">Table</button></div></figure>
+  </div>
+  {{T_score}}
+</section>
+
+<section id="cases">
+  <h2>Cases and results, type by type</h2>
+  <div class="prose"><p>Each card gives the type as the source table describes it, the example that was run, how it was modelled, the
+  produced water temperature and the heat and electricity over the design life, and (where a well was solved) the temperature profile
+  along the well at the end of the run. Reference conditions throughout: 15 °C ambient; GEOPHIRES practical binary (air-cooled, brine
+  returned at its reinjection temperature) for liquid water; single or double flash or a condensing steam turbine for two-phase and steam
+  streams, 40 °C condenser; 70 % pumps. "Gross" is the plant output; "pumps" is downhole lift plus circulation against the fracture
+  impedance; heat is relative to each case's return temperature.</p></div>
+  {{cases_html}}
+</section>
+
+<section id="overview">
+  <h2>Results across the types</h2>
+  {{T_results}}
+  <div class="figrow">
+    <figure class="fig"><div class="ft">Water temperature and net electricity at the horizon</div><div class="fs">One point per example, net of downhole and circulation pumps; hollow markers: heat only, drawn at the axis floor</div>
+      <div class="chart tall" id="o-scatter"></div>
+      <div class="figfoot"><span class="src">dev_types.py</span><button class="tbtn" data-table="o-scatter">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Heat and electricity per example</div><div class="fs">MWth, gross and net MWe at the horizon, log scale; no electricity marker where there is none</div>
+      <div class="chart tall" id="o-dots"></div>
+      <div class="figfoot"><span class="src">dev_types.py; heat pumps consume electricity</span><button class="tbtn" data-table="o-dots">Table</button></div></figure>
+  </div>
+  <div class="figrow">
+    <figure class="fig"><div class="ft">Model against the capacities quoted in the source table</div><div class="fs">Gross MWe per example: year 1 and horizon (markers) against the quoted range (bar), log scale</div>
+      <div class="chart tall" id="o-claims"></div>
+      <div class="figfoot"><span class="src">dev_types.py; source table. Per-well cases only; type 13 is per 20 wells, type 20 per plant as quoted</span><button class="tbtn" data-table="o-claims">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Decline over the design life</div><div class="fs">Produced water temperature in year 1 and at the horizon</div>
+      <div class="chart tall" id="o-decline"></div>
+      <div class="figfoot"><span class="src">dev_types.py; day 30 → 365 for the cyclic cases, year 1 → 5 for the heat store</span><button class="tbtn" data-table="o-decline">Table</button></div></figure>
+  </div>
+  <div class="figrow">
+    <figure class="fig"><div class="ft">Ambient temperature</div><div class="fs">Binary output at 25, 35 and 45 °C ambient relative to 15 °C (GEOPHIRES correlation, air-cooled); flash at a 50 °C condenser relative to 40 °C</div>
+      <div class="chart" id="o-ambient"></div>
+      <div class="figfoot"><span class="src">plant.orc_practical / plant.flash on the horizon stream of each case</span><button class="tbtn" data-table="o-ambient">Table</button></div></figure>
+    <figure class="fig"><div class="ft">Parasitic load</div><div class="fs">Pump power as a share of gross output at the horizon, cases with a pump</div>
+      <div class="chart" id="o-para"></div>
+      <div class="figfoot"><span class="src">dev_types.py; downhole pump plus circulation against the impedance</span><button class="tbtn" data-table="o-para">Table</button></div></figure>
+  </div>
+  <h3>The temperature ladder</h3>
+  <div class="ladder">{{ladder}}</div>
+</section>
+
+<section id="discussion">
+  <h2>Discussion</h2>
+  {{discussion}}
+</section>
+
+<section id="repro">
+  <h2>Reproduce</h2>
+  <div class="prose">
+<pre>pip install numpy scipy CoolProp pyyaml matplotlib pygfunction mpmath
+cd aharrsim/validation
+python verify_ext.py          # V8–V11 and B4 (~25 min; B4 needs external/GeoCLUSTER)
+python dev_types.py           # the 21 examples (~15 min on 2 cores) -> results/DT_types.json
+python dev_types_table.py     # results/DT_summary.json
+python ../report/build_dt_report.py   # this page</pre>
+    <p>Every number on this page is read from <code>validation/results/</code> by the page builder; the parameters of each case are in the
+    docstring and the <code>assumptions</code> dictionary of its function in <code>dev_types.py</code>.</p>
+  </div>
+  <h3>Sources</h3>
+  <ol class="sources">
+    <li>Khodayar, M. &amp; Björnsson, S. (2024), classification of geothermal development types (the source spreadsheet <code>geothermal_development_types.xlsx</code>).</li>
+    <li>Ramey, H. J. (1962), Wellbore heat transmission, JPT 14:427. Hasan, A. R. &amp; Kabir, C. S. (2012), Wellbore heat-transfer modeling and applications, J. Pet. Sci. Eng. 86–87:127.</li>
+    <li>Ambastha, A. K. &amp; Gudmundsson, J. S. (1986), Pressure profiles in two-phase geothermal wells: comparison of field data and model calculations, Stanford Geothermal Workshop 11 (Los Azufres, HGP-A, Cerro Prieto, Utah State wells).</li>
+    <li>Cimmino, M. &amp; Cook, J. C. (2022), pygfunction 2.2; Hellström, G. (1991), Ground heat storage, Lund University; Claesson, J. &amp; Hellström, G. (2011), multipole method.</li>
+    <li>Beckers, K. F. et al. (2022), Tabulated database of closed-loop geothermal systems performance (GeoCLUSTER, Sandia SBT); PNNL GeoCLUSTER repository.</li>
+    <li>Gringarten, A. C., Witherspoon, P. A. &amp; Ohnishi, Y. (1975), Theory of heat extraction from fractured hot dry rock, J. Geophys. Res. 80:1120. Gringarten, A. C. &amp; Sauty, J. P. (1975), A theoretical study of heat extraction from aquifers with uniform regional flow, J. Geophys. Res. 80:4956. Lauwerier, H. A. (1955), Appl. Sci. Res. A5:145. Stehfest, H. (1970), Comm. ACM 13:47.</li>
+    <li>Beckers, K. F. &amp; McCabe, K. (2019), GEOPHIRES v2.0; NREL GEOPHIRES-X v3 (utilisation-efficiency, availability and reinjection correlations). DiPippo, R. (2016), Geothermal Power Plants, 4th ed. Baumann, K. (1921).</li>
+    <li>Public project figures referred to in the discussion: Fervo Project Red (3.5 MWe, 63 L/s, 191 °C), Eavor-Loop 1 Geretsried, IDDP-1 and IDDP-2, Soultz-sous-Forêts and United Downs, Sage Geosystems, GreenFire Energy Coso demonstration, CeraPhi, Quaise Energy.</li>
+  </ol>
+  <footer>aharrsim 2.0 · built {{date}} from validation/results · companion to the aharrsim report (deep coaxial loop simulator)</footer>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+const DATA = {{data}};
+{{js}}
+</script>

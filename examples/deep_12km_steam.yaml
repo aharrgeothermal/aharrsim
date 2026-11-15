@@ -1,0 +1,29 @@
+# 12 km coaxial loop delivering to a 0.5 MPa separator.  At 5 kg/s the hot riser drives the loop by
+# itself (thermosiphon), so the model holds the inlet at 0.2 MPa and a wellhead choke takes the excess
+# pressure; part of the water flashes to steam in the choke (steam fraction reported in summary.json).
+# Same completion as deep_8km.yaml, 30 C/km (375 C at TD).
+
+name: "12 km coaxial, 5 kg/s, 0.5 MPa delivery (steam flashed at the wellhead)"
+fluid: iapws
+well:
+  depth_m: 12000
+  casing:
+    - {top_m: 0, bottom_m: 3000, id_in: 8.535, layers: [{od_in: 9.625, material: steel}, {od_in: 12.25, material: cement}]}
+    - {top_m: 3000, bottom_m: 12000, id_in: 6.094, layers: [{od_in: 7.0, material: steel}, {od_in: 8.5, material: cement}]}
+  tubing:
+    - {top_m: 0, bottom_m: 12000, id_in: 2.992, layers: [{od_in: 3.5, k: 45}, {od_in: 4.0, k: 0.03}, {od_in: 4.5, k: 45}]}
+materials:
+  steel:  {k: 45,  rho: 7850, cp: 490}
+  cement: {k: 1.0, rho: 1900, cp: 1000}
+rock:
+  layers: [{k: 2.8, rho: 2650, cp: 900}]
+  surface_T_C: 15
+  geotherm: {gradient_C_per_km: 30}
+operation:
+  pressure_bc: {outlet_MPa: 0.5}
+  schedule:
+    - {duration_days: 10957, mdot_kg_s: 5, T_in_C: 40}
+numerics:
+  dz_m: 50
+  two_phase_model: drift_flux
+  output_times_days: [1, 365, 3653, 10957]

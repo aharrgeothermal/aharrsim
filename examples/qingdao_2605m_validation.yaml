@@ -1,0 +1,32 @@
+# Field validation case: Jimo (Qingdao) 2605 m deep borehole heat exchanger, 138-day test.
+# Inputs from Bu, Ran & Zhang (2019) Renewable Energy 143:1902-1909 as tabulated by
+# Chen & Tomac (2023) and Kolo et al. (2024).  Measured: mean extraction 448.49 kW,
+# outlet about 17.5 C at the end of the test.
+
+name: "Qingdao (Jimo) 2605 m field test"
+fluid: iapws
+well:
+  depth_m: 2605
+  casing:
+    - id_m: 0.16398                 # 177.8 x 6.91 mm steel casing
+      layers:
+        - {od_m: 0.1778, material: steel}
+        - {od_m: 0.2159, material: cement}     # 19.05 mm cement, k 0.73
+  tubing:
+    - id_m: 0.090                   # PP insulating pipe 110 x 10 mm, k 0.21
+      layers: [{od_m: 0.110, k: 0.21}]
+materials:
+  steel:  {k: 45, rho: 7850, cp: 490}
+  cement: {k: 0.73, rho: 1900, cp: 1000}
+rock:
+  layers: [{k: 3.49, rho: 2800, cp: 920}]
+  surface_T_C: 15.0
+  geotherm: {gradient_C_per_km: 27.8}
+operation:
+  pressure_bc: {outlet_MPa: 0.3}
+  schedule:
+    - {duration_days: 138, mdot_kg_s: 8.333, T_in_C: 5.0}
+numerics:
+  dz_m: 25
+  dt_initial_s: 60
+  output_times_days: [1, 30, 138]

@@ -1,0 +1,918 @@
+<title>Deep Coaxial Loop Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: single reading column (68ch prose) with full-width figure rows; summary first, evidence after. */
+:root {
+  --bg: #f5f6f6;
+  --surface: #fcfcfb;
+  --ink: #111417;
+  --ink-2: #4c5258;
+  --muted: #7b8187;
+  --rule: #dcdfe1;
+  --grid: #e3e4de;
+  --axis: #c3c2b7;
+  --accent: #1c5cab;
+  --heat: #c4471b;
+  --good: #0a7d0a;
+  --warn: #9a6400;
+  --bad: #c03434;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --q1: #86b6ef; --q2: #5598e7; --q3: #2a78d6; --q4: #1c5cab; --q5: #104281;
+  --ref: #898781;
+  --f-head: "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1112; --surface: #1a1a19; --ink: #f3f4f4; --ink-2: #c3c2b7; --muted: #8d9297; --rule: #2d3033;
+    --grid: #2c2c2a; --axis: #45454a; --accent: #6da7ec; --heat: #f07a4a; --good: #3cc23c; --warn: #e2a43a; --bad: #ef6b6b;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --q1: #9ec5f4; --q2: #6da7ec; --q3: #3987e5; --q4: #256abf; --q5: #184f95; --ref: #8d9297;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1112; --surface: #1a1a19; --ink: #f3f4f4; --ink-2: #c3c2b7; --muted: #8d9297; --rule: #2d3033;
+  --grid: #2c2c2a; --axis: #45454a; --accent: #6da7ec; --heat: #f07a4a; --good: #3cc23c; --warn: #e2a43a; --bad: #ef6b6b;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --q1: #9ec5f4; --q2: #6da7ec; --q3: #3987e5; --q4: #256abf; --q5: #184f95; --ref: #8d9297;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15.5px; line-height: 1.6; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+.prose { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--f-head); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); font-weight: 600; letter-spacing: -0.01em; }
+h2 { font-size: 1.75rem; font-weight: 600; margin-top: 3.2rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.22rem; font-weight: 600; margin-top: 2rem; }
+p { margin: 0.7rem 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.12rem; color: var(--ink-2); max-width: 68ch; margin-top: 0.9rem; }
+code, .mono { font-family: var(--f-mono); font-size: 0.88em; }
+pre { font-family: var(--f-mono); font-size: 0.85rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+      padding: 12px 14px; overflow-x: auto; line-height: 1.5; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 1.4rem; padding-block: 10px; border-block: 1px solid var(--rule);
+          font-size: 0.9rem; }
+nav.toc a { color: var(--ink-2); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+
+/* headline answer */
+.answer { margin-top: 1.6rem; display: grid; gap: 14px; }
+.answer .label { font-size: 0.95rem; color: var(--ink-2); }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .k { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.tile .v { font-family: var(--f-head); font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 600; line-height: 1.1; margin-top: 4px; }
+.tile .v small { font-size: 0.5em; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+.tile .s { font-size: 0.88rem; color: var(--ink-2); margin-top: 2px; }
+@media (max-width: 640px) { .tiles { grid-template-columns: 1fr; } }
+
+/* figures */
+.figrow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 1.2rem; align-items: start; }
+.figrow.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.figrow.one { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 900px) { .figrow, .figrow.three { grid-template-columns: minmax(0, 1fr); } }
+figure.fig { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 14px 10px; min-width: 0; }
+figure.fig .ft { font-weight: 600; font-size: 0.98rem; }
+figure.fig .fs { font-size: 0.85rem; color: var(--ink-2); margin-top: 2px; }
+.chart { width: 100%; height: 340px; margin-top: 6px; }
+.chart.tall { height: 420px; }
+.chart.short { height: 300px; }
+.figfoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.figfoot .src { font-size: 0.78rem; color: var(--muted); }
+.ctl { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.ctl button, .tbtn { font: inherit; font-size: 0.8rem; padding: 4px 10px; background: transparent; color: var(--ink-2); border: 0; cursor: pointer; }
+.ctl button + button { border-left: 1px solid var(--rule); }
+.ctl button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.tbtn { border: 1px solid var(--rule); border-radius: 6px; }
+.tbtn:hover, .ctl button:hover { color: var(--accent); }
+.ctlrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.dtable { margin-top: 8px; max-height: 260px; overflow: auto; border: 1px solid var(--rule); border-radius: 6px; }
+.dtable table { font-size: 0.78rem; }
+
+/* tables */
+.tbl { overflow-x: auto; margin-top: 1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; color: var(--ink-2); background: var(--surface); position: sticky; top: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+.num td { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 0.82rem; white-space: nowrap; }
+.num td:first-child { font-family: var(--f-body); font-size: 0.86rem; }
+td:first-child { white-space: nowrap; }
+.wrapfirst td:first-child { white-space: normal; min-width: 14ch; }
+.small td { font-size: 0.83rem; }
+.tnote { font-size: 0.82rem; color: var(--muted); margin-top: 6px; max-width: 110ch; }
+.num td .sub { display: block; font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+.five td { min-width: 9.5ch; }
+.five td .hyp { color: var(--muted); }
+
+/* scorecard */
+.pill { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 0.74rem; font-weight: 500; padding: 2px 8px;
+        border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.ok { color: var(--good); }
+.pill.mid { color: var(--warn); }
+.pill.no { color: var(--bad); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.callout { border-left: 3px solid var(--heat); padding: 4px 0 4px 14px; margin: 1rem 0; color: var(--ink-2); max-width: 75ch; }
+ul.tight { margin: 0.4rem 0; padding-left: 1.2rem; }
+ul.tight li { margin: 0.25rem 0; }
+.sources li { margin: 0.35rem 0; font-size: 0.9rem; }
+footer { margin-top: 3rem; font-size: 0.82rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">aharrsim 1.0 · simulator and validation report · 9 October 2026</div>
+  <h1>Deep Coaxial Loop Simulator</h1>
+  <p class="lede">How much heat a 4–12 km closed-loop coaxial well delivers to surface, and the evidence that the simulator computing it is right.
+  Cold water is pumped down the annulus, returns hot up an insulated centre tubing, and gains heat from the rock by conduction only.
+  The working fluid is water and steam (IAPWS-95).</p>
+
+  <div class="answer">
+    <div class="label">Heat delivered to surface after 10 years, 10 kg/s injected at 40 °C, 30 °C/km geotherm, vacuum-insulated tubing</div>
+    <div class="tiles">
+      <div class="tile"><div class="k">4 km well</div><div class="v">{{q4}}<small>MWth</small></div><div class="s">outlet {{t4}} °C</div></div>
+      <div class="tile"><div class="k">8 km well</div><div class="v">{{q8}}<small>MWth</small></div><div class="s">outlet {{t8}} °C</div></div>
+      <div class="tile"><div class="k">12 km well</div><div class="v">{{q12}}<small>MWth</small></div><div class="s">outlet {{t12}} °C</div></div>
+    </div>
+  </div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#heat">Heat delivered</a><a href="#sens">Sensitivities</a><a href="#steam">Steam</a><a href="#fivegw">5 GW field</a><a href="#devtypes">Development types</a><a href="#scorecard">Validation summary</a>
+    <a href="#verification">Analytical checks</a><a href="#field">Field data</a><a href="#benchmarks">Benchmark models</a>
+    <a href="#twophase">Steam–water riser</a><a href="#model">Model</a><a href="#use">Using the code</a><a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<section id="heat">
+<h2>Heat delivered to surface, 4–12 km</h2>
+<div class="prose">
+<p>The reference loop is the same at every depth: 9⅝″ casing to 3 km, a 7″ liner to TD, and 3½″ × 4½″ vacuum-insulated tubing
+to the bottom, with an apparent conductivity of 0.03 W/m/K across the insulation annulus (0.71 K·m/W per metre of tubing). The rock has k = 2.8 W/m/K and the geotherm is 30 °C/km from 15 °C,
+so the bottom-hole rock temperature runs from 135 °C at 4 km to 375 °C at 12 km. Water is injected at 40 °C and delivered at 5 MPa,
+which keeps it single-phase.</p>
+<p>Heat grows faster than depth: each extra kilometre adds hotter rock and more contact area at the same time. At 10 kg/s, an 8 km loop gives
+{{q8}} MWth after 10 years and a 12 km loop {{q12}} MWth ({{cum8}} and {{cum12}} GWh over 30 years). Doubling the flow from 10 to 20 kg/s
+adds only {{dbl_lo}}–{{dbl_hi}} % more heat, because the rock near the well, not the water, limits the supply. It lowers the outlet temperature
+by {{dbl_dT}} K at 12 km and multiplies the pumping power in 3½″ tubing: at 12 km, 20 kg/s gives {{q12_20}} MWth for {{pump12_20}} kW of pumping.</p>
+</div>
+<div class="figrow">
+  <figure class="fig">
+    <div class="ft">Heat delivered vs depth</div>
+    <div class="fs">MWth at the wellhead, by circulation rate</div>
+    <div class="ctlrow">
+      <div class="ctl" role="group" aria-label="Time"><button data-t="1" aria-pressed="false">1 yr</button><button data-t="10" aria-pressed="true">10 yr</button><button data-t="30" aria-pressed="false">30 yr</button></div>
+      <div class="ctl" role="group" aria-label="Quantity"><button data-q="Q" aria-pressed="true">Heat</button><button data-q="T" aria-pressed="false">Outlet temperature</button></div>
+    </div>
+    <div class="chart" id="c-depth"></div>
+    <div class="figfoot"><span class="src">Reference design; deep_study.py</span><button class="tbtn" data-table="c-depth">Table</button></div>
+  </figure>
+  <figure class="fig">
+    <div class="ft">Outlet temperature over 30 years</div>
+    <div class="fs">10 kg/s; the early peak is the hot water initially standing in the well</div>
+    <div class="chart" id="c-tout"></div>
+    <div class="figfoot"><span class="src">Reference design; log time axis</span><button class="tbtn" data-table="c-tout">Table</button></div>
+  </figure>
+</div>
+{{T_summary}}
+<h3>Effect of circulation rate</h3>
+{{T_flow}}
+
+<h3>Where the heat comes from</h3>
+<div class="prose">
+<p>The profiles below show the undisturbed rock, the cold stream going down the annulus and the hot stream coming up the tubing after 10 years.
+The annulus only starts to gain heat once the rock is hotter than the injected water; the deepest third of the well supplies {{bot3}} of the heat.
+On the way up, the tubing passes {{loss12}} MW (at 12 km) back through the insulation to the colder annulus. That heat stays in the loop,
+but it lowers the outlet temperature and pre-warms the down-going water, so the rock gives up less. The tubing insulation is therefore
+one of the main design levers (next section).</p>
+</div>
+<div class="figrow three">
+  <figure class="fig"><div class="ft">4 km</div><div class="fs">Temperature vs measured depth, 10 years</div><div class="chart tall" id="c-p4"></div></figure>
+  <figure class="fig"><div class="ft">8 km</div><div class="fs">Temperature vs measured depth, 10 years</div><div class="chart tall" id="c-p8"></div></figure>
+  <figure class="fig"><div class="ft">12 km</div><div class="fs">Temperature vs measured depth, 10 years</div><div class="chart tall" id="c-p12"></div></figure>
+</div>
+</section>
+
+<section id="sens">
+<h2>Sensitivities</h2>
+<div class="prose">
+<p>All at 10 kg/s and 10 years; one input changed at a time from the reference design. The geothermal gradient and the tubing
+insulation dominate. Rock conductivity matters less than either. Gradients were run from 20 to 60 °C/km in 5 °C/km steps (every other one
+is plotted; the 5 GW section has them all). Leaving the lower half of the tubing uninsulated is the costliest
+simplification: the up-flowing water gives its heat straight back to the annulus. With plain steel tubing over the full length almost no
+heat reaches surface, because the two streams simply exchange heat with each other.</p>
+</div>
+<div class="figrow three">
+  <figure class="fig"><div class="ft">Geothermal gradient</div><div class="fs">MWth after 10 years</div><div class="chart" id="c-grad"></div>
+    <div class="figfoot"><span class="src">15 °C surface; 20–60 °C/km</span><button class="tbtn" data-table="c-grad">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Centre-tubing insulation</div><div class="fs">MWth after 10 years</div><div class="chart" id="c-ins"></div>
+    <div class="figfoot"><span class="src">k = apparent insulation conductivity, W/m/K</span><button class="tbtn" data-table="c-ins">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Rock thermal conductivity</div><div class="fs">MWth after 10 years</div><div class="chart" id="c-rock"></div>
+    <div class="figfoot"><span class="src">W/m/K, constant with temperature</span><button class="tbtn" data-table="c-rock">Table</button></div></figure>
+</div>
+<h3>Larger completion for higher flow</h3>
+<div class="prose"><p>With 9⅝″ casing to TD and 4½″ × 5½″ insulated tubing, 20–40 kg/s becomes hydraulically practical. The extra flow mostly buys
+a lower outlet temperature for a modest gain in heat, because the rock around the well, not the water, limits the supply.</p></div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Large-bore loop: heat vs depth</div><div class="fs">MWth after 10 years</div><div class="chart" id="c-bb"></div>
+    <div class="figfoot"><span class="src">9⅝″ casing to TD, 4½″ × 5½″ VIT</span><button class="tbtn" data-table="c-bb">Table</button></div></figure>
+  <div style="min-width:0">{{T_bigbore}}</div>
+</div>
+<h3>Producing up the annulus</h3>
+<div class="prose">
+<p>The loop can also be run the other way: inject down the insulated tubing and produce up the annulus, as in an oil well.
+Seventeen casing-and-tubing combinations were run both ways (7″ to 13⅜″ casing, 2⅜″ to 7″ vacuum-insulated tubing), which
+takes the annulus velocity at 10 kg/s from {{dir_vhi}} m/s down to {{dir_vlo}} m/s. Producing up the annulus delivers
+{{dir_lo}}–{{dir_hi}} % less heat than the reference arrangement in the same completion, with the outlet {{dir_dT}} K cooler,
+and about half the net power. The penalty is larger at low flow ({{dir_r5}} % at 5 kg/s) and smaller at high flow
+({{dir_r20}} % at 20 kg/s), and about the same at 60 °C/km ({{dir_g60}} %).</p>
+<p>The reason is the direction of flow relative to the geotherm. Going down the annulus, the water meets hotter rock as it
+warms, so the temperature difference driving the heat is kept up all the way to TD, and the hot return is insulated from the
+rock. Going up the annulus, the water meets cooler rock as it warms: it peaks at about {{dir_peak}} °C around {{dir_peakz}} km,
+then gives {{dir_loss}} MW back to the rock above {{dir_xo}} km, where the rock is colder than the water. The profiles below
+show both.</p>
+<p>Slowing the annulus flow does not help: over the twentyfold range of velocity the heat produced up the annulus only
+varies between {{dir_qlo}} and {{dir_qhi}} MWth, and that variation follows the casing size and the tubing insulation, not the
+velocity. The film at the casing wall is well under 1 % of the thermal resistance between the water and the rock, so the
+velocity has no leverage on the heat; at a given mass flow the water carries the same heat per kilogram however wide the
+channel. A larger hole adds a little rock contact ({{dir_big_gain}} % from 9⅝″ to 13⅜″), and a larger insulated tubing of the
+same construction leaks more between the streams (7″ in 13⅜″ gives {{dir_q7}} MWth; with the 3½″ tubing's wall resistance
+it gives {{dir_r7}}). What the annulus area does change is pumping: the tight annuli (clearance under an inch) cost
+{{dir_pump_tight}} kW, while from 9⅝″ casing upwards the loop drives itself at 10 kg/s in either direction. With bare steel
+tubing both directions deliver nothing, because the two streams exchange heat with each other instead.</p>
+</div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Heat vs annulus velocity, both flow directions</div><div class="fs">MWth in year 30, 12 km, 10 kg/s; one point per completion, log velocity axis</div>
+    <div class="chart" id="c-dir"></div>
+    <div class="figfoot"><span class="src">direction_study.py</span><button class="tbtn" data-table="c-dir">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Temperature profiles, 9⅝″ × 3½″ VIT, 10 years</div><div class="fs">Solid: annulus down, tubing up. Dashed: tubing down, annulus up</div>
+    <div class="chart" id="c-dirprof"></div>
+    <div class="figfoot"><span class="src">12 km, 30 °C/km, 10 kg/s</span><button class="tbtn" data-table="c-dirprof">Table</button></div></figure>
+</div>
+{{T_dir}}
+</section>
+
+<section id="steam">
+<h2>Delivering steam</h2>
+<div class="prose">
+<p>With a 30 °C/km geotherm a conduction-only loop delivers pressurised hot water, not steam. After 10 years the wellhead water is at
+80–160 °C. Flashed to 0.5 MPa it gives at most {{st_x05}} % steam by mass (12 km, 5 kg/s); flashed to atmospheric pressure, {{st_atm_lo}}–{{st_atm_hi}} %.
+Useful steam needs hotter rock, lower flow or a deeper well, and lower flow means less total heat. At 50–60 °C/km the 10–12 km loops
+deliver {{st_hotT}} °C water at 10 kg/s, which flashes to {{st_hot}} % steam at 0.5 MPa.
+For most designs a binary (ORC) or direct-use plant fed with the hot water will use the heat better than flashing it.</p>
+<p>At 5 kg/s the hot riser outweighs the cold annulus by more than the friction, so the loop circulates without a pump: the inlet
+pressure is only {{st_pin5}} MPa at 8, 10 and 12 km for 5 MPa at the wellhead. Where the delivery pressure is lower still, the loop has to be
+throttled; the model then holds the inlet at 0.2 MPa and reports the pressure taken by the wellhead choke. At 10 kg/s the pump must add
+{{st_pump10}} MPa. The model computes flashing inside the tubing when the wellhead pressure is low enough, but in these designs the riser
+stays single-phase.</p>
+</div>
+{{T_steam}}
+</section>
+
+<section id="fivegw">
+<h2>Wells for a 5 GW field</h2>
+<div class="prose">
+<p>The number of loops needed for 5 GW, by depth and geothermal gradient. Each count holds 5 GW through year 30; sizing on first-year
+output needs about a fifth fewer wells, but output then falls by about a fifth over the 30 years. Heat uses the reference design at 10 kg/s.
+Power uses whichever of 5, 10, 15 and 20 kg/s gives the most net electricity: lower flow means hotter water, which matters more for power
+than the extra heat. The conversion follows GeoCLUSTER’s ORC method (20 % of the thermal exergy at 100 °C rising to 45 % at 200 °C, nothing
+below 100 °C), with a 20 °C heat sink and the circulation pump deducted.</p>
+<p>At 30 °C/km a 5 GWth field needs {{s5_12_30}} wells at 12 km and {{s5_4_30}} at 4 km; at 60 °C/km, {{s5_12_60}} and {{s5_4_60}}.
+Power takes far more: {{s5e_12_30}} wells at 12 km and 30 °C/km, {{s5e_12_60}} at 60 °C/km. The gradients span surface heat flows of
+56–168 mW/m² at k = 2.8 W/m/K, against a continental average of about 65 mW/m², so the upper half of the range applies only to volcanic or
+rifting areas. Above about 400 °C at TD (marked †) granite turns ductile and current casing, cement and insulated tubing are beyond their
+ratings; at 12 km and 60 °C/km the rock at TD is 735 °C, close to where wet granite starts to melt. Those cases show what conduction could
+supply, not what can be built.</p>
+</div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Heat per well vs gradient</div><div class="fs">MWth in year 30, reference design at 10 kg/s</div>
+    <div class="chart" id="c-5heat"></div>
+    <div class="figfoot"><span class="src">deep_study.py, field_sizing.py</span><button class="tbtn" data-table="c-5heat">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Wells for 5 GW vs gradient</div><div class="fs">Held through year 30; log scale</div>
+    <div class="ctlrow"><div class="ctl" role="group" aria-label="Output"><button data-w="heat" aria-pressed="true">5 GWth</button><button data-w="power" aria-pressed="false">5 GWe</button></div></div>
+    <div class="chart" id="c-5wells"></div>
+    <div class="figfoot"><span class="src">Power: best of 5–20 kg/s; gaps = no net power</span><button class="tbtn" data-table="c-5wells">Table</button></div></figure>
+</div>
+<h3>5 GW of heat</h3>
+{{T_5th}}
+<h3>5 GW of electricity</h3>
+{{T_5e}}
+<h3>Best case (“high-high”)</h3>
+<div class="prose"><p>Every input at the most favourable value tested: 60 °C/km, rock k 3.5 W/m/K, the large-bore completion with insulation
+k 0.01 W/m/K, and 5–40 kg/s. At 12 km one well gives {{mx_q_12}} MWth or {{mx_p_12}} MWe, so 5 GW takes {{mx_th_12}} wells for heat or
+{{mx_e_12}} for power. It is an upper bound, not a design: k 3.5 W/m/K with 60 °C/km implies 210 mW/m² of heat flow, and the deeper cases
+are well past the 400 °C line.</p></div>
+{{T_max}}
+<h3>Rock conductivity falling with temperature</h3>
+<div class="prose"><p>The study holds rock conductivity constant. Letting it fall with temperature, as it does in crystalline rock, cuts the heat
+per well by {{kT30}} % at 30 °C/km and {{kT60}} % at 60 °C/km (shallow to deep), and raises the well counts in proportion. The hottest cases
+are therefore the most optimistic.</p></div>
+{{T_kT}}
+<p class="tnote">Spacing: after 30 years the cooled rock reaches about {{sp_reach}} m from each well. On a 100 m grid, neighbouring wells cut each
+other’s output by about {{sp100}} % ({{sp100m}} % in the best case, {{sp150m}} % at 150 m), so a field needs roughly 0.01–0.02 km² per well at
+depth. Line-source superposition at a constant extraction rate.</p>
+</section>
+
+<section id="devtypes">
+<h2>The twenty development types</h2>
+<div class="prose">
+<p>Khodayar and Björnsson (2024) sort geothermal developments into twenty types, from hot sedimentary aquifers and volcanic flash fields to
+heat pumps, closed loops, fractured-rock EGS, oil-field heat and the supercritical and 20 km concepts. Only three of them are coaxial loops.
+To run the rest, the solver gained single-channel production and injection wells (feed zone, flashing riser, downhole pump, productivity
+index), a U-tube borehole exchanger, an adiabatic unit-cell far field, a reservoir element in series at TD, chains of segments with
+transient hand-over, reservoir models (convective reservoir, Gringarten–Sauty doublet breakthrough, Gringarten parallel-fracture EGS, cyclic
+fracture, lumped heat store) and surface plants (ORC cycle and the GEOPHIRES practical correlations, single and double flash, steam
+turbine, heat pump). Each extension was checked against an independent public reference before use:</p>
+</div>
+{{T_dt_bench}}
+<div class="prose">
+<p>One representative example of each type was then run for 30 years (10 for the heat pumps, 15 for the heat store, a year of daily cycles
+for the batch systems), with the parameters taken from the ranges and named examples in the source table. The water temperature is what
+the model is asked for first; the electricity follows from it. All cases use the same reference conditions: 15 °C ambient, a practical
+binary plant (GEOPHIRES correlation, air-cooled, brine returned at its reinjection temperature) for liquid water, single or double flash or
+a condensing steam turbine for two-phase and steam, a 40 °C condenser, 70 % pumps.</p>
+</div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Water temperature and net electricity at the horizon</div><div class="fs">One point per example, net of downhole and circulation pumps; hollow markers: heat only, drawn at the axis floor</div>
+    <div class="chart" id="c-dtpts"></div>
+    <div class="figfoot"><span class="src">dev_types.py</span><button class="tbtn" data-table="c-dtpts">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Heat and electricity per example</div><div class="fs">MWth, gross and net MWe at the horizon, log scale; cases without electricity have no electricity marker</div>
+    <div class="chart" id="c-dtbars"></div>
+    <div class="figfoot"><span class="src">dev_types.py; heat pumps consume electricity</span><button class="tbtn" data-table="c-dtbars">Table</button></div></figure>
+</div>
+{{T_dt}}
+<h3>What the water temperature allows</h3>
+<div class="prose">
+<p><b>Below about 80 °C there is no electricity.</b> The hot sedimentary aquifer doublet ({{dt_T1}} °C, {{dt_H1}} MWth), the 3 km abandoned-well
+loop ({{dt_T16}} °C, {{dt_H16}} MWth), the single-well Eden-type EGS ({{dt_T11f}} °C in year 1, {{dt_T11}} °C after 30 years: a small fractured volume cools quickly),
+the assumed Chevron-type closed doublet ({{dt_T9}} °C) and
+the 3 km GreenLoop retrofit even in 255 °C rock ({{dt_T7}} °C at 10 kg/s, {{dt_H7}} MWth) deliver heat for networks, buildings and
+greenhouses. The two shallow systems are heat-pump sources: {{dt_wm5}} W/m from the 150 m U-tube and {{dt_wm6}} W/m from the 400 m coaxial
+exchanger, lifted to 45 °C at a COP of about {{dt_cop5}}; they use electricity rather than make it. <b>From 80 to 120 °C</b> a binary plant
+converts 10–20 % of the small exergy: the eight co-produced oil wells give {{dt_P15}} MWe net at {{dt_T15}} °C, the waste-heat module
+{{dt_P4}} MWe from 50 kg/s at 110 °C, the SAGD heat store {{dt_P17f}} MWe at {{dt_T17f}} °C in its first year but nothing after year five ({{dt_T17}} °C; the
+chamber holds a few years of heat, not decades), and the cyclic single-well fracture {{dt_T12}} °C water in daily batches, which twenty
+phased wells turn into {{dt_P13}} MWe. <b>From 120 to 200 °C</b> electricity
+becomes the product: the pumped Nevada-type well gives {{dt_P2}} MWe net at {{dt_T2}} °C, the classic EGS doublet {{dt_P10}} MWe at
+{{dt_T10}} °C after 30 years, the Fervo-type horizontal doublet {{dt_P14f}} MWe gross at {{dt_T14f}} °C in year 1, the same as the 3.5 MWe pilot, but
+nothing after about year twelve ({{dt_T14}} °C at 30 years), because the rock between two laterals 100 m apart is swept out in about
+ten years whatever the number of fractures (a 30-year plant needs several times that rock volume per well pair, or replacement wells), and the Eavor-type loop with 60 km of
+laterals {{dt_P8}} MWe from {{dt_H8}} MWth at {{dt_T8}} °C ({{dt_P8f}} MWe at {{dt_T8f}} °C in year 1). <b>Above 200 °C</b> flash and steam plants take over: the Wairakei-type well
+{{dt_P3}} MWe at {{dt_T3}} °C wellhead temperature, the Geysers-type dry-steam well {{dt_P3b}} MWe, the IDDP-type supercritical well
+{{dt_P18}} MWe from 20 kg/s of steam at {{dt_T18}} °C and 10 MPa (0.67 MWe per kg/s, so the 30 MWe expected of such a well needs
+about 50 kg/s), the superhot EGS doublet {{dt_P19f}} MWe in year 1 ({{dt_T19}} °C at the 5 MPa wellhead, steam fraction {{dt_x19f}}) falling to
+{{dt_P19}} MWe after 30 years as the fractured block cools from 375 to {{dt_Tres19}} °C (steam fraction {{dt_x19}}), and the 20 km Quaise-type loop {{dt_P20}} MWe at {{dt_T20}} °C from 20 kg/s ({{dt_P20f}} MWe at {{dt_T20f}} °C
+in year 1).</p>
+<p><b>Where the heat comes from decides the scale.</b> Everything that touches a convecting or fractured reservoir reaches megawatts per
+well because it sweeps a large rock volume with the fluid; everything that relies on conduction through a borehole wall stays at about a
+megawatt of electricity or less per well whatever the depth (the 69 km Eavor-type loop reaches 1–2 MWe, the 20 km Quaise-type loop
+1 MWe), because the rock around a hole can only pass a few hundred watts per metre once it has cooled. That is why the conventional and
+EGS figures in the source table are consistent with the model, while the closed-loop claims (2–9 MWe for a single retrofitted well,
+8.2 MWe per Eavor loop, 100 MWe per Quaise plant) sit well above what the validated conduction model gives; the independent 2.2 MWe
+estimate quoted for the Eavor loop is of the right order. The cyclic single-fracture systems are conduction-limited between cycles in the
+same way: with the assumed 300 × 100 m fracture in 150 °C rock, twenty wells give {{dt_H13}} MWth and {{dt_P13}} MWe against the 50 MWe
+quoted; a fracture ten times larger in 200 °C rock would give roughly an order of magnitude more, still well short of it. <b>Parasitics matter at the
+margin:</b> a pumped medium-temperature well spends 10–20 % of its output on the pump, an EGS doublet 0.5–1 MWe on circulation against the
+fracture impedance, while self-flowing high-temperature wells and the deep closed loops (thermosiphon) spend almost nothing.
+<b>Climate:</b> the figures are for 15 °C ambient; with the GEOPHIRES availability taken at the actual ambient, the binary outputs fall by
+30–55 % at 35 °C and 42–72 % at 45 °C (the cooler streams losing most), a 50 °C condenser costs the flash and steam plants 5–11 %, and direct
+heat is unaffected. The storage case recovers {{dt_st13}} % of the heat put into the fracture after a day, which is
+{{dt_se13}} % of the electricity once converted back; the SAGD chamber yields {{dt_rec17}} % of its stored heat in 15 years.</p>
+</div>
+<h3>Example parameters</h3>
+{{T_dt_assume}}
+</section>
+
+<section id="scorecard">
+<h2>Validation summary</h2>
+<div class="prose"><p>Every check below was rerun from the scripts in <code>validation/</code>. The field tests reach only 2.6 km, so the 4–12 km
+range rests on the analytical checks, which have no depth limit, and on code-to-code comparison with independent public models.</p></div>
+<div class="tbl"><table>
+<thead><tr><th>Check</th><th>What it tests</th><th>Result</th><th></th></tr></thead>
+<tbody>
+<tr><td>Steady reverse circulation, exact solution</td><td>Wellbore heat exchange, counter-flow coupling, discretisation</td><td>Second-order convergence; error {{v1_err50}} K at 50 m cells</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Constant-temperature cylinder (Carslaw &amp; Jaeger)</td><td>Transient rock conduction, 1 hour to 30 years</td><td>Within {{v2_err}} % of the exact heat flow</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Energy balance</td><td>Conservation in the coupled solution</td><td>Residual {{v4_res}} of the delivered heat</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Reversed flow (tubing down, annulus up), exact solution</td><td>Forward-circulation closed form; mirror symmetry of the two directions in uniform rock</td><td>Second-order convergence, error {{v7_err}} K at 50 m cells; directions agree to {{v7_sym}} K with constant properties</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Grid and time-step refinement</td><td>Numerical convergence on a real 8 km design</td><td>All grid and step variants within 0.1 K from 30 days on</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>IAPWS-95 water properties</td><td>Equation of state and transport properties to 150 MPa</td><td>IAPWS check values to 3e−9; liquid tables within 0.011 K, steam within 0.05 K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Qingdao 2605 m field test</td><td>Measured outlet temperature and heat, 138 days</td><td>Outlet {{qd_dT}} K; mean heat {{qd_pct}} %</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Weggis 2302 m, two years of operation</td><td>Measured annual heat (rock data assumed)</td><td>{{wg_pct1}} % and {{wg_pct2}} %, inside the input uncertainty</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>GeoCLUSTER database (Sandia), 4–5 km</td><td>Independent numerical model, 1–40 years, {{gc_n}} comparisons</td><td>RMS {{gc_rms}} K, max {{gc_max}} K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>SBT model, 4–10 km</td><td>Independent semi-analytical model, constant and variable properties</td><td>Max difference {{sbt_max}} K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>WellTH (Kubacka &amp; Karayiannis 2024), 1–5 km</td><td>Published single-code results, plastic and vacuum-insulated tubing</td><td>Max difference {{wt_max}} K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>SBT (Beckers et al. 2022), 2–4 km</td><td>Published 20-year mean heat</td><td>Within {{bk_max}} %</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>TETRAD (Nalla et al. 2004), 5.6 km</td><td>Published outlet temperatures, nine variants</td><td>−19 to +13 K; TETRAD shows almost no effect of the tubing insulation</td><td><span class="pill mid">partial</span></td></tr>
+<tr><td>Flowing geothermal wells (two-phase)</td><td>Flashing riser pressure drop</td><td>Within 2 % for steam qualities up to 0.35; 7–31 % off at quality ≈0.6 and &lt;20 bar</td><td><span class="pill mid">partial</span></td></tr>
+<tr><td>Xi’an 2000 m and Songyuan 2044 m</td><td>Measured heat</td><td>Reported heat exceeds what conduction from the published rock can supply</td><td><span class="pill no">data unusable</span></td></tr>
+<tr><td colspan="4" class="sub" style="padding-top:14px">Extensions for the development types (v2.0)</td></tr>
+<tr><td>Production / injection wells, exact steady solutions and Ramey</td><td>Single-channel wells with a feed zone, pump and flashing riser</td><td>Second-order convergence; within 1.5 K of Ramey / Hasan–Kabir with constant properties; measured two-phase wells within 2 %</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>U-tube borehole exchanger vs pygfunction</td><td>Multipole borehole resistance and g-function, 5 years</td><td>Wall temperature within 0.1 K, fluid within 0.2 K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>U-loop chains vs GeoCLUSTER <code>utube</code> database (SBT)</td><td>Injector → laterals → producer hand-over, 2–20 km laterals, 1–40 years</td><td>Max difference 0.7 K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Reservoir elements</td><td>Parallel-fracture (Gringarten) inversion, doublet breakthrough, cyclic fracture vs Lauwerier</td><td>Stehfest within 2e−4 of mpmath; breakthrough time exact; 0.8 K</td><td><span class="pill ok">pass</span></td></tr>
+<tr><td>Plant models vs GEOPHIRES v3 correlations</td><td>Binary 100–250 °C, single / double flash 150–300 °C</td><td>Binary cycle 0.87–1.11 of the correlation; flash within 1–3 % at the same condenser temperature</td><td><span class="pill ok">pass</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section id="verification">
+<h2>Verification against analytical solutions</h2>
+<h3>Steady reverse circulation</h3>
+<div class="prose"><p>With constant fluid properties and a fixed formation resistance, the down-annulus/up-tubing problem has a closed-form solution
+(the reverse-circulation form of Holmes &amp; Swift 1970 and Kabir et al. 1996, re-derived and checked against a numerical boundary-value
+solve to 1e−13 K). The simulator converges to it at second order for insulated and bare tubing and for a 12 km well.</p></div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Discretisation error vs axial cell size</div><div class="fs">Largest temperature error in the well (K), log–log</div>
+    <div class="chart" id="c-v1"></div><div class="figfoot"><span class="src">verify.py V1; grey line has slope 2</span><button class="tbtn" data-table="c-v1">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Rock conduction vs Carslaw &amp; Jaeger</div><div class="fs">Error in heat flow per metre (%), constant-temperature cylinder</div>
+    <div class="chart" id="c-v2"></div><div class="figfoot"><span class="src">verify.py V2; r = 0.1 m, α = 1e−6 m²/s</span><button class="tbtn" data-table="c-v2">Table</button></div></figure>
+</div>
+{{T_v1}}
+{{T_v2}}
+<h3>Classical transient approximation</h3>
+<div class="prose"><p>Kabir et al. (1996) combine the steady solution with the Hasan &amp; Kabir dimensionless time function for the formation. It is an
+approximation (no vertical conduction, a fixed-flux time function), so agreement is expected to improve with time. The difference falls
+from 2 K at one day to 0.2 K at 30 years.</p></div>
+<div class="figrow one"><figure class="fig"><div class="ft">Outlet temperature, 6 km reference problem</div><div class="fs">Constant properties, k = 2.5 W/m/K, R<sub>tubing</sub> = 2 K·m/W, 10 kg/s</div>
+<div class="chart short" id="c-v3"></div><div class="figfoot"><span class="src">verify.py V3</span><button class="tbtn" data-table="c-v3">Table</button></div></figure></div>
+<h3>Convergence on a real design</h3>
+{{T_v5}}
+<h3>Water and steam properties</h3>
+{{T_v6}}
+</section>
+
+<section id="field">
+<h2>Field data</h2>
+<div class="prose">
+<p>Four deep borehole heat exchanger tests have enough published data to attempt a re-run. Two are consistent with conduction from the
+published rock and match well. The other two report more heat than the rock could conduct even if the whole annulus stayed at the inlet
+temperature, so they cannot test a conduction model. The likely causes are groundwater flow or understated rock conductivity; the
+simulator was not tuned to them.</p>
+</div>
+{{T_field}}
+<div class="figrow">
+  <figure class="fig"><div class="ft">Qingdao 2605 m: outlet temperature</div><div class="fs">Model with rock k ±10 % band; measured value at test end</div>
+    <div class="chart" id="c-qd-t"></div><div class="figfoot"><span class="src">Bu et al. 2019 via Chen &amp; Tomac 2023</span><button class="tbtn" data-table="c-qd-t">Table</button></div></figure>
+  <figure class="fig"><div class="ft">Qingdao 2605 m: heat extracted</div><div class="fs">Model (kW) and measured 138-day mean</div>
+    <div class="chart" id="c-qd-q"></div><div class="figfoot"><span class="src">5 °C inlet, 30 m³/h</span><button class="tbtn" data-table="c-qd-q">Table</button></div></figure>
+</div>
+</section>
+
+<section id="benchmarks">
+<h2>Benchmark models at depth</h2>
+<div class="prose">
+<p>No field test reaches 4 km, so the deep range is checked against independent public models, each run with its own geometry and assumptions.
+The GeoCLUSTER database holds results from Sandia’s Sierra/Aria model, generated by the US DOE Closed-Loop Geothermal Working Group with
+IAPWS water properties; the comparison points are L-shaped wells (4–5 km vertical plus a 1 km lateral, which aharrsim also handles).
+SBT is the slender-body-theory model of Beckers et al., run from the public GeoCLUSTER code for vertical wells to 10 km.</p>
+</div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Outlet temperature: benchmark vs aharrsim</div><div class="fs">Every comparison point, °C; grey line is equality</div>
+    <div class="chart tall" id="c-par"></div><div class="figfoot"><span class="src">benchmarks.py B1–B3</span><button class="tbtn" data-table="c-par">Table</button></div></figure>
+  <figure class="fig"><div class="ft">GeoCLUSTER example: 5 km, 70 °C/km</div><div class="fs">Sandia database (points) and aharrsim (lines), 1 km lateral, k = 3 W/m/K</div>
+    <div class="chart tall" id="c-gc"></div><div class="figfoot"><span class="src">clgs_results_final.h5, coaxial/H2O</span><button class="tbtn" data-table="c-gc">Table</button></div></figure>
+</div>
+{{T_gc}}
+<h3>SBT, vertical wells to 10 km</h3>
+{{T_sbt}}
+<h3>Published results</h3>
+<p class="prose">Kubacka &amp; Karayiannis (2024), WellTH code, 100 L/min at 10 °C, 30 °C/km, after one year.</p>
+{{T_kub}}
+<p class="prose">Beckers et al. (2022), SBT, 20 kg/s at 20 °C, vacuum-insulated tubing, 200 °C at TD.</p>
+{{T_beckers}}
+<p class="prose">Nalla et al. (2004/2005), TETRAD reservoir simulator used as a wellbore model, 5593 m, 350 °C at TD. Agreement is only
+moderate and follows a pattern: TETRAD’s outlet changes by just 2.6 K between k = 0.07 W/m/K insulation and perfect insulation, whereas in
+aharrsim, the analytical solution and the other benchmarks the riser heat loss matters far more. That makes TETRAD warmer at low flow, where the
+riser loss dominates, and cooler at high flow. At 31.5 kg/s aharrsim also includes the friction heating from about 30 MPa of pumping pressure.</p>
+{{T_nalla}}
+</section>
+
+<section id="twophase">
+<h2>Steam–water riser hydraulics</h2>
+<div class="prose">
+<p>When the riser flashes, the pressure gradient model decides how much steam forms and where. It was tested on flowing pressure surveys of
+geothermal production wells compiled by Ambastha &amp; Gudmundsson (1986), marching down from the shallowest measurement with the same
+correlations and IAPWS properties used in the simulator. For steam qualities up to about 0.35 the homogeneous model is within 2 %, better
+than the Orkiszewski correlation that performed best in the original study. At HGP-A, where the flow is 60 % steam by mass at 3–15 bar and
+close to choking, errors reach 7–31 %. A closed loop normally keeps the riser pressurised, which avoids that regime.</p>
+</div>
+<div class="figrow">
+  <figure class="fig"><div class="ft">Los Azufres Az-18 and Cerro Prieto M-90</div><div class="fs">Flowing pressure (bar abs) vs depth; points measured, lines HEM model</div>
+    <div class="chart tall" id="c-tp1"></div></figure>
+  <figure class="fig"><div class="ft">HGP-A, Hawaii</div><div class="fs">Steam-dominated flow at two rates; points measured, lines HEM model</div>
+    <div class="chart tall" id="c-tp2"></div></figure>
+</div>
+{{T_tp}}
+</section>
+
+<section id="model">
+<h2>Model</h2>
+<div class="tbl"><table>
+<thead><tr><th style="width:22%">Part</th><th>Treatment</th></tr></thead>
+<tbody>
+<tr><td>Fluid energy</td><td>Steady-flow energy equation in enthalpy for annulus and tubing, with gravity work (m g dz), kinetic energy and fluid heat storage.
+Temperature comes from T(p, h), so compression and expansion, friction heating and flashing follow from the equation of state.
+Second-order box scheme with exponential weighting where a cell’s transfer number exceeds one; the axial grid is refined automatically
+where the tubing is poorly insulated.</td></tr>
+<tr><td>Rock and completion</td><td>Axisymmetric r–z finite volumes with casing steel, cement and layered rock as separate materials; radial and vertical
+conduction; far field held at the undisturbed geotherm. An equilibrium source makes the undisturbed geotherm an exact steady state of the
+discrete equations, so the rock does not drift while the well is idle.</td></tr>
+<tr><td>Time</td><td>Variable-step second-order BDF; schedules of flow rate, inlet temperature and shut-ins.</td></tr>
+<tr><td>Coupling</td><td>All fluid enthalpies and solid temperatures solved together in one sparse system; T(h) linearised and iterated with the pressure profile each step.</td></tr>
+<tr><td>Heat-transfer coefficients</td><td>Gnielinski (pipe) and Gnielinski (2009) concentric annulus, with laminar–turbulent blending; Chen enhancement factor in two-phase flow.</td></tr>
+<tr><td>Hydraulics</td><td>Pressure marched each iteration: gravity, Churchill friction, acceleration; homogeneous or drift-flux two-phase. If the riser is light enough to drive the loop, the inlet is held at a minimum pressure and a wellhead choke takes the excess.</td></tr>
+<tr><td>Flow direction</td><td>Either way round: down the annulus and up the tubing (default), or down the tubing and up the annulus (<code>flow_direction: tubing_down</code>). The solver works with a feed stream and a riser; the annulus is whichever touches the casing.</td></tr>
+<tr><td>Properties</td><td>IAPWS-95 through CoolProp, bicubic p–h tables for speed with exact IAPWS 2008/2011 viscosity and conductivity, and a saturation table for two-phase states. Valid to 1000 MPa, well above 12 km bottom-hole pressures.</td></tr>
+<tr><td>Other well types (v2.0)</td><td><code>mode: production</code> and <code>injection</code> run one flow channel (casing, or tubing with a static annulus) with a feed zone at TD given by temperature or enthalpy, a productivity index, a downhole pump at any depth, a wellhead-pressure or bottom-pressure boundary and the same flashing riser; <code>mode: utube</code> couples both legs of a U-tube to the borehole wall through the multipole delta circuit; <code>far_field: adiabatic</code> makes a unit cell for arrays and lateral stacks; <code>bottom_element</code> places a reservoir element in series at TD of a coaxial well.</td></tr>
+<tr><td>Reservoirs and plants (v2.0)</td><td><code>aharrsim.reservoir</code>: convective reservoir at fixed temperature, Gringarten–Sauty doublet breakthrough, Gringarten (1975) parallel-fracture EGS (Stehfest inversion, as GEOPHIRES), cyclic single-well fracture (plug flow with 1-D rock columns), lumped heat store with Duhamel losses. <code>aharrsim.systems</code> chains injector, laterals or reservoir and producer with transient hand-over of the fluid state. <code>aharrsim.plant</code>: ORC cycle (six working fluids, recuperator, 5 K pinch, air or wet cooling), single and double flash with the Baumann rule and 1 % NCG, condensing steam turbine, heat pump and exergy, plus the GEOPHIRES v3 utilisation-efficiency correlations as the practical binary estimate.</td></tr>
+</tbody></table></div>
+<h3>Not modelled</h3>
+<ul class="tight prose">
+<li>Groundwater flow or any convection in the rock; heat supply is pure conduction.</li>
+<li>Temperature dependence of rock conductivity, which falls by roughly 20–35 % between 25 and 300–400 °C in crystalline rock. Rock layers can carry depth-dependent values; the 5 GW section shows the effect.</li>
+<li>Heat capacity of the centre tubing wall, natural convection in a shut-in annulus, choked flow at the wellhead, and non-condensable gases.</li>
+<li>Thermal bridges at vacuum-insulated tubing couplings: enter an apparent conductivity that includes them (vendor data are typically 0.01–0.06 W/m/K).</li>
+<li>In the development-type examples: reservoir pressure decline and reinjection returns, scaling and corrosion, chemistry of supercritical fluids, the mechanics of fracture creation, and the number of flow paths an EGS actually makes; the fracture counts and areas are inputs.</li>
+</ul>
+</section>
+
+<section id="use">
+<h2>Using the code</h2>
+<div class="prose">
+<p>Python 3.9 or later with numpy, scipy, CoolProp, pyyaml and matplotlib. A case is a YAML file: survey or depth, casing and cement by
+interval, centre tubing layers, rock layers, geotherm, an operating schedule and the pressure boundary condition. <code>examples/deep_8km.yaml</code>
+documents every option.</p>
+</div>
+<pre>pip install numpy scipy CoolProp pyyaml matplotlib
+python -m aharrsim run examples/deep_8km.yaml --plot --progress</pre>
+<div class="prose">
+<p>Results go to a folder next to the case: <code>timeseries.csv</code> (wellhead history), <code>profiles.csv</code> (depth profiles at the
+requested times), <code>summary.json</code> (outlet temperature, heat, exergy, steam fraction, pumping power, cumulative energy) and an optional
+<code>summary.png</code>. A 12 km, 30-year run takes about a minute on a laptop. The <code>validation/</code> scripts regenerate every number on this page.</p>
+<p>The other well types take the same YAML with <code>mode: production | injection | utube</code>, an <code>inflow</code> block (temperature or enthalpy,
+reservoir pressure, productivity index), an optional <code>pump</code> (depth, efficiency) and <code>pressure_bc: outlet_MPa</code> or <code>bottom_MPa</code>.
+Chains, reservoirs and plants are called from Python (<code>aharrsim.systems</code>, <code>aharrsim.reservoir</code>, <code>aharrsim.plant</code>);
+<code>validation/dev_types.py</code> holds one worked example of each of the twenty types and <code>validation/verify_ext.py</code> the benchmarks above.</p>
+</div>
+</section>
+
+<section id="sources">
+<h2>Sources</h2>
+<ol class="sources prose">
+<li>Wagner &amp; Pruß (2002), IAPWS-95 formulation, J. Phys. Chem. Ref. Data 31:387; CoolProp, Bell et al. (2014), Ind. Eng. Chem. Res. 53:2498.</li>
+<li>Carslaw &amp; Jaeger (1959), Conduction of Heat in Solids, §13.5. Holmes &amp; Swift (1970), JPT 22:670. Kabir et al. (1996), SPE Drilling &amp; Completion 11:74. Hasan &amp; Kabir (1994).</li>
+<li>Bu, Ran &amp; Zhang (2019), Renewable Energy 143:1902, as tabulated by <a href="https://escholarship.org/content/qt4s97c8n2/qt4s97c8n2.pdf">Chen &amp; Tomac (2023)</a> and <a href="https://geothermal-energy-journal.springeropen.com/articles/10.1186/s40517-024-00297-3">Kolo et al. (2024)</a>.</li>
+<li>Eugster &amp; Füglister, <a href="https://www.aramis.admin.ch/Dokument.aspx?DocumentID=64254">BFE project 38'330 final report (2003)</a>; Weggis geometry from <a href="https://geothermal-energy-journal.springeropen.com/articles/10.1186/s40517-024-00315-4">Geothermal Energy (2024)</a>.</li>
+<li>Wang Z. et al. (2017) ECM 153:603 and Cai et al. (2019) ATE 149:975 via <a href="https://www.mdpi.com/article/10.3390/pr10010121">Zhang et al. (2022)</a>; Huang et al. (2020) Energy 210:118643 via Chen &amp; Tomac (2023).</li>
+<li>GeoCLUSTER: <a href="https://github.com/pnnl/GeoCLUSTER">pnnl/GeoCLUSTER</a>; <a href="https://gdr.openei.org/submissions/1473">GDR submission 1473</a>; Beckers et al. (2023) <a href="https://www.nrel.gov/docs/fy23osti/84979.pdf">Tabulated database of closed-loop geothermal systems</a>; White et al. (2024) Geothermics 116:102852.</li>
+<li>Beckers et al. (2022), Geothermics 100:102318. <a href="https://bura.brunel.ac.uk/bitstream/2438/29441/4/FullText.pdf">Kubacka &amp; Karayiannis (2024)</a>, Int. J. Low-Carbon Technol. 19:2068. <a href="https://inldigitallibrary.inl.gov/sites/sti/sti/2633905.pdf">Nalla et al. (2004)</a>, INEEL/EXT-03-01433.</li>
+<li><a href="https://pangea.stanford.edu/ERE/pdf/SGPreports/SGP-TR-100.pdf">Ambastha &amp; Gudmundsson (1986)</a>, SGP-TR-100, and <a href="https://www.osti.gov/servlets/purl/887140">SGP-TR-93</a>.</li>
+<li>Gnielinski (1976, 2009, 2013); Churchill (1977); Chen (1966); Zuber &amp; Findlay (1965); Hasan &amp; Kabir (2010), J. Pet. Sci. Eng. 71:77.</li>
+<li>Khodayar &amp; Björnsson (2024), classification of geothermal development types (the source spreadsheet). Ramey (1962), JPT 14:427. Gringarten, Witherspoon &amp; Ohnishi (1975), J. Geophys. Res. 80:1120. Gringarten &amp; Sauty (1975), J. Geophys. Res. 80:4956. Lauwerier (1955), Appl. Sci. Res. A5:145. Hellström (1991), Ground heat storage, Lund. <a href="https://github.com/MassimoCimmino/pygfunction">pygfunction</a> (Cimmino &amp; Cook 2022). <a href="https://github.com/NREL/GEOPHIRES-X">GEOPHIRES-X</a> (Beckers &amp; McCabe 2019; v3). Baumann (1921); DiPippo (2016), Geothermal Power Plants, 4th ed.</li>
+</ol>
+</section>
+<footer>aharrsim 2.0 · results generated from validation/results/*.json by report/build_report.py</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<script>
+const DATA = {{data}};
+(function () {
+  const css = () => getComputedStyle(document.documentElement);
+  const tok = (n) => css().getPropertyValue(n).trim();
+  const T = () => ({
+    ink: tok('--ink'), ink2: tok('--ink-2'), muted: tok('--muted'), grid: tok('--grid'), axis: tok('--axis'),
+    surface: tok('--surface'), rule: tok('--rule'), ref: tok('--ref'), heat: tok('--heat'),
+    s: [tok('--s1'), tok('--s2'), tok('--s3'), tok('--s4'), tok('--s5')],
+    q: [tok('--q1'), tok('--q2'), tok('--q3'), tok('--q4'), tok('--q5')],
+    mono: tok('--f-mono'), body: tok('--f-body')
+  });
+  const charts = [];
+  const tables = {};
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = (v, d) => (v === null || v === undefined || !isFinite(v)) ? '–' :
+    Number(v).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
+
+  function axis(t, o) {
+    return Object.assign({
+      nameLocation: 'middle', nameGap: 30, nameTextStyle: { color: t.ink2, fontFamily: t.body, fontSize: 12 },
+      axisLine: { show: true, lineStyle: { color: t.axis } }, axisTick: { lineStyle: { color: t.axis } },
+      axisLabel: { color: t.muted, fontFamily: t.mono, fontSize: 11 },
+      splitLine: { show: true, lineStyle: { color: t.grid, width: 1 } }, scale: true
+    }, o || {});
+  }
+  function tip(t, o) {
+    return Object.assign({
+      backgroundColor: t.surface, borderColor: t.rule, borderWidth: 1, padding: [8, 10],
+      textStyle: { color: t.ink, fontFamily: t.body, fontSize: 12 }, extraCssText: 'box-shadow:0 2px 10px rgba(0,0,0,.12);border-radius:6px;'
+    }, o || {});
+  }
+  function legend(t, o) {
+    return Object.assign({ top: 0, left: 0, itemWidth: 16, itemHeight: 8, itemGap: 12, textStyle: { color: t.ink2, fontFamily: t.body, fontSize: 11.5 },
+      icon: 'roundRect' }, o || {});
+  }
+  function lineS(name, data, color, extra) {
+    return Object.assign({ name, type: 'line', data, showSymbol: false, symbolSize: 8, lineStyle: { width: 2, color }, itemStyle: { color },
+      emphasis: { focus: 'series' }, z: 3 }, extra || {});
+  }
+  function ptsS(name, data, color, extra) {
+    return Object.assign({ name, type: 'scatter', data, symbolSize: 9, itemStyle: { color, borderColor: T().surface, borderWidth: 2 }, z: 4 }, extra || {});
+  }
+  function axisTip(t, xl, yl, xd, yd, swap) {
+    return tip(t, { trigger: 'axis', axisPointer: { type: 'line', axis: swap ? 'y' : 'x', lineStyle: { color: t.muted, width: 1 } },
+      formatter: (ps) => {
+        if (!ps.length) return '';
+        const v0 = ps[0].value; const head = swap ? `${yl} ${fmt(v0[1], yd)}` : `${xl} ${fmt(v0[0], xd)}`;
+        const rows = ps.map(p => `<div style="display:flex;align-items:center;gap:8px;margin-top:3px"><span style="display:inline-block;width:14px;height:2px;background:${p.color}"></span><b style="font-family:${t.mono}">${fmt(swap ? p.value[0] : p.value[1], swap ? xd : yd)}</b><span style="color:${t.ink2}">${esc(p.seriesName)}</span></div>`);
+        return `<div style="color:${t.muted};font-size:11px">${esc(head)}</div>` + rows.join('');
+      } });
+  }
+  function mount(id, build, tableFn) {
+    const el = document.getElementById(id);
+    if (!el || typeof echarts === 'undefined') return;
+    const c = echarts.init(el, null, { renderer: 'svg' });
+    const render = () => { c.setOption(build(T()), true); };
+    render();
+    charts.push({ c, render });
+    if (tableFn) tables[id] = tableFn;
+  }
+  function seriesTable(obj, xl, yl, xd, yd) {
+    return () => {
+      let h = `<table><thead><tr><th>Series</th><th>${esc(xl)}</th><th>${esc(yl)}</th></tr></thead><tbody>`;
+      for (const [k, arr] of Object.entries(obj)) for (const p of arr) h += `<tr><td>${esc(k)}</td><td>${fmt(p[0], xd)}</td><td>${fmt(p[1], yd)}</td></tr>`;
+      return h + '</tbody></table>';
+    };
+  }
+
+  // ---------------- heat vs depth with controls ----------------
+  let selT = '10', selQ = 'Q';
+  const depthObj = () => {
+    const src = selQ === 'Q' ? DATA.power_depth : DATA.tout_depth; const o = {};
+    for (const m of Object.keys(src)) o[`${m} kg/s`] = src[m][selT];
+    return o;
+  };
+  mount('c-depth', (t) => {
+    const o = depthObj(); const keys = Object.keys(o);
+    return { grid: { left: 54, right: 16, top: 40, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+      tooltip: axisTip(t, 'Depth', '', 0, selQ === 'Q' ? 2 : 1, false),
+      xAxis: axis(t, { type: 'value', name: 'Depth (km)', min: 4, max: 12, interval: 2 }),
+      yAxis: axis(t, { type: 'value', name: selQ === 'Q' ? 'Heat delivered (MWth)' : 'Outlet temperature (°C)', nameGap: 38, scale: selQ !== 'Q', min: selQ === 'Q' ? 0 : null }),
+      series: keys.map((k, i) => lineS(k, o[k], t.s[i], { showSymbol: true, symbol: 'circle', symbolSize: 7 })) };
+  }, () => seriesTable(depthObj(), 'Depth (km)', selQ === 'Q' ? 'MWth' : '°C', 0, 2)());
+  const depthChartRef = charts[0];
+  document.querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => {
+    selT = b.dataset.t; document.querySelectorAll('[data-t]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    if (depthChartRef) depthChartRef.render(); refreshTable('c-depth');
+  }));
+  document.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => {
+    selQ = b.dataset.q; document.querySelectorAll('[data-q]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    if (depthChartRef) depthChartRef.render(); refreshTable('c-depth');
+  }));
+
+  // ---------------- outlet temperature vs time ----------------
+  mount('c-tout', (t) => {
+    const keys = Object.keys(DATA.tout_time);
+    return { grid: { left: 54, right: 16, top: 40, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+      tooltip: axisTip(t, 'Years', '', 2, 1, false),
+      xAxis: axis(t, { type: 'log', name: 'Time (years)', min: 0.002, max: 30, logBase: 10 }),
+      yAxis: axis(t, { type: 'value', name: 'Outlet temperature (°C)', nameGap: 38 }),
+      series: keys.map((k, i) => lineS(k, DATA.tout_time[k], t.s[i])) };
+  }, seriesTable(DATA.tout_time, 'Years', '°C', 3, 1));
+
+  // ---------------- profiles ----------------
+  for (const km of ['4', '8', '12']) {
+    const P = DATA.profiles[km];
+    mount('c-p' + km, (t) => ({ grid: { left: 58, right: 14, top: 66, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+      tooltip: axisTip(t, 'T', 'MD (m)', 1, 0, true),
+      xAxis: axis(t, { type: 'value', name: 'Temperature (°C)', min: 0 }),
+      yAxis: axis(t, { type: 'value', inverse: true, name: 'Measured depth (m)', nameGap: 44, min: 0, max: Number(km) * 1000 }),
+      series: [lineS('Undisturbed rock', P.T0, t.ref, { lineStyle: { width: 1.5, color: t.ref } }), lineS('Annulus (down)', P.Ta, t.s[0]), lineS('Tubing (up)', P.Tt, t.s[1])] }));
+  }
+
+  // ---------------- sensitivities ----------------
+  function depthChart(id, obj, ramp, yl) {
+    mount(id, (t) => {
+      const keys = Object.keys(obj);
+      const cols = ramp ? (keys.length === 3 ? [t.q[1], t.q[2], t.q[4]] : t.q) : t.s;
+      return { grid: { left: 50, right: 12, top: keys.length > 3 ? 64 : 44, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+        tooltip: axisTip(t, 'Depth', '', 0, 2, false),
+        xAxis: axis(t, { type: 'value', name: 'Depth (km)', min: 4, max: 12, interval: 2 }),
+        yAxis: axis(t, { type: 'value', name: yl || 'MWth', nameGap: 34, min: 0 }),
+        series: keys.map((k, i) => lineS(k, obj[k], cols[i], { showSymbol: true, symbolSize: 6 })) };
+    }, seriesTable(obj, 'Depth (km)', yl || 'MWth', 0, 2));
+  }
+  depthChart('c-grad', DATA.sens_gradient, true);
+  depthChart('c-ins', DATA.sens_insulation, false);
+  depthChart('c-rock', DATA.sens_rock, true);
+  depthChart('c-bb', DATA.bigbore, false);
+
+  // ---------------- flow direction ----------------
+  if (DATA.dir_scatter) {
+    mount('c-dir', (t) => {
+      const keys = Object.keys(DATA.dir_scatter);
+      return { grid: { left: 50, right: 14, top: 40, bottom: 44 }, legend: legend(t, { icon: 'circle' }),
+        tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${fmt(p.value[1], 2)} MWth</b> at ${fmt(p.value[0], 2)} m/s<br><span style="color:${t.ink2}">${esc(p.value[2])} — ${esc(p.seriesName)}</span>` }),
+        xAxis: axis(t, { type: 'log', name: 'Annulus velocity at 10 kg/s (m/s)', min: 0.1, max: 4, logBase: 10 }),
+        yAxis: axis(t, { type: 'value', name: 'Heat delivered (MWth)', nameGap: 34, min: 0, max: 4 }),
+        series: keys.map((k, i) => ptsS(k, DATA.dir_scatter[k], t.s[i === 0 ? 1 : 0], { symbolSize: 9 })) };
+    }, () => {
+      let h = '<table><thead><tr><th>Direction</th><th>Completion</th><th>Annulus v (m/s)</th><th>MWth</th></tr></thead><tbody>';
+      for (const [k, arr] of Object.entries(DATA.dir_scatter)) for (const p of arr) h += `<tr><td>${esc(k)}</td><td>${esc(p[2])}</td><td>${fmt(p[0], 2)}</td><td>${fmt(p[1], 2)}</td></tr>`;
+      return h + '</tbody></table>';
+    });
+    const P = DATA.dir_prof;
+    mount('c-dirprof', (t) => ({ grid: { left: 58, right: 14, top: 66, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+      tooltip: axisTip(t, 'T', 'MD (m)', 1, 0, true),
+      xAxis: axis(t, { type: 'value', name: 'Temperature (°C)', min: 0, max: 400 }),
+      yAxis: axis(t, { type: 'value', inverse: true, name: 'Measured depth (m)', nameGap: 44, min: 0, max: 12000 }),
+      series: [lineS('Undisturbed rock', P.ad_T0, t.ref, { lineStyle: { width: 1.5, color: t.ref } }),
+               lineS('Annulus (down)', P.ad_Ta, t.s[0]), lineS('Tubing (up)', P.ad_Tt, t.s[1]),
+               lineS('Tubing (down)', P.td_Tt, t.s[0], { lineStyle: { width: 2, color: t.s[0], type: 'dashed' } }),
+               lineS('Annulus (up)', P.td_Ta, t.s[1], { lineStyle: { width: 2, color: t.s[1], type: 'dashed' } })] }),
+      seriesTable({ 'rock': P.ad_T0, 'annulus down': P.ad_Ta, 'tubing up': P.ad_Tt, 'tubing down': P.td_Tt, 'annulus up': P.td_Ta }, '°C', 'MD (m)', 1, 0));
+  }
+
+  // ---------------- development types ----------------
+  if (DATA.dt_points) {
+    const groups = [...new Set(DATA.dt_points.map(p => p[3]))];
+    mount('c-dtpts', (t) => ({ grid: { left: 56, right: 14, top: 44, bottom: 44 }, legend: legend(t, { icon: 'circle' }),
+      tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${fmt(p.value[1], 2)} MWe</b> at ${fmt(p.value[0], 0)} °C<br><span style="color:${t.ink2}">${esc(p.value[2])}</span>` }),
+      xAxis: axis(t, { type: 'value', name: 'Water temperature at the horizon (°C)', min: 0, max: 350 }),
+      yAxis: axis(t, { type: 'log', name: 'Net electricity (MWe)', nameGap: 44, logBase: 10, min: 0.01, max: 100,
+        axisLabel: { color: t.muted, fontFamily: t.mono, fontSize: 11, formatter: (v) => String(v) } }),
+      series: groups.map((g, i) => { const c = [t.s[0], t.s[1], t.s[2], t.s[3], t.s[4], t.q[1], t.q[3]][i % 7];
+        return ptsS(g, DATA.dt_points.filter(p => p[3] === g).map(p => ({ value: [p[0], Math.max(p[1], 0.011), p[2]], symbol: p[1] > 0 ? 'circle' : 'emptyCircle' })), c, { symbolSize: 10 }); }) }),
+      () => { let h = '<table><thead><tr><th>Example</th><th>Water T (°C)</th><th>Net MWe</th></tr></thead><tbody>';
+        for (const p of DATA.dt_points) h += `<tr><td>${esc(p[2])}</td><td>${fmt(p[0], 0)}</td><td>${fmt(p[1], 2)}</td></tr>`; return h + '</tbody></table>'; });
+    const B = DATA.dt_bars;
+    mount('c-dtbars', (t) => ({ grid: { left: 56, right: 14, top: 44, bottom: 40 }, legend: legend(t, { data: ['Heat (MWth)', 'Gross electricity (MWe)', 'Net electricity (MWe)'] }),
+      tooltip: tip(t, { trigger: 'axis', formatter: (ps) => { const i = ps[0].dataIndex; return `<b>${esc(B.labels[i])}</b> ${esc(B.names[i])}<br>` + ps.filter(p => p.seriesName !== 'range' && p.value[1] != null).map(p => `${esc(p.seriesName)}: <b style="font-family:${t.mono}">${fmt(p.value[1], 2)}</b>`).join('<br>'); } }),
+      xAxis: axis(t, { type: 'category', data: B.labels, name: 'Type', nameGap: 24, splitLine: { show: false } }),
+      yAxis: axis(t, { type: 'log', name: 'MW', nameGap: 44, logBase: 10, min: 0.005, axisLabel: { color: t.muted, fontFamily: t.mono, fontSize: 11, formatter: (v) => String(v) } }),
+      series: [{ name: 'Heat (MWth)', type: 'scatter', symbol: 'diamond', symbolSize: 12, data: B.heat.map((v, i) => [i, v > 0.001 ? v : null]), itemStyle: { color: t.heat } },
+               { name: 'Gross electricity (MWe)', type: 'scatter', symbol: 'emptyCircle', symbolSize: 11, data: B.gross.map((v, i) => [i, v > 0.005 ? v : null]), itemStyle: { color: t.s[0], borderWidth: 2 } },
+               { name: 'Net electricity (MWe)', type: 'scatter', symbol: 'circle', symbolSize: 8, data: B.net.map((v, i) => [i, v > 0.005 ? v : null]), itemStyle: { color: t.s[0] } },
+               { name: 'range', type: 'custom', silent: true, legendHoverLink: false, tooltip: { show: false },
+                 renderItem: (params, api) => { const i = api.value(0), lo = api.value(1), hi = api.value(2); if (!(lo > 0) || !(hi > 0)) return null;
+                   const a = api.coord([i, lo]), b = api.coord([i, hi]); return { type: 'line', shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: t.axis, lineWidth: 1 } }; },
+                 data: B.labels.map((l, i) => [i, Math.min(...[B.net[i], B.gross[i], B.heat[i]].filter(v => v > 0.005)), Math.max(B.heat[i], B.gross[i])]) }] }),
+      () => { let h = '<table><thead><tr><th>#</th><th>Type</th><th>MWth</th><th>Gross MWe</th><th>Net MWe</th></tr></thead><tbody>';
+        B.labels.forEach((l, i) => { h += `<tr><td>${esc(l)}</td><td>${esc(B.names[i])}</td><td>${fmt(B.heat[i], 2)}</td><td>${fmt(B.gross[i], 2)}</td><td>${fmt(B.net[i], 2)}</td></tr>`; }); return h + '</tbody></table>'; });
+  }
+
+  // ---------------- 5 GW field ----------------
+  if (DATA.s5_heat) {
+    mount('c-5heat', (t) => {
+      const keys = Object.keys(DATA.s5_heat);
+      return { grid: { left: 50, right: 14, top: 40, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+        tooltip: axisTip(t, 'Gradient (°C/km)', '', 0, 2, false),
+        xAxis: axis(t, { type: 'value', name: 'Geothermal gradient (°C/km)', min: 20, max: 60, interval: 10 }),
+        yAxis: axis(t, { type: 'value', name: 'MWth per well', nameGap: 34, min: 0 }),
+        series: keys.map((k, i) => lineS(k, DATA.s5_heat[k], t.q[i], { showSymbol: true, symbolSize: 6 })) };
+    }, seriesTable(DATA.s5_heat, '°C/km', 'MWth per well', 0, 2));
+    let sel5 = 'heat';
+    mount('c-5wells', (t) => {
+      const o = DATA.s5_wells[sel5]; const keys = Object.keys(o);
+      return { grid: { left: 54, right: 14, top: 40, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+        tooltip: axisTip(t, 'Gradient (°C/km)', '', 0, 0, false),
+        xAxis: axis(t, { type: 'value', name: 'Geothermal gradient (°C/km)', min: 20, max: 60, interval: 10 }),
+        yAxis: axis(t, { type: 'log', name: sel5 === 'heat' ? 'Wells for 5 GWth' : 'Wells for 5 GWe', nameGap: 40, logBase: 10,
+          axisLabel: { color: t.muted, fontFamily: t.mono, fontSize: 11,
+            formatter: (v) => v >= 1e6 ? (v / 1e6) + 'M' : v >= 1e3 ? (v / 1e3) + 'k' : String(v) } }),
+        series: keys.map((k, i) => lineS(k, o[k], t.q[i], { showSymbol: true, symbolSize: 6 })) };
+    }, () => seriesTable(DATA.s5_wells[sel5], '°C/km', 'wells', 0, 0)());
+    const wellsRef = charts.find(x => x.c.getDom() === document.getElementById('c-5wells'));
+    document.querySelectorAll('[data-w]').forEach(b => b.addEventListener('click', () => {
+      sel5 = b.dataset.w; document.querySelectorAll('[data-w]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      if (wellsRef) wellsRef.render(); refreshTable('c-5wells');
+    }));
+  }
+
+  // ---------------- V1 ----------------
+  mount('c-v1', (t) => {
+    const keys = Object.keys(DATA.v1);
+    const ref = [[400, 0.03], [12.5, 0.03 * Math.pow(12.5 / 400, 2)]];
+    return { grid: { left: 62, right: 16, top: 64, bottom: 44 }, legend: legend(t, { data: keys }),
+      tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${p.value[1].toExponential(2)} K</b> at dz ${p.value[0]} m<br><span style="color:${t.ink2}">${esc(p.seriesName)}</span>` }),
+      xAxis: axis(t, { type: 'log', name: 'Axial cell size dz (m)', min: 10, max: 500 }),
+      yAxis: axis(t, { type: 'log', name: 'Max error (K)', nameGap: 46 }),
+      series: [lineS('slope 2', ref, t.ref, { lineStyle: { width: 1, color: t.ref }, tooltip: { show: false } })].concat(
+        keys.map((k, i) => lineS(k, DATA.v1[k], t.s[i], { showSymbol: true, symbolSize: 8 }))) };
+  }, seriesTable(DATA.v1, 'dz (m)', 'max error (K)', 1, 6));
+
+  // ---------------- V2 ----------------
+  mount('c-v2', (t) => {
+    const keys = Object.keys(DATA.v2);
+    return { grid: { left: 54, right: 16, top: 64, bottom: 44 }, legend: legend(t, { data: keys }),
+      tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${fmt(p.value[1], 3)} %</b> at ${fmt(p.value[0], 2)} days<br><span style="color:${t.ink2}">${esc(p.seriesName)}</span>` }),
+      xAxis: axis(t, { type: 'log', name: 'Time (days)', min: 0.005, max: 20000 }),
+      yAxis: axis(t, { type: 'value', name: 'Error (%)', nameGap: 40, min: -1, max: 6 }),
+      series: keys.map((k, i) => lineS(k, DATA.v2[k], t.s[i], { showSymbol: true, symbolSize: 8 })).concat([
+        lineS('zero', [[0.005, 0], [20000, 0]], t.ref, { lineStyle: { width: 1, color: t.ref }, tooltip: { show: false }, legendHoverLink: false })]) };
+  }, seriesTable(DATA.v2, 'days', 'error %', 2, 3));
+
+  // ---------------- V3 ----------------
+  mount('c-v3', (t) => {
+    const keys = Object.keys(DATA.v3);
+    return { grid: { left: 54, right: 16, top: 40, bottom: 44 }, legend: legend(t, { icon: 'path://M0,4 L16,4 L16,6 L0,6 Z' }),
+      tooltip: axisTip(t, 'Years', '', 3, 2, false),
+      xAxis: axis(t, { type: 'log', name: 'Time (years)', min: 0.001, max: 30 }),
+      yAxis: axis(t, { type: 'value', name: 'Outlet temperature (°C)', nameGap: 38 }),
+      series: keys.map((k, i) => lineS(k, DATA.v3[k], t.s[i])) };
+  }, seriesTable(DATA.v3, 'years', '°C', 3, 2));
+
+  // ---------------- Qingdao ----------------
+  const Q = DATA.qingdao;
+  mount('c-qd-t', (t) => ({ grid: { left: 54, right: 16, top: 40, bottom: 44 }, legend: legend(t),
+    tooltip: axisTip(t, 'Day', '', 1, 2, false),
+    xAxis: axis(t, { type: 'value', name: 'Time (days)', min: 0, max: 140 }),
+    yAxis: axis(t, { type: 'value', name: 'Outlet temperature (°C)', nameGap: 38, min: 10, max: 40 }),
+    series: [lineS('aharrsim', Q.T, t.s[0]),
+             ptsS('Measured at test end (≈)', [Q.meas_T], t.s[1]),
+             ptsS('aharrsim, rock k ±10 %', [[138, Q.lo.T_out_end], [138, Q.hi.T_out_end]], t.s[0], { symbol: 'rect', symbolSize: [12, 2], itemStyle: { color: t.s[0] } })] }),
+    seriesTable({ aharrsim: Q.T, measured: [Q.meas_T] }, 'day', '°C', 1, 2));
+  mount('c-qd-q', (t) => ({ grid: { left: 58, right: 16, top: 40, bottom: 44 }, legend: legend(t),
+    tooltip: axisTip(t, 'Day', '', 1, 0, false),
+    xAxis: axis(t, { type: 'value', name: 'Time (days)', min: 0, max: 140 }),
+    yAxis: axis(t, { type: 'value', name: 'Heat extracted (kW)', nameGap: 42, min: 300, max: 1200 }),
+    series: [lineS('aharrsim', Q.Q, t.s[0]),
+             lineS('Measured 138-day mean', [[0, Q.meas_Q], [138, Q.meas_Q]], t.s[1], { lineStyle: { width: 2, color: t.s[1] } })] }),
+    seriesTable({ aharrsim: Q.Q }, 'day', 'kW', 1, 0));
+
+  // ---------------- parity ----------------
+  mount('c-par', (t) => {
+    const keys = Object.keys(DATA.parity);
+    return { grid: { left: 54, right: 16, top: 64, bottom: 44 }, legend: legend(t, { icon: 'circle', data: keys }),
+      tooltip: tip(t, { trigger: 'item', formatter: (p) => {
+        if (!p.value || p.value.length < 3) return '';
+        return `<b style="font-family:${t.mono}">${fmt(p.value[1], 2)} °C</b> aharrsim<br><b style="font-family:${t.mono}">${fmt(p.value[0], 2)} °C</b> benchmark<br><span style="color:${t.ink2}">${esc(p.value[2])}</span>`; } }),
+      xAxis: axis(t, { type: 'value', name: 'Benchmark outlet temperature (°C)', min: 0, max: 180 }),
+      yAxis: axis(t, { type: 'value', name: 'aharrsim (°C)', nameGap: 38, min: 0, max: 180 }),
+      series: [lineS('equality', [[0, 0], [180, 180]], t.ref, { lineStyle: { width: 1, color: t.ref }, tooltip: { show: false } })].concat(
+        keys.map((k, i) => ptsS(k, DATA.parity[k], t.s[i], { symbolSize: 8 }))) };
+  }, () => {
+    let h = '<table><thead><tr><th>Benchmark</th><th>Case</th><th>Benchmark °C</th><th>aharrsim °C</th></tr></thead><tbody>';
+    for (const [k, arr] of Object.entries(DATA.parity)) for (const p of arr) h += `<tr><td>${esc(k)}</td><td>${esc(p[2])}</td><td>${fmt(p[0], 2)}</td><td>${fmt(p[1], 2)}</td></tr>`;
+    return h + '</tbody></table>';
+  });
+
+  // ---------------- GeoCLUSTER example ----------------
+  mount('c-gc', (t) => {
+    const keys = Object.keys(DATA.gc_ts); const ser = [];
+    keys.forEach((k, i) => { ser.push(lineS(`aharrsim ${k}`, DATA.gc_ts[k].model, t.s[i])); ser.push(ptsS(`Sandia ${k}`, DATA.gc_ts[k].db, t.s[i], { symbolSize: 7 })); });
+    return { grid: { left: 54, right: 16, top: 64, bottom: 44 }, legend: legend(t),
+      tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${fmt(p.value[1], 2)} °C</b> at ${fmt(p.value[0], 2)} yr<br><span style="color:${t.ink2}">${esc(p.seriesName)}</span>` }),
+      xAxis: axis(t, { type: 'value', name: 'Time (years)', min: 0, max: 40 }),
+      yAxis: axis(t, { type: 'value', name: 'Outlet temperature (°C)', nameGap: 38 }),
+      series: ser };
+  }, () => {
+    const o = {}; for (const [k, v] of Object.entries(DATA.gc_ts)) { o[`aharrsim ${k}`] = v.model; o[`Sandia ${k}`] = v.db; }
+    return seriesTable(o, 'years', '°C', 2, 2)();
+  });
+
+  // ---------------- two-phase ----------------
+  function tpChart(id, wells) {
+    mount(id, (t) => {
+      const ser = [];
+      wells.forEach((w, i) => { const d = DATA.twophase[w]; if (!d) return;
+        ser.push(lineS(`${w} model`, d.model, t.s[i])); ser.push(ptsS(`${w} measured`, d.meas, t.s[i], { symbolSize: 7 })); });
+      return { grid: { left: 58, right: 16, top: 64, bottom: 44 }, legend: legend(t),
+        tooltip: tip(t, { trigger: 'item', formatter: (p) => `<b style="font-family:${t.mono}">${fmt(p.value[0], 1)} bar</b> at ${fmt(p.value[1], 0)} m<br><span style="color:${t.ink2}">${esc(p.seriesName)}</span>` }),
+        xAxis: axis(t, { type: 'value', name: 'Pressure (bar abs)' }),
+        yAxis: axis(t, { type: 'value', inverse: true, name: 'Depth (m)', nameGap: 44, min: 0 }),
+        series: ser };
+    }, () => { const o = {}; wells.forEach(w => { const d = DATA.twophase[w]; if (d) { o[`${w} measured`] = d.meas; o[`${w} model`] = d.model; } });
+      return seriesTable(o, 'bar abs', 'depth m', 2, 0)(); });
+  }
+  tpChart('c-tp1', ['Los Azufres Az-18', 'Cerro Prieto M-90']);
+  tpChart('c-tp2', ['HGP-A, 12.8 kg/s', 'HGP-A, 13.9 kg/s']);
+
+  // ---------------- tables, resize, theme ----------------
+  function refreshTable(id) {
+    const box = document.getElementById(id + '-tbl');
+    if (box && !box.hidden && tables[id]) box.innerHTML = tables[id]();
+  }
+  document.querySelectorAll('[data-table]').forEach(b => {
+    const id = b.dataset.table;
+    b.setAttribute('aria-expanded', 'false');
+    b.addEventListener('click', () => {
+      let box = document.getElementById(id + '-tbl');
+      if (!box) { box = document.createElement('div'); box.id = id + '-tbl'; box.className = 'dtable'; box.hidden = true;
+        b.closest('figure').appendChild(box); }
+      box.hidden = !box.hidden;
+      b.setAttribute('aria-expanded', String(!box.hidden));
+      b.textContent = box.hidden ? 'Table' : 'Hide table';
+      if (!box.hidden && tables[id]) box.innerHTML = tables[id]();
+    });
+  });
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => charts.forEach(x => x.c.resize()), 120); });
+  const rerender = () => charts.forEach(x => x.render());
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rerender); } catch (e) {}
+  new MutationObserver(rerender).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>

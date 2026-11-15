@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, together with the accompanying paper named in the README."
+type: software
+title: "aharrsim: a transient wellbore-reservoir-plant simulator for geothermal wells"
+abstract: "Transient heat-transfer and hydraulics model of geothermal wells (coaxial closed loops, production, injection and U-tube wells), with reservoir elements, well chains and surface plants, used to run one example of each of twenty geothermal development types on a common basis."
+authors:
+  - family-names: Wrobel
+    given-names: Lukasz
+    affiliation: Aharr Geothermal
+version: "2.3.0"
+date-released: "2026-11-14"
+license: MIT
+keywords:
+  - geothermal
+  - wellbore simulation
+  - enhanced geothermal system
+  - closed-loop geothermal
+  - benchmark
