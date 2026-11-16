@@ -1,0 +1,596 @@
+{
+ "rows": [
+  {
+   "id": 1.0,
+   "name": "Low-temperature / hot sedimentary aquifer doublet (Paris Basin type)",
+   "life_yr": 30.0,
+   "hole_km": 3.6,
+   "hole_note": "producer and injector",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.0,
+   "mean_net_MWe": 0.0,
+   "E_h_GWh": 1973.9967465248928,
+   "mean_heat_MWth": 7.50626186981859,
+   "GWh_e_per_km": 0.0,
+   "kWe_per_km": 0.0,
+   "GWh_th_per_km": 548.332429590248,
+   "kWth_per_km": 2085.072741616275
+  },
+  {
+   "id": 2.0,
+   "name": "Medium-temperature pumped well + binary plant (Nevada type)",
+   "life_yr": 30.0,
+   "hole_km": 2.0,
+   "hole_note": "producer only",
+   "net_first_MWe": null,
+   "net_last_MWe": 1.834414229805489,
+   "E_e_GWh": 588.098100347351,
+   "mean_net_MWe": 2.236284509648456,
+   "E_h_GWh": 7019.60697982445,
+   "mean_heat_MWth": 26.692550687597723,
+   "GWh_e_per_km": 294.0490501736755,
+   "kWe_per_km": 1118.1422548242278,
+   "GWh_th_per_km": 3509.803489912225,
+   "kWth_per_km": 13346.275343798861
+  },
+  {
+   "id": 3.0,
+   "name": "High-temperature self-flowing well, flash plant (Wairakei type)",
+   "life_yr": 30.0,
+   "hole_km": 1.5,
+   "hole_note": "producer only",
+   "net_first_MWe": null,
+   "net_last_MWe": 4.5278341094938535,
+   "E_e_GWh": 1189.433295463823,
+   "mean_net_MWe": 4.522904005870497,
+   "E_h_GWh": 8098.048651555063,
+   "mean_heat_MWth": 30.793401215130668,
+   "GWh_e_per_km": 792.9555303092153,
+   "kWe_per_km": 3015.269337246998,
+   "GWh_th_per_km": 5398.699101036708,
+   "kWth_per_km": 20528.934143420443
+  },
+  {
+   "id": 3.5,
+   "name": "High-temperature vapour-dominated (dry steam, Geysers type)",
+   "life_yr": 30.0,
+   "hole_km": 2.5,
+   "hole_note": "producer only",
+   "net_first_MWe": null,
+   "net_last_MWe": 7.308057740441377,
+   "E_e_GWh": 1919.5327677863218,
+   "mean_net_MWe": 7.299158748902281,
+   "E_h_GWh": 9652.44731509879,
+   "mean_heat_MWth": 36.704111776936614,
+   "GWh_e_per_km": 767.8131071145287,
+   "kWe_per_km": 2919.6634995609124,
+   "GWh_th_per_km": 3860.9789260395164,
+   "kWth_per_km": 14681.644710774646
+  },
+  {
+   "id": 4.0,
+   "name": "Modular ORC on surface waste heat (Climeon type)",
+   "life_yr": 30.0,
+   "hole_km": null,
+   "hole_note": "no wells",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.5582341459532837,
+   "E_e_GWh": 146.80441570279453,
+   "mean_net_MWe": 0.5582341459532837,
+   "E_h_GWh": null,
+   "mean_heat_MWth": null
+  },
+  {
+   "id": 5.0,
+   "name": "Ground-source heat pump, 150 m U-tube borehole",
+   "life_yr": 9.990417522245037,
+   "hole_km": 0.15,
+   "hole_note": "",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.0,
+   "mean_net_MWe": 0.0,
+   "E_h_GWh": 0.26293845547333333,
+   "mean_heat_MWth": 0.0030024031181297766,
+   "GWh_e_per_km": 0.0,
+   "kWe_per_km": 0.0,
+   "GWh_th_per_km": 1.752923036488889,
+   "kWth_per_km": 20.016020787531847
+  },
+  {
+   "id": 6.0,
+   "name": "Shallow geothermal: 400 m coaxial borehole heat exchanger + heat pump",
+   "life_yr": 10.0,
+   "hole_km": 0.4,
+   "hole_note": "",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.0,
+   "mean_net_MWe": 0.0,
+   "E_h_GWh": 1.0075013383481803,
+   "mean_heat_MWth": 0.011493284717638379,
+   "GWh_e_per_km": 0.0,
+   "kWe_per_km": 0.0,
+   "GWh_th_per_km": 2.5187533458704507,
+   "kWth_per_km": 28.733211794095944
+  },
+  {
+   "id": 7.0,
+   "name": "Single-well deep coaxial retrofit in a hot field (GreenLoop type)",
+   "life_yr": 30.0,
+   "hole_km": 3.0,
+   "hole_note": "existing well",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.006298877654063879,
+   "mean_net_MWe": 2.3951926587816103e-05,
+   "E_h_GWh": 186.7067419850755,
+   "mean_heat_MWth": 0.7099655562593182,
+   "GWh_e_per_km": 0.0020996258846879595,
+   "kWe_per_km": 0.007983975529272035,
+   "GWh_th_per_km": 62.235580661691834,
+   "kWth_per_km": 236.65518541977272
+  },
+  {
+   "id": 8.0,
+   "name": "Multilateral deep closed loop (Eavor-Loop 1 type)",
+   "life_yr": 30.0,
+   "hole_km": 69.0,
+   "hole_note": "two verticals and twelve laterals",
+   "net_first_MWe": null,
+   "net_last_MWe": 1.158180299886211,
+   "E_e_GWh": 401.32912259326645,
+   "mean_net_MWe": 1.526082297487514,
+   "E_h_GWh": 8811.844266411828,
+   "mean_heat_MWth": 33.50765939011266,
+   "GWh_e_per_km": 5.8163640955545866,
+   "kWe_per_km": 22.117134746195852,
+   "GWh_th_per_km": 127.70788791901201,
+   "kWth_per_km": 485.6182520306182
+  },
+  {
+   "id": 9.0,
+   "name": "Doublet with horizontal closed-loop connections (Chevron-type, parameters assumed)",
+   "life_yr": 30.0,
+   "hole_km": 12.0,
+   "hole_note": "two wells and two laterals",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.0041707677096168416,
+   "mean_net_MWe": 1.5859638412110586e-05,
+   "E_h_GWh": 522.0630574200525,
+   "mean_heat_MWth": 1.9851816009584473,
+   "GWh_e_per_km": 0.00034756397580140344,
+   "kWe_per_km": 0.0013216365343425489,
+   "GWh_th_per_km": 43.505254785004375,
+   "kWth_per_km": 165.4318000798706
+  },
+  {
+   "id": 10.0,
+   "name": "Doublet EGS, hot dry rock (Soultz / UDDGP type)",
+   "life_yr": 30.0,
+   "hole_km": 10.0,
+   "hole_note": "producer and injector",
+   "net_first_MWe": null,
+   "net_last_MWe": 1.6066399454612894,
+   "E_e_GWh": 416.1455837204509,
+   "mean_net_MWe": 1.582422936042478,
+   "E_h_GWh": 4174.230797436445,
+   "mean_heat_MWth": 15.872807047822818,
+   "GWh_e_per_km": 41.61455837204509,
+   "kWe_per_km": 158.24229360424778,
+   "GWh_th_per_km": 417.4230797436445,
+   "kWth_per_km": 1587.2807047822819
+  },
+  {
+   "id": 11.0,
+   "name": "Hybrid single-well EGS with surface heat exchanger (Eden Project type)",
+   "life_yr": 30.0,
+   "hole_km": 4.8,
+   "hole_note": "",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 7.456505420549508,
+   "mean_net_MWe": 0.02835388782625868,
+   "E_h_GWh": 340.1925044388059,
+   "mean_heat_MWth": 1.2936059945197578,
+   "GWh_e_per_km": 1.5534386292811475,
+   "kWe_per_km": 5.907059963803892,
+   "GWh_th_per_km": 70.87343842475123,
+   "kWth_per_km": 269.5012488582829
+  },
+  {
+   "id": 12.0,
+   "name": "Single-well cyclic fracture loop (Sage HeatRoot type)",
+   "life_yr": 0.999315537303217,
+   "hole_km": 3.5,
+   "hole_note": "",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.00483628865449986,
+   "E_e_GWh": 0.055723012449180674,
+   "mean_net_MWe": 0.006361074480500077,
+   "E_h_GWh": 3.281937501426179,
+   "mean_heat_MWth": 0.37465039970618486,
+   "GWh_e_per_km": 0.015920860699765907,
+   "kWe_per_km": 1.8174498515714503,
+   "GWh_th_per_km": 0.9376964289789083,
+   "kWth_per_km": 107.04297134462423
+  },
+  {
+   "id": 13.0,
+   "name": "Multi-well cyclic EGS with subsurface thermal storage (Sage HeatCycle / Battery+ type)",
+   "life_yr": 0.999315537303217,
+   "hole_km": 70.0,
+   "hole_note": "twenty wells",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.09672577308999719,
+   "E_e_GWh": 1.1144602489836133,
+   "mean_net_MWe": 0.12722148961000151,
+   "E_h_GWh": 65.63875002852359,
+   "mean_heat_MWth": 7.493007994123698,
+   "GWh_e_per_km": 0.015920860699765903,
+   "kWe_per_km": 1.8174498515714501,
+   "GWh_th_per_km": 0.9376964289789084,
+   "kWth_per_km": 107.04297134462425
+  },
+  {
+   "id": 14.0,
+   "name": "Horizontal doublet EGS (Fervo Project Red type)",
+   "life_yr": 30.0,
+   "hole_km": 6.55,
+   "hole_note": "two wells with 975 m laterals",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 72.66175487620811,
+   "mean_net_MWe": 0.27630144830864745,
+   "E_h_GWh": 1427.812470407747,
+   "mean_heat_MWth": 5.4293576333095555,
+   "GWh_e_per_km": 11.093397691024139,
+   "kWe_per_km": 42.18342722269426,
+   "GWh_th_per_km": 217.98663670347284,
+   "kWth_per_km": 828.9095623373368
+  },
+  {
+   "id": 14.5,
+   "name": "Horizontal EGS, one producer between two injectors (Fervo Cape Station type)",
+   "life_yr": 30.0,
+   "hole_km": 12.34,
+   "hole_note": "three wells with 1524 m laterals",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 398.1042546384981,
+   "mean_net_MWe": 1.5138195096147924,
+   "E_h_GWh": 5439.044383758684,
+   "mean_heat_MWth": 20.68234992683354,
+   "GWh_e_per_km": 32.26128481673405,
+   "kWe_per_km": 122.67581115192807,
+   "GWh_th_per_km": 440.7653471441397,
+   "kWth_per_km": 1676.0413230821346
+  },
+  {
+   "id": 15.0,
+   "name": "Fluid co-production from producing oil / gas wells (8 wells)",
+   "life_yr": 30.0,
+   "hole_km": 16.0,
+   "hole_note": "eight existing wells",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.7232335376521337,
+   "E_e_GWh": 188.92482823364847,
+   "mean_net_MWe": 0.7183999856781826,
+   "E_h_GWh": 4327.660625618782,
+   "mean_heat_MWth": 16.456234792070816,
+   "GWh_e_per_km": 11.80780176460303,
+   "kWe_per_km": 44.89999910488641,
+   "GWh_th_per_km": 270.4787891011739,
+   "kWth_per_km": 1028.514674504426
+  },
+  {
+   "id": 16.0,
+   "name": "Closed loop in a single abandoned hydrocarbon well (CeraPhi / wells2watts type)",
+   "life_yr": 30.0,
+   "hole_km": 3.0,
+   "hole_note": "existing well",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 0.0,
+   "mean_net_MWe": 0.0,
+   "E_h_GWh": 54.295379465403904,
+   "mean_heat_MWth": 0.20646201028748917,
+   "GWh_e_per_km": 0.0,
+   "kWe_per_km": 0.0,
+   "GWh_th_per_km": 18.098459821801303,
+   "kWth_per_km": 68.82067009582973
+  },
+  {
+   "id": 17.0,
+   "name": "Recovery of man-made heat after thermal EOR (SAGD chamber, HT ESP circulation)",
+   "life_yr": 14.976043805612594,
+   "hole_km": null,
+   "hole_note": "existing wells",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.0,
+   "E_e_GWh": 6.919365570735558,
+   "mean_net_MWe": 0.05270692847909474,
+   "E_h_GWh": 153.11586465603082,
+   "mean_heat_MWth": 1.1663304742232694
+  },
+  {
+   "id": 18.0,
+   "name": "Supercritical fluid produced from below a volcanic field (IDDP-2 type)",
+   "life_yr": 30.0,
+   "hole_km": 4.5,
+   "hole_note": "producer only",
+   "net_first_MWe": null,
+   "net_last_MWe": 13.39218739412134,
+   "E_e_GWh": 3524.968560743726,
+   "mean_net_MWe": 13.40394159534461,
+   "E_h_GWh": 12738.585556180396,
+   "mean_heat_MWth": 48.43937012769183,
+   "GWh_e_per_km": 783.3263468319391,
+   "kWe_per_km": 2978.653687854358,
+   "GWh_th_per_km": 2830.7967902623104,
+   "kWth_per_km": 10764.304472820406
+  },
+  {
+   "id": 19.0,
+   "name": "Superhot-rock EGS doublet (Newberry / AltaRock type)",
+   "life_yr": 30.0,
+   "hole_km": 7.0,
+   "hole_note": "producer and injector",
+   "net_first_MWe": null,
+   "net_last_MWe": 5.208380283524836,
+   "E_e_GWh": 2585.7800902409335,
+   "mean_net_MWe": 9.832611188078689,
+   "E_h_GWh": 13262.673063630915,
+   "mean_heat_MWth": 50.432249842691135,
+   "GWh_e_per_km": 369.3971557487048,
+   "kWe_per_km": 1404.6587411540984,
+   "GWh_th_per_km": 1894.6675805187022,
+   "kWth_per_km": 7204.607120384448
+  },
+  {
+   "id": 20.0,
+   "name": "Ultradeep millimetre-wave drilled closed loop (Quaise type)",
+   "life_yr": 30.0,
+   "hole_km": 20.0,
+   "hole_note": "",
+   "net_first_MWe": null,
+   "net_last_MWe": 0.5856572148083439,
+   "E_e_GWh": 181.19823557432306,
+   "mean_net_MWe": 0.6890190720751506,
+   "E_h_GWh": 2493.9250334014437,
+   "mean_heat_MWth": 9.483325855203605,
+   "GWh_e_per_km": 9.059911778716152,
+   "kWe_per_km": 34.450953603757526,
+   "GWh_th_per_km": 124.69625167007219,
+   "kWth_per_km": 474.1662927601802
+  }
+ ],
+ "rock_quality": {
+  "10": {
+   "example": {
+    "even": {
+     "GWh": 423.23104599073827,
+     "GWh_per_km": 42.32310459907383,
+     "mean_net": 1.6093658904980315
+    },
+    "good": {
+     "GWh": 422.7064345715621,
+     "GWh_per_km": 42.27064345715621,
+     "mean_net": 1.6073542549421074
+    },
+    "moderate": {
+     "GWh": 378.1458494509959,
+     "GWh_per_km": 37.81458494509959,
+     "mean_net": 1.4364855812062405
+    },
+    "poor": {
+     "GWh": 186.47200782362168,
+     "GWh_per_km": 18.64720078236217,
+     "mean_net": 0.701507507164696
+    }
+   },
+   "hole_km": 10.0,
+   "need": {
+    "design": {
+     "target": 3.0,
+     "N": 74,
+     "m": 62.5,
+     "W": 746.9506404953561,
+     "L": 448.17038429721373,
+     "vf": 0.5579352593364227
+    },
+    "hole_km": 10.0,
+    "even": {
+     "GWh": 794.5289586567038,
+     "GWh_per_km": 79.45289586567038,
+     "mean_net": 3.0211180237665896
+    },
+    "good": {
+     "GWh": 756.0877845896359,
+     "GWh_per_km": 75.6087784589636,
+     "mean_net": 2.873714384161822
+    },
+    "moderate": {
+     "GWh": 362.22212101328734,
+     "GWh_per_km": 36.222212101328736,
+     "mean_net": 1.3634266852167054
+    },
+    "poor": {
+     "GWh": 192.73775200217904,
+     "GWh_per_km": 19.273775200217905,
+     "mean_net": 0.7135829326599968
+    }
+   }
+  },
+  "14": {
+   "example": {
+    "even": {
+     "GWh": 69.51058211311214,
+     "GWh_per_km": 10.612302612688875,
+     "mean_net": 0.244735063025799
+    },
+    "good": {
+     "GWh": 60.66614099218879,
+     "GWh_per_km": 9.262006258349434,
+     "mean_net": 0.21082548375718646
+    },
+    "moderate": {
+     "GWh": 26.983476026225453,
+     "GWh_per_km": 4.119614660492435,
+     "mean_net": 0.08338525488592614
+    },
+    "poor": {
+     "GWh": 3.445006949680277,
+     "GWh_per_km": 0.525955259493172,
+     "mean_net": 0.007484206767830942
+    }
+   },
+   "hole_km": 6.55,
+   "need": {
+    "design": {
+     "target": 3.5,
+     "N": 390,
+     "m": 70.0,
+     "W": 3900.0,
+     "L": 272.53439641778215,
+     "vf": 9.91034168791935
+    },
+    "hole_km": 12.4,
+    "even": {
+     "GWh": 941.257854132429,
+     "GWh_per_km": 75.90789146229265,
+     "mean_net": 3.5790407790338845
+    },
+    "good": {
+     "GWh": 900.1830962436915,
+     "GWh_per_km": 72.59541098739447,
+     "mean_net": 3.4215385966572174
+    },
+    "moderate": {
+     "GWh": 493.2102037697223,
+     "GWh_per_km": 39.77501643304212,
+     "mean_net": 1.8609909019775481
+    },
+    "poor": {
+     "GWh": 273.29144471790653,
+     "GWh_per_km": 22.039632638540848,
+     "mean_net": 1.0184034188951847
+    }
+   }
+  },
+  "141": {
+   "example": {
+    "even": {
+     "GWh": 391.41763030477574,
+     "GWh_per_km": 31.71941898742105,
+     "mean_net": 1.454889030485602
+    },
+    "good": {
+     "GWh": 348.116899787236,
+     "GWh_per_km": 28.210445687782496,
+     "mean_net": 1.2888513006104816
+    },
+    "moderate": {
+     "GWh": 150.58879085507843,
+     "GWh_per_km": 12.203305579828074,
+     "mean_net": 0.5314431938580653
+    },
+    "poor": {
+     "GWh": 35.72424961546543,
+     "GWh_per_km": 2.894995916974508,
+     "mean_net": 0.1099463323012113
+    }
+   },
+   "hole_km": 12.34,
+   "need": {
+    "design": {
+     "target": 10.0,
+     "N": 304,
+     "m": 195.0,
+     "W": 3048.0,
+     "L": 489.63810772203624,
+     "vf": 7.14800157258447
+    },
+    "hole_km": 16.914,
+    "even": {
+     "GWh": 2641.610370211468,
+     "GWh_per_km": 156.1789269369438,
+     "mean_net": 10.044473977365111
+    },
+    "good": {
+     "GWh": 2507.814762765811,
+     "GWh_per_km": 148.26858003818202,
+     "mean_net": 9.531431387505291
+    },
+    "moderate": {
+     "GWh": 1130.740122488626,
+     "GWh_per_km": 66.85231893630282,
+     "mean_net": 4.251004373748223
+    },
+    "poor": {
+     "GWh": 469.1353434947901,
+     "GWh_per_km": 27.736510789570183,
+     "mean_net": 1.716421673277696
+    }
+   }
+  },
+  "19": {
+   "example": {
+    "even": {
+     "GWh": 2593.045149585094,
+     "GWh_per_km": 370.43502136929914,
+     "mean_net": 9.842605236853482
+    },
+    "good": {
+     "GWh": 2398.501483788839,
+     "GWh_per_km": 342.64306911269125,
+     "mean_net": 9.096622703895726
+    },
+    "moderate": {
+     "GWh": 1731.074412609164,
+     "GWh_per_km": 247.296344658452,
+     "mean_net": 6.537392136173517
+    },
+    "poor": {
+     "GWh": 668.5152350126167,
+     "GWh_per_km": 95.50217643037381,
+     "mean_net": 2.4806472997843168
+    }
+   },
+   "hole_km": 7.0,
+   "need": {
+    "design": {
+     "target": 50.0,
+     "N": 169,
+     "m": 190.0,
+     "W": 1690.9148870327251,
+     "L": 634.0930826372718,
+     "vf": 4.467489304982645
+    },
+    "hole_km": 7.0,
+    "even": {
+     "GWh": 13171.33376994107,
+     "GWh_per_km": 1881.6191099915814,
+     "mean_net": 50.08254084876467
+    },
+    "good": {
+     "GWh": 12521.076518097443,
+     "GWh_per_km": 1788.7252168710634,
+     "mean_net": 47.58911321739435
+    },
+    "moderate": {
+     "GWh": 7269.875929498646,
+     "GWh_per_km": 1038.5537042140922,
+     "mean_net": 27.453253742767206
+    },
+    "poor": {
+     "GWh": 4224.8535823473785,
+     "GWh_per_km": 603.5505117639112,
+     "mean_net": 15.79585181732508
+    }
+   }
+  }
+ }
+}

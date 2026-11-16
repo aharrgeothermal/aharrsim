@@ -1,6 +1,6 @@
 # aharrsim — transient wellbore–reservoir–plant simulator for geothermal wells
 
-Version 2.3 (November 2026). The core is a transient heat-transfer and hydraulics model of a vertical
+Version 2.4 (November 2026). The core is a transient heat-transfer and hydraulics model of a vertical
 (or deviated / L-shaped) coaxial closed loop, 1–12+ km deep:
 
 * cold water is pumped **down the annulus** and returns hot **up the centre tubing** (or the reverse,
@@ -16,7 +16,7 @@ Since v2.0 the same solver also runs production, injection and U-tube wells, cha
 surface plants, so that one example of every geothermal development type can be run on a common basis (below).
 
 The simulator accompanies the paper "Swept rock or touched rock: a common-basis benchmark of twenty geothermal development types and an
-audit of their quoted capacities" (Wrobel, McGeer and Sellar); `paper/make_figs.py` draws its figures from `validation/results/` into `paper/figs/`.
+audit of their quoted capacities" (Wrobel, McGeer and Sellar); `paper/make_figs.py` draws its figures from `validation/results/`.
 The change history is in `CHANGELOG.md`.
 
 ## Heat delivered (reference design)
@@ -135,6 +135,20 @@ python3 validation/study_open.py screen|confirm|cyclic|part3|need
 
 Multilateral-loop cases above 100 kg/s or with 6⅛ in laterals did not finish within the 240 s per-case limit and are omitted.
 
+## Rock quality and lifetime output (v2.4)
+
+`aharrsim.reservoir.UnevenFractures` is the parallel-fracture element without the assumption of equal flow: fractures carry the flows given by a
+pattern of multipliers (or by a Lorenz coefficient, a corridor width and a seed) and exchange heat through the rock between them.
+`validation/study_rock.py` runs three scenarios of rock quality on the four fractured systems; `validation/zoned_verify.py` verifies the element;
+`validation/lifetime.py` gives the net electricity and heat of every example per kilometre of hole. Results and findings are in `CHANGELOG.md`.
+
+```python
+from aharrsim.reservoir import UnevenFractures
+r = UnevenFractures(Q=0.11, N=300, L_flow=137.0, B=143.0, S=10.2, k_r=2.8, rhoc_r=2650 * 850.0, T_rock_C=200.0, T_inj_C=60.0,
+                    rhoc_w=4160.0 * 900.0, lorenz=0.5, corridor=5, seed=0)
+r.T_D([3.156e7, 3.156e8])      # dimensionless drop of the mixed outlet after 1 and 10 years
+```
+
 ## Physics and numerics
 
 | Part | Model |
@@ -213,11 +227,3 @@ python ../report/build_report.py
 
 Field tests only reach 2.6 km; the 4–12 km range rests on the analytical checks (no depth limit) and the
 code-to-code comparisons.
-
-## Citing
-
-If you use aharrsim, please cite the release you used (`CITATION.cff`; each release carries its own DOI) and the paper named at the top of this file.
-
-## Licence
-
-MIT; see `LICENSE`.

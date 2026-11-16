@@ -186,6 +186,205 @@ class ParallelFractures:
 
 
 # ----------------------------------------------------------------------------
+# Uneven flow.  The fracture area of the block is divided into zones; zone k holds the share a_k of the area (and, at uniform
+# spacing, of the rock) and carries the share F_k of the flow.  Ordered from the fastest zone to the slowest, the cumulative
+# flow against the cumulative area is the flow-capacity / storage-capacity curve of reservoir engineering, and twice the
+# area between that curve and the diagonal is the Lorenz coefficient L_c: 0 for even flow, towards 1 as the flow concentrates.
+def lorenz_sigma(lorenz):
+    """Log-standard deviation of the lognormal distribution of flow per unit fracture area whose Lorenz coefficient is
+    `lorenz`: L_c = erf(sigma / 2)."""
+    from scipy.special import erfinv
+    if not 0.0 <= lorenz < 1.0:
+        raise ValueError("the Lorenz coefficient lies in [0, 1)")
+    return 2.0 * float(erfinv(lorenz))
+
+
+def lorenz_curve(area, lorenz):
+    """Share of the flow carried by the fastest share `area` of the fracture area, lognormal flow per unit area:
+    F = Phi(Phi^-1(area) + sigma)."""
+    from scipy.stats import norm
+    area = np.asarray(area, float)
+    return norm.cdf(norm.ppf(np.clip(area, 0.0, 1.0)) + lorenz_sigma(lorenz))
+
+
+def lognormal_zones(lorenz, n_zones=60):
+    """Zones of equal flow share for a lognormal flow per unit area, fastest first.  Returns (flow shares, area shares)."""
+    from scipy.stats import norm
+    if lorenz <= 0.0:
+        return np.array([1.0]), np.array([1.0])
+    sig = lorenz_sigma(lorenz)
+    Fe = np.linspace(0.0, 1.0, n_zones + 1)
+    Ae = norm.cdf(norm.ppf(Fe) - sig)                      # area share that carries the fastest share F of the flow
+    return np.diff(Fe), np.diff(Ae)
+
+
+def lorenz_of(flow, area=None):
+    """Lorenz coefficient of measured flow shares (per stage, cluster or fracture) holding the area shares `area` (equal if
+    omitted): twice the area between the flow-capacity / storage-capacity curve and the diagonal."""
+    flow = np.asarray(flow, float)
+    area = np.full(len(flow), 1.0) if area is None else np.asarray(area, float)
+    o = np.argsort(-flow / area)
+    F = np.concatenate([[0.0], np.cumsum(flow[o])]) / flow.sum()
+    A = np.concatenate([[0.0], np.cumsum(area[o])]) / area.sum()
+    return float(2.0 * (np.trapezoid(F, A) - 0.5))
+
+
+class ZonedFractures(ParallelFractures):
+    """Parallel fractures with uneven flow: the block of ParallelFractures divided into zones that take unequal shares of the
+    flow.  Within a zone the flow per unit fracture area is uniform and the Gringarten solution holds with that zone's flow;
+    the outlet is the flow-weighted mix of the zones.  Zones do not exchange heat with one another, which is right when a zone
+    is wider than the conduction length (a stage or corridor, tens of metres) and pessimistic when fast and slow fractures
+    alternate at close spacing.
+
+    lorenz      Lorenz coefficient of a lognormal flow per unit fracture area (0: even flow, the ParallelFractures result), or
+    flow, area  explicit flow and area shares of the zones (a measured flow profile), which take precedence.
+    """
+
+    def __init__(self, *args, lorenz=0.0, n_zones=60, flow=None, area=None, **kw):
+        super().__init__(*args, **kw)
+        if flow is not None:
+            flow = np.asarray(flow, float); area = np.full(len(flow), 1.0) if area is None else np.asarray(area, float)
+            F, A = flow / flow.sum(), area / area.sum()
+            o = np.argsort(-F / A); F, A = F[o], A[o]
+            lorenz = lorenz_of(F, A)
+        else:
+            F, A = lognormal_zones(lorenz, n_zones)
+        A = A / A.sum()
+        keep = (F > 0.0) & (A > 0.0)                                           # a zone without flow holds rock that is never reached
+        self.zone_flow, self.zone_area = F[keep] / F[keep].sum(), A[keep]
+        self.zone_ratio = self.zone_flow / self.zone_area                      # flow per unit area relative to the mean of the block
+        self.lorenz = lorenz
+
+    def T_D(self, t, method="dehoog"):
+        """Flow-weighted dimensionless temperature drop of the mixed outlet."""
+        t = np.atleast_1d(np.asarray(t, float))
+        r = self.zone_ratio[:, None]
+        tD = np.maximum(t[None, :] * r ** 2 / self.gamma2, 1e-12)             # zone k runs r_k^2 faster in dimensionless time
+        xe = self.x_ED * r * np.ones_like(tD)
+        x_zone = t[None, :] / self.t_sweep * r                                 # flushed share of each zone
+        out = np.ones_like(tD)                                                 # a zone flushed many times over has given up its heat
+        todo = np.where(x_zone.ravel() <= 40.0)[0]
+        tDf, xef, res = tD.ravel()[todo], xe.ravel()[todo], np.empty(len(todo))
+        for a in range(0, len(todo), 4000):                                    # the inversion table takes 20 kB per point
+            td, x = tDf[a:a + 4000], xef[a:a + 4000, None]
+            if method == "stehfest":
+                res[a:a + 4000] = [stehfest(lambda s, x_=x_: np.exp(-np.sqrt(s) * np.tanh(np.minimum(x_ * np.sqrt(s), 50.0))) / s, np.atleast_1d(t_))[0]
+                                   for t_, x_ in zip(td, x[:, 0])]
+            else:
+                def f(s):
+                    q = np.sqrt(s)
+                    return np.exp(-q * np.tanh(x * q)) / s
+                with np.errstate(all="ignore"):
+                    res[a:a + 4000] = dehoog(f, td)
+        out.ravel()[todo] = np.clip(np.where(np.isfinite(res), res, 0.0), 0.0, 1.0)
+        return (self.zone_flow[:, None] * out).sum(axis=0)
+
+
+def zoned_dense_limit(x, lorenz):
+    """Retained share of the temperature rise at the flushed share x = t / t_s for closely spaced fractures (sharp front in
+    every zone) and a lognormal flow per unit area: theta = 1 - Phi((ln x + sigma^2 / 2) / sigma)."""
+    from scipy.stats import norm
+    x = np.asarray(x, float)
+    if lorenz <= 0.0:
+        return np.where(x < 1.0, 1.0, 0.0)
+    sig = lorenz_sigma(lorenz)
+    return 1.0 - norm.cdf((np.log(np.maximum(x, 1e-300)) + 0.5 * sig ** 2) / sig)
+
+
+# ----------------------------------------------------------------------------
+def flow_pattern(n, lorenz, corridor=1, seed=0):
+    """Flow multipliers (mean 1) for n fractures along the well.  The multipliers are the quantiles of a lognormal distribution
+    whose spread is set so that the Lorenz coefficient of the pattern is `lorenz`; `corridor` neighbouring fractures share one
+    multiplier (a corridor or stage); the order along the well is random (seeded)."""
+    from scipy.stats import norm
+    from scipy.optimize import brentq
+    n = int(n); corridor = max(int(corridor), 1)
+    if lorenz <= 0.0:
+        return np.ones(n)
+    nz = int(math.ceil(n / corridor))
+    z = norm.ppf((np.arange(nz) + 0.5) / nz)
+    size = np.minimum(corridor, n - corridor * np.arange(nz)).astype(float)       # fractures in each corridor (the last may be short)
+    order = np.random.default_rng(seed).permutation(nz)
+
+    def pattern(sig):
+        w = np.exp(sig * z)[order]
+        return w, lorenz_of(w * size, size)
+
+    if nz < 2 or pattern(60.0)[1] < lorenz:
+        raise ValueError("too few corridors for this Lorenz coefficient")
+    sig = brentq(lambda v: pattern(v)[1] - lorenz, 1e-6, 60.0)
+    m = np.repeat(pattern(sig)[0], corridor)[:n]
+    return m / m.mean()
+
+
+class UnevenFractures(ParallelFractures):
+    """Parallel fractures that carry unequal flows and exchange heat through the rock between them: the solution of Gringarten et
+    al. (1975) without the assumption that every fracture takes the same flow.
+
+    In Laplace space the rock slab of thickness d between fractures i and i+1 passes the heat flux
+    k b [T_i coth(b d) - T_(i+1) csch(b d)], b = sqrt(s / alpha), out of fracture i, so that the fracture temperatures along the
+    flow obey  c_i dT_i/dz = -(K T)_i  with K tridiagonal and c_i the heat-capacity flow per unit breadth.  The outlet is
+    T(L) = exp(-C^-1 K L) T(0), and the produced water is the flow-weighted mix.  With equal flows this is the Gringarten solution;
+    with wide zones of equal flow it is the mix of independent zones (ZonedFractures).
+
+    mult      flow multiplier of each fracture of the pattern (mean 1); the block is the pattern repeated, with mirror symmetry
+              at its ends.  Fractures without flow are rock.  Alternatively lorenz, corridor, seed (see flow_pattern) and n_pattern.
+    """
+
+    def __init__(self, *args, mult=None, lorenz=0.0, corridor=1, seed=0, n_pattern=None, **kw):
+        super().__init__(*args, **kw)
+        if mult is None:
+            n = int(min(round(self.N), 160)) if n_pattern is None else int(n_pattern)
+            mult = flow_pattern(n, lorenz, corridor, seed)
+        mult = np.asarray(mult, float)
+        self.mult = mult / mult.mean()
+        self.lorenz = lorenz_of(self.mult)
+        act = np.where(self.mult > 0.0)[0]
+        # slab thickness between successive flowing fractures, and the rock beyond the first and last (mirror at half a spacing)
+        self._d = np.diff(act) * self.S
+        self._d0, self._d1 = (act[0] + 0.5) * self.S, (len(mult) - act[-1] - 0.5) * self.S
+        self._c = self.rhoc_w * self.q_f * self.mult[act] / self.B                  # heat-capacity flow per unit breadth [W/K/m]
+        self._memo = {}
+
+    def T_out(self, T_in_K, t):
+        key = round(max(t, 1.0), 1)                                                 # a chain asks for the same time several times
+        if key not in self._memo:
+            self._memo[key] = float(self.T_D(key)[0])
+        return self.T_rock - self._memo[key] * (self.T_rock - T_in_K)
+
+    def _outlet(self, s_dim):
+        """Laplace transform of the mixed outlet T_D at the dimensionless s (time in units of gamma2)."""
+        shp = s_dim.shape; sv = (s_dim / self.gamma2).ravel()
+        k, alpha = self.k_r, self.k_r / self.rhoc_r
+        w = np.sqrt(self._c); n = len(w); out = np.empty(len(sv), complex)
+        for a in range(0, len(sv), 64):
+            s = sv[a:a + 64]; b = np.sqrt(s / alpha)[:, None]
+            e = np.exp(-2.0 * b * self._d[None, :]) if n > 1 else None
+            A = np.zeros((len(s), n, n), complex)
+            diag = np.zeros((len(s), n), complex)
+            diag[:, 0] += (k * b * np.tanh(b * self._d0))[:, 0]; diag[:, -1] += (k * b * np.tanh(b * self._d1))[:, 0]
+            if n > 1:
+                coth = (1.0 + e) / (1.0 - e); csch = 2.0 * np.exp(-b * self._d[None, :]) / (1.0 - e)
+                diag[:, :-1] += k * b * coth; diag[:, 1:] += k * b * coth
+                off = -k * b * csch / (w[None, :-1] * w[None, 1:])
+                i = np.arange(n - 1)
+                A[:, i, i + 1] = off; A[:, i + 1, i] = off
+            i = np.arange(n)
+            A[:, i, i] = diag / self._c[None, :]
+            lam, V = np.linalg.eig(A)                                              # A = C^-1/2 K C^-1/2 (complex symmetric)
+            x = np.linalg.solve(V, np.broadcast_to(w, (len(s), n))[..., None])[..., 0]
+            out[a:a + 64] = ((w[None, :] @ V)[:, 0, :] if False else np.einsum("j,sjm->sm", w, V) * np.exp(-lam * self.L) * x).sum(axis=1) / (w @ w)
+        return (out / sv / self.gamma2).reshape(shp)
+
+    def T_D(self, t, method="dehoog"):
+        t = np.atleast_1d(np.asarray(t, float))
+        tD = np.maximum(t / self.gamma2, 1e-12)
+        with np.errstate(all="ignore"):
+            out = dehoog(self._outlet, tD)
+        return np.clip(np.where(np.isfinite(out), out, 0.0), 0.0, 1.0)
+
+
+# ----------------------------------------------------------------------------
 class DoubletAquifer:
     """Gringarten & Sauty (1975) doublet in a confined aquifer: production temperature after cold-water
     reinjection, with conductive heat exchange with the cap and base rock along every streamline.

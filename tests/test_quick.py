@@ -130,3 +130,19 @@ def test_porous_block():
     c = AxisymmetricBlock(R=0.5, H=1.5, r_w=0.008, K=1e-9, phi=0.35, rhoc_s=1.2e6 / 0.65, lam=1.5, T0=60.0, nr=12, nz=30, water=W)
     c.solve_flow()
     assert np.max(np.abs(c.FZ)) < 1e-15 and np.max(np.abs(c.FR)) < 1e-15
+
+
+def test_uneven_fractures():
+    """Unequal flows: equal multipliers return the parallel-fracture solution; the flow pattern has the Lorenz coefficient asked
+    for; wide zones tend to the mix of separate blocks; uneven flow cools the outlet earlier."""
+    from aharrsim.reservoir import ParallelFractures, UnevenFractures, ZonedFractures, flow_pattern, lorenz_of
+    base = dict(Q=100.0 / 900.0, N=300, L_flow=137.0, B=143.0, S=10.16, k_r=2.8, rhoc_r=2650 * 850.0, T_rock_C=200.0, T_inj_C=60.0, rhoc_w=4160.0 * 900.0)
+    t = np.array([1.0, 5.0, 10.0, 20.0]) * 365.25 * 86400.0
+    even = ParallelFractures(**base).T_D(t)
+    assert np.abs(UnevenFractures(**base, mult=np.ones(5)).T_D(t) - even).max() < 1e-10
+    m = flow_pattern(60, 0.5, corridor=5, seed=1)
+    assert abs(lorenz_of(m) - 0.5) < 1e-6 and abs(m.mean() - 1.0) < 1e-12
+    wide = UnevenFractures(**base, mult=[1.6] * 64 + [0.4] * 64).T_D(t)
+    sep = ZonedFractures(**base, flow=[1.6, 0.4], area=[1.0, 1.0]).T_D(t)
+    assert np.abs(wide - sep).max() < 0.01
+    assert UnevenFractures(**base, mult=m).T_D(t)[1] > even[1] + 0.05

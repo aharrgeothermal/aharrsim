@@ -1,5 +1,36 @@
 # Change history
 
+## 2.4 (November 2026)
+
+**Rock quality and a lifetime measure.** Added after a co-author's review of the manuscript. The benchmark tables stand as they are.
+
+| Addition | What it does |
+|---|---|
+| `aharrsim.reservoir.UnevenFractures` | parallel fractures that carry unequal flows and exchange heat through the rock between them: the Gringarten solution without the assumption of equal flow. In Laplace space the fracture temperatures obey a tridiagonal system along the flow path; the outlet is a matrix exponential and the produced water the flow-weighted mean |
+| `aharrsim.reservoir.ZonedFractures`, `zoned_dense_limit` | the limit of wide zones that do not exchange heat (flow-capacity and storage-capacity form), with its closed form for closely spaced fractures |
+| `flow_pattern`, `lorenz_of`, `lorenz_curve`, `lorenz_sigma` | flows per fracture with a given Lorenz coefficient (lognormal quantiles, optional corridors, seeded order) and the coefficient of a measured allocation |
+| `validation/zoned_verify.py` | verification: equal flows, closed form, heat balance, convergence, and an independent finite-volume solution (`results/ZF_verify.json`) |
+| `validation/study_rock.py` | three scenarios of rock quality (Good, Moderate, Poor: Lorenz coefficients 0.2, 0.5 and 0.8) on the four fractured systems, the volume each needs, the scale of the unevenness, the Project Red record read as uneven flow, and two full-chain confirmations (`results/RQ_*.json`) |
+| `validation/lifetime.py` | net electricity and heat over the simulated life of every example per kilometre of hole (`results/LT_lifetime.json`) |
+| `study_open.design(..., uneven=...)`, `confirm_one` | the screening model and the full chain with uneven flow |
+
+Findings:
+
+* **The element is verified three ways.** Equal flows return the parallel-fracture solution to 3 × 10⁻¹⁴; alternating zones agree with a finite-volume solution within 0.007–0.020 in T_D (the
+  discretisation error of the latter); and wide zones tend to the mix of separate blocks (0.33 at 20 m, 0.007 at 1300 m).
+* **Designs sized for even flow have no margin.** The four designs that just hold their quoted capacities keep 95 % of their 30-year net output in Good rock, 42–55 % in Moderate and
+  17–32 % in Poor. Holding the outlet for 30 years takes 1.1, 2.7–2.8 and 5.4–6.0 times the swept volume.
+* **Scale matters as much as the coefficient.** Conduction evens out differences between fractures closer than the conduction length (34 m after 30 years). With the same six flows at a
+  Lorenz coefficient of 0.5 the year-30 outlet of the Cape Station-type design is 153 °C between single fractures 10 m apart and 112 °C between corridors 160 m wide (even flow: 196 °C).
+* **The Project Red record does not distinguish its readings.** Fewer active fractures (0.45), half the volume swept, and uneven flow among all the fractures (Lorenz coefficient 0.35)
+  fit the 614 days within the digitising accuracy and diverge afterwards.
+* **Lifetime net electricity per kilometre of hole** spans two orders of magnitude: 290–790 GWh/km for wells in convecting reservoirs, 11–42 GWh/km for the fractured examples at
+  190–200 °C (76 and 156 for the horizontal-well designs sized to hold their quoted capacities), and 6–9 GWh/km for the sealed loops that generate at all.
+
+Also: the reference list of the manuscript was checked against its sources; the Qingdao field test is from Bu, Ran and Zhang (2019) and the GeoCLUSTER database from Beckers et al. (2023).
+
+Figures: `paper/make_figs.py` draws the thirteen figures at the journal's widths (188 and 140 mm) with no lettering below 7 points, and `AUDIT=1 python paper/make_figs.py` checks each one for lettering that overlaps other lettering, lies on or within a point of a line or marker, or is cut off. No number in any figure changed; type 12 in Fig. 3 is now drawn at its value (5 kWe) instead of at the axis floor.
+
 ## 2.3 (November 2026)
 
 **A laboratory comparison and two elements for a single well.** No existing result changes; the benchmark tables stand as they are.
@@ -98,4 +129,4 @@ python3 validation/study_cl.py oat30 8          # type 8 uncertainty at 30 kg/s 
 The figures of the accompanying paper ("Swept rock or touched rock") are drawn by `paper/make_figs.py` from `validation/results/`.
 The two HTML reports in `report/` on the development types (`aharrsim_dev_types_report.html`, v2.0) and on the uncertainty study
 (`aharrsim_uncertainty_report.html`, v2.1) are kept as snapshots: their fractured-system figures predate the three corrections of v2.2 and
-are superseded by `validation/results/`.
+are superseded by `validation/results/`. The result files that the corrections replaced are kept in `validation/results/superseded/`.
