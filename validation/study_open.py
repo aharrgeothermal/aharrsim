@@ -29,7 +29,7 @@ import CoolProp.CoolProp as CP
 from common import save, load
 from functools import lru_cache
 
-from aharrsim.reservoir import ParallelFractures, cbar_w
+from aharrsim.reservoir import ParallelFractures, UnevenFractures, cbar_w
 from aharrsim.systems import doublet, YEAR
 from aharrsim import plant
 from study_cl import k_of_T, tri
@@ -178,8 +178,10 @@ def gross_MWe(m, T_res_C, s, T_amb=15.0):
 
 
 def design(s, N=None, tau=1.0, f=1.0, phi=1.0, m=None, W=None, L=None, B=None, T_rock=None, k=None, rhoc=None, T_amb=15.0, a_nw=0.5, I0=None,
-           years=YRS):
-    """Evaluate one fractured-reservoir design with the screening model. Returns histories and 30-year figures."""
+           years=YRS, uneven=None):
+    """Evaluate one fractured-reservoir design with the screening model. Returns histories and 30-year figures.
+    uneven = dict(lorenz, corridor_m, seeds): unequal flows between the fractures (aharrsim.reservoir.UnevenFractures), the
+    response averaged over the seeded arrangements; the impedance is left as it is (it is measured at the wellheads)."""
     N = N or s["N0"]; m = m or s["m"]; W = W or s["W"]; L = L or s["L"]; B = B or s["B"]
     T_rock = s["T_rock"] if T_rock is None else T_rock; k = k or s["k"]; rhoc = rhoc or s["rhoc"]; I0 = s["I0"] if I0 is None else I0
     Q = m / s["rho_w"]
@@ -189,7 +191,15 @@ def design(s, N=None, tau=1.0, f=1.0, phi=1.0, m=None, W=None, L=None, B=None, T
     S_eff = W / Na / tau                       # slab thickness per active fracture with the rock volume kept
     pf = ParallelFractures(Q=Q, N=Na * wings, L_flow=tau * L, B=phi * B, S=S_eff, k_r=k, rhoc_r=rhoc, T_rock_C=T_rock, T_inj_C=s["T_inj"],
                            rhoc_w=cw * s["rho_w"])
-    TD = pf.T_D(years * YEAR)
+    if uneven and uneven.get("lorenz", 0.0) > 0.0:
+        n_pat = int(min(max(round(Na), 2), uneven.get("n_max", 160)))
+        cor = max(int(round(uneven.get("corridor_m", 0.0) / S_eff)), 1)
+        TDs = np.array([UnevenFractures(Q=Q, N=Na * wings, L_flow=tau * L, B=phi * B, S=S_eff, k_r=k, rhoc_r=rhoc, T_rock_C=T_rock, T_inj_C=s["T_inj"],
+                                        rhoc_w=cw * s["rho_w"], lorenz=uneven["lorenz"], corridor=cor, seed=sd, n_pattern=n_pat).T_D(years * YEAR)
+                        for sd in uneven.get("seeds", (0, 1, 2))])
+        TD = TDs.mean(axis=0); TD_sd = TDs.std(axis=0)
+    else:
+        TD = pf.T_D(years * YEAR); TD_sd = np.zeros_like(TD)
     TD = np.maximum.accumulate(np.minimum.accumulate(TD[::-1])[::-1])     # the step response is monotone (guards against inversion noise)
     T_res = T_rock - TD * (T_rock - s["T_inj"])
     ss = dict(s); ss["T_rock"] = T_rock
@@ -209,11 +219,12 @@ def design(s, N=None, tau=1.0, f=1.0, phi=1.0, m=None, W=None, L=None, B=None, T
                 T30=float(T_res[-1]), T1=float(np.interp(1.0, years, T_res)), gross1=float(np.interp(1.0, years, gross)), gross30=float(gross[-1]),
                 net1=float(np.interp(1.0, years, net)), net30=float(net[-1]), mean_net=mean_net, mean_gross=mean_gross, W_circ=W_circ, W_lift=W_lift,
                 I_MPa_per_Ls=I / 1e9, dp_MPa=Q * I / 1e6, dp_pump_MPa=float(np.interp(1.0, years, dp_t)), W_circ30=float(W_circ_t[-1]), t_sweep_yr=t_sweep, t_10pct_yr=t10, area_km2=2 * Na * wings * tau * L * phi * B / 1e6,
-                x_30=30.0 / t_sweep, y_30=0.5 * (W / Na / tau) / math.sqrt(k / rhoc * 30.0 * YEAR))
+                x_30=30.0 / t_sweep, y_30=0.5 * (W / Na / tau) / math.sqrt(k / rhoc * 30.0 * YEAR), TD=TD.tolist(),
+                T_sd_K=(TD_sd * (T_rock - s["T_inj"])).tolist(), GWh=float(np.trapezoid(np.concatenate([[net[0]], net]), np.concatenate([[0.0], years])) * 8.766))
 
 
 def strip(d):
-    return {k: v for k, v in d.items() if k not in ("T_res", "gross", "net")}
+    return {k: v for k, v in d.items() if k not in ("T_res", "gross", "net", "TD", "T_sd_K")}
 
 
 def screen():
@@ -329,6 +340,12 @@ def confirm_one(args):
     wings = s.get("wings", 1)
     fac = lambda T_bot: ParallelFractures(Q=Q, N=c["N"] * wings, L_flow=L, B=s["B"], S=W / c["N"], k_r=s["k"], rhoc_r=s["rhoc"], T_rock_C=s["T_rock"],
                                            T_inj_C=lambda t: T_bot(t) - 273.15, rhoc_w=cbar(s) * s["rho_w"])
+    un = c.get("uneven")
+    if un:                                         # unequal flows between the fractures (one arrangement)
+        cor = max(int(round(un.get("corridor_m", 0.0) / (W / c["N"]))), 1)
+        fac = lambda T_bot: UnevenFractures(Q=Q, N=c["N"] * wings, L_flow=L, B=s["B"], S=W / c["N"], k_r=s["k"], rhoc_r=s["rhoc"], T_rock_C=s["T_rock"],
+                                             T_inj_C=lambda t: T_bot(t) - 273.15, rhoc_w=cbar(s) * s["rho_w"], lorenz=un["lorenz"], corridor=cor,
+                                             seed=un.get("seed", 0), n_pattern=min(c["N"], 160))
     big = m > (110.0 if sid == 141 else 65.0)      # Cape Phase I produced about 100 kg/s through 7 in casing
     d_in = (8.535 if big else 6.094) * IN
     layers = [dict(od_in=9.625 if big else 7.0, material="steel"), dict(od_in=12.25 if big else 8.5, material="cement")]
@@ -354,7 +371,7 @@ def confirm_one(args):
             h = float(np.interp(t, ts["t"], ts["h_out"])); p = float(np.interp(t, ts["t"], ts["p_out"]))
             out["years"].append(y); out["T_wh"].append(float(np.interp(t, ts["t"], ts["T_out"])) - 273.15); out["T_res"].append(ch["T_res"](t) - 273.15)
             out["x"].append(float(np.interp(t, ts["t"], ts["x_out"]))); out["gross"].append(max(power(m, h, p, 15.0), 0.0)); out["pump_kW"].append(float(np.interp(t, ts["t"], ts["pump_kW"])))
-        scr = design(s, N=c["N"], m=m, W=W, L=L)
+        scr = design(s, N=c["N"], m=m, W=W, L=L, uneven=dict(un, seeds=(un.get("seed", 0),)) if un else None)
         out["screen_gross"] = [float(np.interp(y, YRS, scr["gross"])) for y in out["years"]]
         out["screen_T_res"] = [float(np.interp(y, YRS, scr["T_res"])) for y in out["years"]]
         out["screen_net"] = [float(np.interp(y, YRS, scr["net"])) for y in out["years"]]

@@ -7,8 +7,8 @@ authors:
   - family-names: Wrobel
     given-names: Lukasz
     affiliation: Aharr Geothermal
-version: "2.4.0"
-date-released: "2026-11-15"
+version: "2.4.1"
+date-released: "2026-11-16"
 license: MIT
 keywords:
   - geothermal

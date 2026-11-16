@@ -1,5 +1,9 @@
 # Change history
 
+## 2.4.1 (16 November 2026)
+
+Repository release only: the simulator and every result are as in 2.4. The 2.4.0 release on GitHub and Zenodo (https://doi.org/10.5281/zenodo.24270031) lacked part of the `validation` folder: `study_rock.py`, `zoned_verify.py`, the 2.4 version of `study_open.py`, `results/RQ_volume.json`, `results/ZF_verify.json` and `results/superseded/`. They are in this release.
+
 ## 2.4 (November 2026)
 
 **Rock quality and a lifetime measure.** Added after a co-author's review of the manuscript. The benchmark tables stand as they are.
