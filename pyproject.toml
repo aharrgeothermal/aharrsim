@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aharrsim"
-version = "2.4.1"
+version = "2.5.0"
 description = "Transient wellbore-reservoir-plant simulator for geothermal wells: coaxial closed loops, production and injection wells, fracture and aquifer elements, plants (water/steam, IAPWS-95)"
 readme = "README.md"
 requires-python = ">=3.9"

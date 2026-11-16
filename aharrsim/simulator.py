@@ -57,7 +57,7 @@ class Results:
         self.ts = {k: [] for k in (
             "t", "mdot", "T_in", "T_out", "p_in", "p_out", "h_in", "h_out", "x_out",
             "Q_wellhead", "Q_rock", "Q_riser_loss", "dE_fluid", "iters", "flash_md", "choke_dp", "Q_ke",
-            "choke_warning", "Q_res", "pump_dp", "pump_kW", "inflow_margin", "Q_pe")}
+            "choke_warning", "Q_res", "pump_dp", "pump_kW", "inflow_margin", "Q_pe", "feed_floor")}
         self.profiles = []          # list of dicts at output times
         self.meta = {}
 
@@ -644,6 +644,7 @@ class Simulator:
         given, otherwise at the larger of the local pressure and the saturation pressure; it then flashes
         isenthalpically in the well.  A two-phase or steam feed is given by enthalpy."""
         inf = self.case.inflow
+        self.feed_floor = False                 # diagnostic: True when the feed was evaluated at 1.02 p_sat instead of the stated pressure
         if "h" in inf:
             hv = inf["h"]
             return float(hv(t)) if callable(hv) else float(hv)
@@ -654,7 +655,9 @@ class Simulator:
         else:
             p_eval = p
         if not self.fluid.is_constant:
-            p_eval = max(p_eval, 1.02 * self._psat(T))
+            p_floor = 1.02 * self._psat(T)
+            self.feed_floor = p_eval < p_floor
+            p_eval = max(p_eval, p_floor)
         return float(self.fluid.h_pT(p_eval, T)[0])
 
     def _march_single(self, h, m):
@@ -1310,7 +1313,7 @@ class Simulator:
                            choke_warning=float(getattr(self, "choke_warning", False)),
                            Q_res=info.get("Q_res", 0.0), pump_dp=getattr(self, "pump_dp", 0.0),
                            pump_kW=getattr(self, "pump_kW", 0.0), inflow_margin=getattr(self, "inflow_margin", np.nan),
-                           Q_pe=Q_pe)
+                           Q_pe=Q_pe, feed_floor=float(getattr(self, "feed_floor", False)))
                 if nxt is not None and abs(t - nxt) < 1e-3:
                     res.profiles.append(self.profile())
                 if progress:

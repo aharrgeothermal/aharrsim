@@ -12,7 +12,7 @@ from .case import Case, case_from_dict, DAY, YEAR, INCH
 from .simulator import Simulator, Results
 from .props import WaterIAPWS, ConstantFluid
 
-__version__ = "2.4.1"
+__version__ = "2.5.0"
 
 
 def load_case(path):

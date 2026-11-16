@@ -1,5 +1,72 @@
 # Change history
 
+## 2.5.0 (16 November 2026)
+
+**Calculations asked for in the review of the manuscript.** The solver is that of 2.4: the 22 benchmark cases were run again and give the 2.4 results in every
+reported field but one, the circulation load of the multilateral loop at 100 kg/s, which was not charged before (below). One diagnostic output is added and one
+input of one example is changed, without effect on its results. `REPRODUCE.md` lists the command and the result file behind every table and figure.
+
+| Addition | What it does |
+|---|---|
+| `Simulator` time series `feed_floor` | 1 on the steps at which the enthalpy of a liquid feed is evaluated at the 1.02 p_sat floor rather than at reservoir pressure less drawdown |
+| `validation/dev_types.py` | flags `feed_floor`, `steps` and, for the wells that flow unaided (types 3, 3b, 18), `inflow_short_MPa`: how far the stated reservoir pressure and productivity index fall short of the computed bottom-hole pressure. Type 3b: productivity index 15 → 25 kg/s/MPa |
+| `validation/study_review.py gross` | the designs of Table 7 for the same figures as gross targets (`results/RV1_gross_need.json`) |
+| `validation/study_review.py share` | the net-target designs with a quarter and three quarters of the impedance held near the wells (`RV2_impedance_share.json`) |
+| `validation/study_review.py seeds` | the three flow-heterogeneity scenarios with 20 arrangements of the flows instead of 5 (`RV3_arrangements.json`) |
+| `validation/study_review.py red` | the Project Red fit at the produced, mean and injected rates (`RV4_red_flow_basis.json`) |
+| `validation/study_review.py paths`, `paths_grid` | conduction along the flow path and from the rock around the block, with the fractures resolved, against the parallel-fracture element; grid and time-step check (`RV8_conduction_paths.json`, `RV8_conduction_grid.json`) |
+| `validation/study_review.py outside` | the earlier two-dimensional form of the surrounding-rock calculation, dense-fracture limit (`RV5_outside_conduction.json`) |
+| `validation/study_review.py boot` | bootstrap intervals of the closed-loop percentiles (`RV6_percentiles.json`) |
+| `validation/study_cl_timeouts.py` | the two multilateral-loop cases without a result in the first sweep, run again with a longer limit (`RV7_type8_timeouts.json`) and with 10 and 20 MPa at the inlet (`RV7_type8_inlet_pressure.json`) |
+
+Findings:
+
+* **Benchmark diagnostics.** The feed-pressure floor is not active on any recorded step of any case. The unaided wells are deliverable with margins of 4.7 MPa (type 3),
+  0.12 MPa (type 3b, with the productivity index of 25 kg/s/MPa; it was short by 0.28 MPa at 15) and 13.6 MPa (type 18). The largest energy-balance residual, 2.4 kW for
+  type 19, is less than 10⁻⁴ of the heat delivered; the 18 single-phase cases close to round-off.
+* **Gross against net targets.** Taken as gross targets, the figures of Table 7 (3, 3.5, 10 and 50 MWe) need 47.5, 60, 135 and 165 kg/s through 0.10, 0.13, 0.29 and 0.37 km³,
+  against 62.5, 70, 195 and 190 kg/s through 0.13, 0.15, 0.43 and 0.43 km³ as net targets: 13–31 % less flow and 14–32 % less volume. The gross-target designs give
+  2.5, 2.7, 8.1 and 45 MWe net. The 16 MWe gross design figure of Cape Station needs 215 kg/s through 0.46 km³ at 200 °C; 16 MWe net is not reached up to 400 kg/s.
+* **Near-well share of the impedance.** With 0.25 in place of 0.5 the net targets need 4–12 % less flow and 4–13 % less volume; with 0.75 they need 7–18 % and 8–20 % more
+  for types 10, 14 and 19, and the 10 MWe net target of type 14b is not reached. The gross-target designs do not depend on it.
+* **Project Red flow basis.** At 36 (produced), 44 (mean) and 51 kg/s (injected, 70 % recovered) the fitted product of active and swept fractions is 0.43–0.53, 0.52–0.64 and
+  0.61–0.76; at each of the three rates the ideal sweep misfits by 2.3–2.4 K RMS against 0.4 K for the best fit.
+* **Conduction along the flow path and from the rock around the block** (`study_review.py paths`, `paths_grid`; `results/RV8_conduction_paths.json`,
+  `RV8_conduction_grid.json`). The parallel-fracture element conducts heat only across the slabs between fractures. A balance with the fractures resolved
+  (`block_slab`) reproduces the element when both other paths are off (time to a 10 % loss of temperature rise within 0.1 years of the analytical solution). For the
+  four net-target designs, conduction along the flow path alone brings that time forward by 3–15 % and the surrounding rock delays it by about as much: with both, it
+  changes by −3 to +2 % (31.0, 31.1, 32.8 and 32.4 years against 31.9, 31.7, 32.1 and 32.4). At year 30 the outlet has lost 4–8 % of its rise in place of 3–4 %,
+  equivalent to about 2–10 % more swept volume at a fixed flow. By year 30 the surroundings have supplied 9–13 % of the heat in place of the 400 m-high blocks and
+  20–25 % of the 143 m-high blocks. Project Red block at 36 kg/s: onset 4.9 years in place of 4.8; loss at year 8 41 % in place of 68 %. The earlier two-dimensional
+  form in the dense-fracture limit (`outside`, `RV5_outside_conduction.json`) is kept for reference: its insulated control includes conduction along the flow path, so
+  its 2–14 % is the effect of the surroundings relative to that control, not a correction to the element.
+* **Sampling.** An ordinary bootstrap of the closed-loop runs (4000 resamples, seed 1) gives 5th–95th percentile ranges within ±10 % for the medians and −10 to +17 % for the
+  10th and 90th percentiles. It is a descriptive diagnostic, not a set of confidence intervals: Latin-hypercube runs are stratified, not independent.
+* **Arrangements of the unequal flows.** Twenty arrangements in place of five change the retained share of the 30-year net output by at most 0.02 and the year-30
+  outlet temperature by at most 3.4 K (5.8 K for the 375 °C system); single arrangements scatter with standard deviations of 0.01–0.03 and 2–9 K.
+* **The two multilateral-loop cases without a result** (125 kg/s through the 8½ in bore; 100 kg/s through a 6⅛ in bore) again gave none in 40 minutes each with the
+  2 MPa inlet pressure of the study, and run in half a minute with a higher inlet pressure, 10 MPa for the first and 20 MPa for the second (`python study_cl_timeouts.py pressure`,
+  `results/RV7_type8_inlet_pressure.json`): the loop loses 2.0–2.7 MPa and 11.9–12.5 MPa (friction of the two verticals, which have the bore of the laterals, less the
+  buoyancy of the loop), so that with 2 MPa at the inlet the water cannot reach the production wellhead as liquid (the second case also gives no result at 10 MPa, below its loss). The cases are infeasible as specified, not numerical
+  failures. At 100 kg/s the base loop is at balance in year 1 and 0.83 MPa short by year 30: with the 0.3 MPa plant pressure drop, a circulation load of 0.04 rising to
+  0.16 MWe. **This load is now charged to type 8** (`dev_types.py`, `well_pump_kW`): net output at year 30 1.16 → 1.00 MWe, lifetime net electricity 401 → 370 GWh,
+  5.8 → 5.4 GWh/km. It is the one net output at the horizon that differs from 2.4. At 30 kg/s the loop has 4.9–6.1 MPa to spare and no pump; over 20–50 kg/s it keeps
+  2.8–7.1 MPa (`python study_cl_timeouts.py flows`, `results/RV7_type8_flows.json`).
+* **The same balance for every sealed loop** (`dev_types.py`: `sealed_loop_pump` for the loops solved as one well, `uloop_pump` for the two chains; `loop_pump` and
+  `well_pump_kW` in `DT_types.json`). Every other field of the rerun cases is identical. The 20 km loop at 20 kg/s has 6–9 MPa to spare and no pump; at 40 kg/s it
+  loses 7.4–9.3 MPa and its circulation (0.44 rising to 0.55 MWe) exceeds its gross output at year 30 (0.40 MWe). The loops that deliver heat only do not circulate
+  unaided: the 3 km coaxial well (type 7) loses 2.2–2.3 MPa at 10 kg/s (0.04 MWe with the plant pressure drop), the abandoned-well loop (type 16) 0.7 MPa (0.01 MWe)
+  and the closed-loop doublet (type 9) up to 0.1 MPa (0.02 MWe). These enter the pumping column of the benchmark table; their net electricity stays zero. The borehole
+  loops of the two shallow exchangers (types 5 and 6) lose 0.06 and 0.02 MPa, 26 and 55 W, recorded as `loop_circulation` and not included in the heat-pump consumption.
+  The single-well EGS (type 11) loses 0.8 MPa in year 1 and 3.3 MPa by year 30 through its coaxial well (0.02 rising to 0.05 MWe, more than its gross output after
+  year 5; the pressure drop of its fracture path is not specified and not included): lifetime net electricity 7.5 → 5.5 GWh, 1.6 → 1.2 GWh/km. No circulation or lift
+  is modelled for the two cyclic examples (12, 13) and the heat store (17); their electrical outputs are gross.
+
+Also: `validation/dev_types_table.py` labels the 2.2 MWe of type 8 as a figure of the classification, attributed there to Toews and Holmes (2021); the figure could not be located in that
+paper, which is by the developer's staff (its commercial case gives an average of 8 MWe over 30 years in 350 °C rock). `paper/make_figs.py`: the figures use the terms of the revised manuscript (published capacity, flow
+heterogeneity, dimensionless thermal throughput, net-target design); Fig. 4 draws the type 2 range as 2–6 MWe and marks the figures reported for a different system (types 7
+and 20); Fig. 3 plots the electrical output at the horizon, net of pumping except for types 12 and 13 (pumping not modelled, gross); Fig. 5 labels the drilled length of the resized designs; Fig. 8 marks the net-target and gross-target designs of Table 7.
+
 ## 2.4.1 (16 November 2026)
 
 Repository release only: the simulator and every result are as in 2.4. The 2.4.0 release on GitHub and Zenodo (https://doi.org/10.5281/zenodo.24270031) lacked part of the `validation` folder: `study_rock.py`, `zoned_verify.py`, the 2.4 version of `study_open.py`, `results/RQ_volume.json`, `results/ZF_verify.json` and `results/superseded/`. They are in this release.

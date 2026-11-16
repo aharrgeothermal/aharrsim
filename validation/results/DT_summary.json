@@ -37,10 +37,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 5.21540641784668e-11
+   "max_residual_kW": 5.21540641784668e-11,
+   "feed_floor": 0,
+   "steps": 436
   },
   "extra": {},
-  "wall_s": 9.841565132141113,
+  "wall_s": 6.8096723556518555,
   "T_series": {
    "1": 68.50719599898724,
    "5": 68.57617037519753,
@@ -89,10 +91,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.227017492055893e-10
+   "max_residual_kW": 1.227017492055893e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 15.055295705795288,
+  "wall_s": 11.41968846321106,
   "T_series": {
    "1": 160.5779876313655,
    "5": 158.81889421649976,
@@ -141,10 +145,13 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.07869961333624087
+   "max_residual_kW": 0.07869961333624087,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "extra": {},
-  "wall_s": 129.7742793560028,
+  "wall_s": 96.69177722930908,
   "T_series": {
    "1": 175.35045958678393,
    "5": 175.35045958678393,
@@ -187,15 +194,19 @@
    "T_res_C": 240,
    "p_res_MPa": 3.3469251442691,
    "mdot": 15.0,
-   "p_wh_MPa": 0.8
+   "p_wh_MPa": 0.8,
+   "PI": 25
   },
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.02964555835997453
+   "max_residual_kW": 0.02964555835997453,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "extra": {},
-  "wall_s": 114.45219397544861,
+  "wall_s": 85.27923822402954,
   "T_series": {
    "1": 170.4064976151484,
    "5": 170.4064976151484,
@@ -244,7 +255,7 @@
    "max_residual_kW": 0.0
   },
   "extra": {},
-  "wall_s": 0.2918972969055176,
+  "wall_s": 0.17611050605773926,
   "T_series": {
    "0": 110.0
   },
@@ -290,14 +301,16 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 9.346555162313176e-14
+   "max_residual_kW": 9.346555162313176e-14,
+   "feed_floor": 0,
+   "steps": 1342
   },
   "extra": {
    "COP": 3.4669352892225853,
    "W_e_MW": 0.0017372584436408627,
    "W_per_m": 28.571361074117
   },
-  "wall_s": 34.41725754737854,
+  "wall_s": 27.265154123306274,
   "T_series": {
    "10": 5.409765076922828
   },
@@ -341,14 +354,16 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 3.345388549513828e-12
+   "max_residual_kW": 3.345388549513828e-12,
+   "feed_floor": 0,
+   "steps": 96
   },
   "extra": {
    "COP": 3.636672909957303,
    "W_e_MW": 0.004033173819239034,
    "W_per_m": 26.58540037584149
   },
-  "wall_s": 2.9404208660125732,
+  "wall_s": 2.9050376415252686,
   "T_series": {
    "1": 6.502104834560043,
    "5": 6.3267331294177325,
@@ -376,7 +391,7 @@
   "heat_last_MWth": 0.6572257677273787,
   "gross_first_MWe": 0.0,
   "gross_last_MWe": 0.0,
-  "pump_MWe": 0.0,
+  "pump_MWe": 0.036844595045919415,
   "net_last_MWe": 0.0,
   "exergy_last_MW": 0.10999541851531773,
   "plant": "binary (GEOPHIRES practical)",
@@ -398,10 +413,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 9.391632627142599e-11
+   "max_residual_kW": 9.391632627142599e-11,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 25.792508602142334,
+  "wall_s": 19.06962013244629,
   "T_series": {
    "1": 60.480319463394096,
    "5": 57.925538873502376,
@@ -431,14 +448,14 @@
   "heat_last_MWth": 29.845060393399166,
   "gross_first_MWe": 2.291802579400616,
   "gross_last_MWe": 1.158180299886211,
-  "pump_MWe": 0.0,
-  "net_last_MWe": 1.158180299886211,
+  "pump_MWe": 0.1630273712442938,
+  "net_last_MWe": 0.9951529286419172,
   "exergy_last_MW": 5.531420967740484,
   "plant": "binary (GEOPHIRES practical)",
   "plant_kind": "binary (ORC)",
-  "sheet_MWe": "2.2 MWe (independent); 8.2 MWe (company, four loops)",
+  "sheet_MWe": "2.2 MWe (classification, attributed to Toews and Holmes, 2021); 8.2 MWe (company, four loops)",
   "sheet_MWth": "64 MWth (company, four loops)",
-  "sheet_basis": "per loop; the company figures are the nameplate of the four-loop Geretsried project (Toews, 2026)",
+  "sheet_basis": "per loop; the classification attributes the 2.2 MWe to Toews and Holmes (2021), a paper in which the figure could not be located; the company figures are the nameplate of the four-loop Geretsried project (Toews, 2026)",
   "assumptions": {
    "L1_m": 4500.0,
    "L2_m": 5000.0,
@@ -454,10 +471,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.4121254682540894e-10
+   "max_residual_kW": 2.4121254682540894e-10,
+   "feed_floor": 0,
+   "steps": 654
   },
   "extra": {},
-  "wall_s": 66.35340547561646,
+  "wall_s": 55.97025799751282,
   "T_series": {
    "1": 135.58075876917644,
    "5": 125.23047544246913,
@@ -487,7 +506,7 @@
   "heat_last_MWth": 1.8246754048403877,
   "gross_first_MWe": 0.0,
   "gross_last_MWe": 0.0,
-  "pump_MWe": 0.0,
+  "pump_MWe": 0.02024494443178817,
   "net_last_MWe": 0.0,
   "exergy_last_MW": 0.32815568659202254,
   "plant": "binary (GEOPHIRES practical)",
@@ -508,10 +527,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.2491592466831206e-11
+   "max_residual_kW": 4.2491592466831206e-11,
+   "feed_floor": 0,
+   "steps": 654
   },
   "extra": {},
-  "wall_s": 20.242340564727783,
+  "wall_s": 16.124120950698853,
   "T_series": {
    "1": 56.481129880965455,
    "5": 54.361347773171815,
@@ -613,10 +634,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.826564013957977e-10
+   "max_residual_kW": 2.826564013957977e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "extra": {},
-  "wall_s": 26.922064304351807,
+  "wall_s": 31.53984785079956,
   "T_series": {
    "1": 182.15305586692585,
    "5": 183.63112304186006,
@@ -646,7 +669,7 @@
   "heat_last_MWth": 0.7277611668161064,
   "gross_first_MWe": 0.2286687325748525,
   "gross_last_MWe": 0.0,
-  "pump_MWe": 0.0,
+  "pump_MWe": 0.052017738863715995,
   "net_last_MWe": 0.0,
   "exergy_last_MW": 0.11890767500292306,
   "plant": "binary (GEOPHIRES practical)",
@@ -665,10 +688,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.0006553075037061e-10
+   "max_residual_kW": 1.0006553075037061e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 22.73958969116211,
+  "wall_s": 22.920811414718628,
   "T_series": {
    "1": 135.49040204350183,
    "5": 86.83063760413023,
@@ -720,10 +745,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.825415089726448e-11
+   "max_residual_kW": 4.825415089726448e-11,
+   "feed_floor": 0,
+   "steps": 98
   },
   "extra": {},
-  "wall_s": 9.825974225997925,
+  "wall_s": 15.613173484802246,
   "T_series": {
    "30": 84.028732047299,
    "90": 78.65030868521973,
@@ -780,7 +807,9 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.825415089726448e-11
+   "max_residual_kW": 4.825415089726448e-11,
+   "feed_floor": 0,
+   "steps": 98
   },
   "extra": {
    "storage": {
@@ -795,7 +824,7 @@
     "orc_eta_at_T_prod": 0.03285420026087064
    }
   },
-  "wall_s": 11.244200944900513,
+  "wall_s": 17.64763617515564,
   "T_series": {
    "30": 84.028732047299,
    "90": 78.65030868521973,
@@ -897,10 +926,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.78581103682518e-10
+   "max_residual_kW": 1.78581103682518e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "extra": {},
-  "wall_s": 14.944581508636475,
+  "wall_s": 21.555758953094482,
   "T_series": {
    "1": 184.0142167309097,
    "5": 105.05095576513543,
@@ -1004,10 +1035,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 3.3853575587272643e-10
+   "max_residual_kW": 3.3853575587272643e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "extra": {},
-  "wall_s": 15.678795099258423,
+  "wall_s": 22.05972981452942,
   "T_series": {
    "1": 195.1175490842599,
    "5": 195.11911799349792,
@@ -1055,10 +1088,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.0331859812140464e-10
+   "max_residual_kW": 1.0331859812140464e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 5.950220346450806,
+  "wall_s": 8.707778453826904,
   "T_series": {
    "1": 92.24347954639535,
    "5": 92.57414977064707,
@@ -1088,7 +1123,7 @@
   "heat_last_MWth": 0.19186703800260926,
   "gross_first_MWe": 0.0,
   "gross_last_MWe": 0.0,
-  "pump_MWe": 0.0,
+  "pump_MWe": 0.007445479516559709,
   "net_last_MWe": 0.0,
   "exergy_last_MW": 0.020087845096630117,
   "plant": "binary (GEOPHIRES practical)",
@@ -1106,10 +1141,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 5.948209610973088e-11
+   "max_residual_kW": 5.948209610973088e-11,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 11.807536840438843,
+  "wall_s": 9.84630036354065,
   "T_series": {
    "1": 41.79890740328307,
    "5": 40.40269654063769,
@@ -1163,7 +1200,7 @@
   "extra": {
    "recovered_fraction_15yr": 0.3915075897197988
   },
-  "wall_s": 0.5733962059020996,
+  "wall_s": 0.4724602699279785,
   "T_series": {
    "1": 112.08209824740246,
    "2": 85.35305052080487,
@@ -1210,10 +1247,13 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.721942083609174
+   "max_residual_kW": 0.721942083609174,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "extra": {},
-  "wall_s": 141.822336435318,
+  "wall_s": 156.24754691123962,
   "T_series": {
    "1": 310.9971517947515,
    "5": 310.9971517947515,
@@ -1314,10 +1354,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.4275206201602706
+   "max_residual_kW": 2.4275206201602706,
+   "feed_floor": 0,
+   "steps": 436
   },
   "extra": {},
-  "wall_s": 140.61454010009766,
+  "wall_s": 194.28125929832458,
   "T_series": {
    "1": 263.9407341272397,
    "5": 263.9407341272397,
@@ -1371,10 +1413,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.651781292328792e-10
+   "max_residual_kW": 2.651781292328792e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "extra": {},
-  "wall_s": 291.6027657985687,
+  "wall_s": 207.61648106575012,
   "T_series": {
    "1": 171.470635543487,
    "5": 158.09209136547827,

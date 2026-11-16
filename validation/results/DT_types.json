@@ -1209,7 +1209,9 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 5.21540641784668e-11
+   "max_residual_kW": 5.21540641784668e-11,
+   "feed_floor": 0,
+   "steps": 436
   },
   "plant_kind": "direct use; binary marginal",
   "profile_inj": {
@@ -1642,7 +1644,7 @@
     61.99360476372022
    ]
   },
-  "wall_s": 9.841565132141113
+  "wall_s": 6.8096723556518555
  },
  {
   "id": 2,
@@ -2841,10 +2843,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.227017492055893e-10
+   "max_residual_kW": 1.227017492055893e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 15.055295705795288
+  "wall_s": 11.41968846321106
  },
  {
   "id": 3,
@@ -3921,10 +3925,13 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.07869961333624087
+   "max_residual_kW": 0.07869961333624087,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "plant_kind": "single / double flash",
-  "wall_s": 129.7742793560028
+  "wall_s": 96.69177722930908
  },
  {
   "id": 3.5,
@@ -5096,7 +5103,8 @@
    "T_res_C": 240,
    "p_res_MPa": 3.3469251442691,
    "mdot": 15.0,
-   "p_wh_MPa": 0.8
+   "p_wh_MPa": 0.8,
+   "PI": 25
   },
   "T_out": {
    "1": {
@@ -5104,7 +5112,7 @@
     "p_MPa": 0.8,
     "h": 2733210.6016856744,
     "pump_kW": 0.0,
-    "margin_MPa": -0.27993515314356193,
+    "margin_MPa": 0.12006484685643809,
     "x_out": 0.9828601922353575
    },
    "5": {
@@ -5112,7 +5120,7 @@
     "p_MPa": 0.8,
     "h": 2738688.1060877694,
     "pump_kW": 0.0,
-    "margin_MPa": -0.28096534891430663,
+    "margin_MPa": 0.11903465108569339,
     "x_out": 0.9855354870104372
    },
    "10": {
@@ -5120,7 +5128,7 @@
     "p_MPa": 0.8,
     "h": 2740633.00306906,
     "pump_kW": 0.0,
-    "margin_MPa": -0.2813327597330301,
+    "margin_MPa": 0.1186672402669699,
     "x_out": 0.9864854036787151
    },
    "20": {
@@ -5128,7 +5136,7 @@
     "p_MPa": 0.8,
     "h": 2742369.796618109,
     "pump_kW": 0.0,
-    "margin_MPa": -0.28166283009860293,
+    "margin_MPa": 0.11833716990139707,
     "x_out": 0.9873336795295545
    },
    "30": {
@@ -5136,7 +5144,7 @@
     "p_MPa": 0.8,
     "h": 2743297.6540348604,
     "pump_kW": 0.0,
-    "margin_MPa": -0.2818403961962629,
+    "margin_MPa": 0.11815960380373709,
     "x_out": 0.9877868589187129
    }
   },
@@ -5220,10 +5228,13 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.02964555835997453
+   "max_residual_kW": 0.02964555835997453,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "plant_kind": "dry steam",
-  "wall_s": 114.45219397544861
+  "wall_s": 85.27923822402954
  },
  {
   "id": 4,
@@ -5260,7 +5271,7 @@
    "max_residual_kW": 0.0
   },
   "plant_kind": "modular ORC",
-  "wall_s": 0.2918972969055176
+  "wall_s": 0.17611050605773926
  },
  {
   "id": 5,
@@ -9391,10 +9402,17 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 9.346555162313176e-14
+   "max_residual_kW": 9.346555162313176e-14,
+   "feed_floor": 0,
+   "steps": 1342
+  },
+  "loop_circulation": {
+   "loop_loss_MPa": 0.06112231960942002,
+   "W": 26.195279832608584,
+   "note": "borehole loop only, no heat-pump evaporator; not in the heat-pump consumption"
   },
   "plant_kind": "heat pump (consumes electricity)",
-  "wall_s": 34.41725754737854
+  "wall_s": 27.265154123306274
  },
  {
   "id": 6,
@@ -10495,14 +10513,21 @@
    "Q_heat_kW": 14.667333969575632,
    "per_metre_W": 26.58540037584149
   },
+  "loop_circulation": {
+   "loop_loss_MPa": 0.019350469344032287,
+   "W": 55.23744253417733,
+   "note": "borehole loop only, no heat-pump evaporator; not in the heat-pump consumption"
+  },
   "plant": {},
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 3.345388549513828e-12
+   "max_residual_kW": 3.345388549513828e-12,
+   "feed_floor": 0,
+   "steps": 96
   },
   "plant_kind": "heat pump (consumes electricity)",
-  "wall_s": 2.9404208660125732
+  "wall_s": 2.9050376415252686
  },
  {
   "id": 7,
@@ -11892,7 +11917,9 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 9.391632627142599e-11
+   "max_residual_kW": 9.391632627142599e-11,
+   "feed_floor": 0,
+   "steps": 218
   },
   "variants": {
    "5.0": {
@@ -11998,7 +12025,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 8.30856481948139e-11
+     "max_residual_kW": 8.30856481948139e-11,
+     "feed_floor": 0,
+     "steps": 218
     },
     "series": {
      "t_yr": [
@@ -13271,6 +13300,33 @@
       418.1243893229784,
       435.98430896757077
      ]
+    },
+    "loop_pump": {
+     "1": {
+      "kW": 3.789522459164598,
+      "dp_MPa": 0.5268448924056618,
+      "loop_loss_MPa": 0.22684489240566175
+     },
+     "5": {
+      "kW": 4.206088577186847,
+      "dp_MPa": 0.5847587150559322,
+      "loop_loss_MPa": 0.2847587150559323
+     },
+     "10": {
+      "kW": 4.354330921604851,
+      "dp_MPa": 0.6053683625343335,
+      "loop_loss_MPa": 0.30536836253433347
+     },
+     "20": {
+      "kW": 4.486943464007013,
+      "dp_MPa": 0.6238050498442459,
+      "loop_loss_MPa": 0.3238050498442459
+     },
+     "30": {
+      "kW": 4.5580105257040415,
+      "dp_MPa": 0.6336852706047297,
+      "loop_loss_MPa": 0.33368527060472963
+     }
     }
    },
    "10.0": {
@@ -13376,7 +13432,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 9.391632627142599e-11
+     "max_residual_kW": 9.391632627142599e-11,
+     "feed_floor": 0,
+     "steps": 218
     },
     "series": {
      "t_yr": [
@@ -14649,11 +14707,45 @@
       454.95783523782535,
       474.9940093374293
      ]
+    },
+    "loop_pump": {
+     "1": {
+      "kW": 36.03830977551627,
+      "dp_MPa": 2.5051440703625465,
+      "loop_loss_MPa": 2.2051440703625467
+     },
+     "5": {
+      "kW": 36.475920820602134,
+      "dp_MPa": 2.535563885319207,
+      "loop_loss_MPa": 2.235563885319207
+     },
+     "10": {
+      "kW": 36.63129260651167,
+      "dp_MPa": 2.5463643005050858,
+      "loop_loss_MPa": 2.246364300505086
+     },
+     "20": {
+      "kW": 36.77018282887396,
+      "dp_MPa": 2.5560190267991207,
+      "loop_loss_MPa": 2.256019026799121
+     },
+     "30": {
+      "kW": 36.84459504591941,
+      "dp_MPa": 2.5611916701737716,
+      "loop_loss_MPa": 2.2611916701737718
+     }
     }
    }
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 19.329175233840942
+  "well_pump_kW": {
+   "1": 36.03830977551627,
+   "5": 36.475920820602134,
+   "10": 36.63129260651167,
+   "20": 36.77018282887396,
+   "30": 36.84459504591941
+  },
+  "wall_s": 19.06962013244629
  },
  {
   "id": 8,
@@ -18604,7 +18696,9 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.4121254682540894e-10
+   "max_residual_kW": 2.4121254682540894e-10,
+   "feed_floor": 0,
+   "steps": 654
   },
   "variants": {
    "laterals 80 m apart": {
@@ -18710,7 +18804,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 2.4121254682540894e-10
+     "max_residual_kW": 2.4121254682540894e-10,
+     "feed_floor": 0,
+     "steps": 654
     },
     "T_toe": {
      "1": 139.0967035188358,
@@ -18726,7 +18822,34 @@
      "20": 1.323186702065828,
      "30": 1.1667419340046297
     },
-    "thermosiphon_note": "injection at 2 MPa; production wellhead pressure from the march",
+    "loop_pump": {
+     "1": {
+      "dp_MPa": 0.27918028506689135,
+      "kW": 40.162103710871634,
+      "loop_loss_MPa": -0.020819714933108635
+     },
+     "5": {
+      "dp_MPa": 0.6547824831050357,
+      "kW": 94.19519715808606,
+      "loop_loss_MPa": 0.3547824831050357
+     },
+     "10": {
+      "dp_MPa": 0.7957999167854366,
+      "kW": 114.48157517061742,
+      "loop_loss_MPa": 0.49579991678543656
+     },
+     "20": {
+      "dp_MPa": 0.9768132979341722,
+      "kW": 140.5216595734584,
+      "loop_loss_MPa": 0.6768132979341721
+     },
+     "30": {
+      "dp_MPa": 1.1332580659953704,
+      "kW": 163.02737124429382,
+      "loop_loss_MPa": 0.8332580659953703
+     }
+    },
+    "thermosiphon_note": "injection at 2 MPa; production wellhead pressure from the march; pump = (2 MPa - wellhead + 0.3 MPa plant) m / (rho 0.7)",
     "series": {
      "t_yr": [
       0.0054757015742642025,
@@ -22663,7 +22786,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 3.119930624961853e-10
+     "max_residual_kW": 3.119930624961853e-10,
+     "feed_floor": 0,
+     "steps": 654
     },
     "T_toe": {
      "1": 139.09659701537697,
@@ -22679,7 +22804,34 @@
      "20": 1.3905581988908418,
      "30": 1.3258495416157545
     },
-    "thermosiphon_note": "injection at 2 MPa; production wellhead pressure from the march",
+    "loop_pump": {
+     "1": {
+      "dp_MPa": 0.27916491976158103,
+      "kW": 40.159893300543864,
+      "loop_loss_MPa": -0.020835080238418957
+     },
+     "5": {
+      "dp_MPa": 0.6546535283239376,
+      "kW": 94.17664607991365,
+      "loop_loss_MPa": 0.3546535283239376
+     },
+     "10": {
+      "dp_MPa": 0.7889663873437935,
+      "kW": 113.49852252389915,
+      "loop_loss_MPa": 0.4889663873437935
+     },
+     "20": {
+      "dp_MPa": 0.9094418011091583,
+      "kW": 130.82978236230588,
+      "loop_loss_MPa": 0.6094418011091582
+     },
+     "30": {
+      "dp_MPa": 0.9741504583842455,
+      "kW": 140.13859084013455,
+      "loop_loss_MPa": 0.6741504583842455
+     }
+    },
+    "thermosiphon_note": "injection at 2 MPa; production wellhead pressure from the march; pump = (2 MPa - wellhead + 0.3 MPa plant) m / (rho 0.7)",
     "series": {
      "t_yr": [
       0.0054757015742642025,
@@ -26515,7 +26667,14 @@
    }
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 66.35340547561646
+  "well_pump_kW": {
+   "1": 40.162103710871634,
+   "5": 94.19519715808606,
+   "10": 114.48157517061742,
+   "20": 140.5216595734584,
+   "30": 163.02737124429382
+  },
+  "wall_s": 55.97025799751282
  },
  {
   "id": 9,
@@ -29364,10 +29523,53 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.2491592466831206e-11
+   "max_residual_kW": 4.2491592466831206e-11,
+   "feed_floor": 0,
+   "steps": 654
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 20.242340564727783
+  "p_wh_MPa": {
+   "1": 1.956862284178058,
+   "5": 1.9251200262906238,
+   "10": 1.9139984792783271,
+   "20": 1.9039641013522246,
+   "30": 1.897915957339937
+  },
+  "loop_pump": {
+   "1": {
+    "dp_MPa": 0.3431377158219419,
+    "kW": 17.27699498668994,
+    "loop_loss_MPa": 0.043137715821941924
+   },
+   "5": {
+    "dp_MPa": 0.37487997370937615,
+    "kW": 18.875218688429555,
+    "loop_loss_MPa": 0.07487997370937616
+   },
+   "10": {
+    "dp_MPa": 0.3860015207216729,
+    "kW": 19.43518893686297,
+    "loop_loss_MPa": 0.08600152072167289
+   },
+   "20": {
+    "dp_MPa": 0.3960358986477754,
+    "kW": 19.940420186970684,
+    "loop_loss_MPa": 0.0960358986477754
+   },
+   "30": {
+    "dp_MPa": 0.4020840426600631,
+    "kW": 20.24494443178817,
+    "loop_loss_MPa": 0.1020840426600631
+   }
+  },
+  "well_pump_kW": {
+   "1": 17.27699498668994,
+   "5": 18.875218688429555,
+   "10": 19.43518893686297,
+   "20": 19.940420186970684,
+   "30": 20.24494443178817
+  },
+  "wall_s": 16.124120950698853
  },
  {
   "id": 10,
@@ -32492,10 +32694,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.826564013957977e-10
+   "max_residual_kW": 2.826564013957977e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 27.55128526687622
+  "wall_s": 31.53984785079956
  },
  {
   "id": 11,
@@ -34357,10 +34561,47 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.0006553075037061e-10
+   "max_residual_kW": 1.0006553075037061e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "plant_kind": "direct use; binary marginal",
-  "wall_s": 22.73958969116211
+  "loop_pump": {
+   "1": {
+    "kW": 15.550074264727108,
+    "dp_MPa": 1.0809379402261463,
+    "loop_loss_MPa": 0.7809379402261463
+   },
+   "5": {
+    "kW": 40.250343861353024,
+    "dp_MPa": 2.797936720185084,
+    "loop_loss_MPa": 2.4979367201850837
+   },
+   "10": {
+    "kW": 49.24591122211145,
+    "dp_MPa": 3.423248849797245,
+    "loop_loss_MPa": 3.1232488497972453
+   },
+   "20": {
+    "kW": 51.80490102927473,
+    "dp_MPa": 3.6011328344087694,
+    "loop_loss_MPa": 3.3011328344087696
+   },
+   "30": {
+    "kW": 52.017738863716,
+    "dp_MPa": 3.6159279078242705,
+    "loop_loss_MPa": 3.3159279078242703
+   }
+  },
+  "well_pump_kW": {
+   "1": 15.550074264727108,
+   "5": 40.250343861353024,
+   "10": 49.24591122211145,
+   "20": 51.80490102927473,
+   "30": 52.017738863716
+  },
+  "loop_pump_note": "wellbore only: the pressure drop of the fracture path at the toe is not specified in this example and not included",
+  "wall_s": 22.920811414718628
  },
  {
   "id": 12,
@@ -36061,10 +36302,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.825415089726448e-11
+   "max_residual_kW": 4.825415089726448e-11,
+   "feed_floor": 0,
+   "steps": 98
   },
   "plant_kind": "binary on daily-average stream (batch)",
-  "wall_s": 9.825974225997925
+  "wall_s": 15.613173484802246
  },
  {
   "id": 13,
@@ -37246,10 +37489,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 4.825415089726448e-11
+   "max_residual_kW": 4.825415089726448e-11,
+   "feed_floor": 0,
+   "steps": 98
   },
   "plant_kind": "binary; storage round trip",
-  "wall_s": 11.244200944900513
+  "wall_s": 17.64763617515564
  },
  {
   "id": 14,
@@ -39607,10 +39852,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.78581103682518e-10
+   "max_residual_kW": 1.78581103682518e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 14.944581508636475
+  "wall_s": 21.555758953094482
  },
  {
   "id": 14.5,
@@ -41908,10 +42155,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 3.3853575587272643e-10
+   "max_residual_kW": 3.3853575587272643e-10,
+   "feed_floor": 0,
+   "steps": 436
   },
   "plant_kind": "binary (ORC)",
-  "wall_s": 15.678795099258423
+  "wall_s": 22.05972981452942
  },
  {
   "id": 15,
@@ -43077,10 +43326,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 1.0331859812140464e-10
+   "max_residual_kW": 1.0331859812140464e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "plant_kind": "binary (ORC) on the field's water",
-  "wall_s": 5.950220346450806
+  "wall_s": 8.707778453826904
  },
  {
   "id": 16,
@@ -44466,10 +44717,46 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 5.948209610973088e-11
+   "max_residual_kW": 5.948209610973088e-11,
+   "feed_floor": 0,
+   "steps": 218
   },
   "plant_kind": "direct use (heat network)",
-  "wall_s": 11.807536840438843
+  "loop_pump": {
+   "1": {
+    "kW": 7.251426875966909,
+    "dp_MPa": 1.0116405457716573,
+    "loop_loss_MPa": 0.7116405457716573
+   },
+   "5": {
+    "kW": 7.356191154390204,
+    "dp_MPa": 1.0262561233144403,
+    "loop_loss_MPa": 0.7262561233144402
+   },
+   "10": {
+    "kW": 7.3937097402107,
+    "dp_MPa": 1.031490310086953,
+    "loop_loss_MPa": 0.731490310086953
+   },
+   "20": {
+    "kW": 7.427386284983016,
+    "dp_MPa": 1.0361884969012034,
+    "loop_loss_MPa": 0.7361884969012034
+   },
+   "30": {
+    "kW": 7.4454795165597085,
+    "dp_MPa": 1.0387126686235553,
+    "loop_loss_MPa": 0.7387126686235552
+   }
+  },
+  "well_pump_kW": {
+   "1": 7.251426875966909,
+   "5": 7.356191154390204,
+   "10": 7.3937097402107,
+   "20": 7.427386284983016,
+   "30": 7.4454795165597085
+  },
+  "wall_s": 9.84630036354065
  },
  {
   "id": 17,
@@ -44935,7 +45222,7 @@
    "max_residual_kW": 0.0
   },
   "plant_kind": "binary (ORC), declining",
-  "wall_s": 0.5733962059020996
+  "wall_s": 0.4724602699279785
  },
  {
   "id": 18,
@@ -46674,10 +46961,13 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 0.721942083609174
+   "max_residual_kW": 0.721942083609174,
+   "feed_floor": 0,
+   "steps": 218,
+   "inflow_short_MPa": 0.0
   },
   "plant_kind": "superheated-steam condensing turbine",
-  "wall_s": 141.822336435318
+  "wall_s": 156.24754691123962
  },
  {
   "id": 19,
@@ -49136,10 +49426,12 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.4275206201602706
+   "max_residual_kW": 2.4275206201602706,
+   "feed_floor": 0,
+   "steps": 436
   },
   "plant_kind": "steam turbine on the flashed / superheated stream",
-  "wall_s": 140.61454010009766
+  "wall_s": 194.28125929832458
  },
  {
   "id": 20,
@@ -51647,7 +51939,9 @@
   "flags": {
    "unconverged": 0,
    "choke": 0,
-   "max_residual_kW": 2.651781292328792e-10
+   "max_residual_kW": 2.651781292328792e-10,
+   "feed_floor": 0,
+   "steps": 218
   },
   "variants": {
    "20.0": {
@@ -51778,7 +52072,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 2.651781292328792e-10
+     "max_residual_kW": 2.651781292328792e-10,
+     "feed_floor": 0,
+     "steps": 218
     },
     "series": {
      "t_yr": [
@@ -54142,6 +54438,33 @@
       870.1154738119051,
       885.6406921104275
      ]
+    },
+    "loop_pump": {
+     "1": {
+      "kW": 0.0,
+      "dp_MPa": -9.03429727247307,
+      "loop_loss_MPa": -9.334297272473071
+     },
+     "5": {
+      "kW": 0.0,
+      "dp_MPa": -7.307089398087697,
+      "loop_loss_MPa": -7.607089398087697
+     },
+     "10": {
+      "kW": 0.0,
+      "dp_MPa": -6.682175186762276,
+      "loop_loss_MPa": -6.982175186762276
+     },
+     "20": {
+      "kW": 0.0,
+      "dp_MPa": -6.1172280389861164,
+      "loop_loss_MPa": -6.417228038986116
+     },
+     "30": {
+      "kW": 0.0,
+      "dp_MPa": -5.8117029134129545,
+      "loop_loss_MPa": -6.111702913412954
+     }
     }
    },
    "40.0": {
@@ -54247,7 +54570,9 @@
     "flags": {
      "unconverged": 0,
      "choke": 0,
-     "max_residual_kW": 5.861019189978833e-10
+     "max_residual_kW": 5.861019189978833e-10,
+     "feed_floor": 0,
+     "steps": 218
     },
     "series": {
      "t_yr": [
@@ -56611,10 +56936,44 @@
       1080.0901986677345,
       1100.3517494699613
      ]
+    },
+    "loop_pump": {
+     "1": {
+      "kW": 442.47558273282925,
+      "dp_MPa": 7.6894913306702115,
+      "loop_loss_MPa": 7.389491330670212
+     },
+     "5": {
+      "kW": 501.89576697441987,
+      "dp_MPa": 8.722115523785122,
+      "loop_loss_MPa": 8.422115523785122
+     },
+     "10": {
+      "kW": 522.7178608770622,
+      "dp_MPa": 9.08396896112484,
+      "loop_loss_MPa": 8.783968961124842
+     },
+     "20": {
+      "kW": 541.2336628287688,
+      "dp_MPa": 9.405742871695683,
+      "loop_loss_MPa": 9.105742871695682
+     },
+     "30": {
+      "kW": 551.1267987933663,
+      "dp_MPa": 9.577669156900097,
+      "loop_loss_MPa": 9.277669156900096
+     }
     }
    }
   },
   "plant_kind": "flash / supercritical ORC",
-  "wall_s": 291.6027657985687
+  "well_pump_kW": {
+   "1": 0.0,
+   "5": 0.0,
+   "10": 0.0,
+   "20": 0.0,
+   "30": 0.0
+  },
+  "wall_s": 207.61648106575012
  }
 ]

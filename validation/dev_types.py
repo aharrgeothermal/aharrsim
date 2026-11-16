@@ -118,12 +118,39 @@ def loop_pump(ch, m, imp_Pa_per_m3s, T_inj_C, years, rho_res=900.0, dp_plant=0.3
     return out
 
 
+def sealed_loop_pump(res, m, T_in_C, years, dp_plant=0.3e6, eta=0.7):
+    """Circulation power of a sealed loop solved as one well (coaxial or U-tube): the balance of loop_pump without a reservoir term,
+        pump dp = p_inlet - p_outlet + dp_plant,   W = (m / rho_surface) max(dp, 0) / eta,
+    with the inlet pressure that the pressure march needs to deliver the outlet pressure, so that the thermosiphon is credited in full.
+    Returns {year: dict}."""
+    ts = res.ts
+    rho_s = CP.PropsSI("D", "T", T_in_C + 273.15, "P", 2.0e6, "Water")
+    out = {}
+    for y in years:
+        t = y * YEAR
+        if t <= ts["t"][-1] + 1:
+            loss = float(np.interp(t, ts["t"], ts["p_in"] - ts["p_out"]))
+            dp = loss + dp_plant
+            out[y] = dict(kW=max(dp, 0.0) * m / rho_s / eta / 1e3, dp_MPa=dp / 1e6, loop_loss_MPa=loss / 1e6)
+    return out
+
+
+def uloop_pump(s, m, T_in_C, p_in=2.0e6, dp_plant=0.3e6, eta=0.7):
+    """The same balance for an injector - laterals - producer loop run as a chain from a fixed injection pressure: the loop loses
+    p_in less the pressure that arrives at the production wellhead (s: the summary of the producer). Returns {year: dict}."""
+    rho_s = CP.PropsSI("D", "T", T_in_C + 273.15, "P", 2.0e6, "Water")
+    return {y: dict(dp_MPa=p_in / 1e6 - s[y]["p_MPa"] + dp_plant / 1e6, kW=max(p_in / 1e6 - s[y]["p_MPa"] + dp_plant / 1e6, 0.0) * 1e6 * m / rho_s / eta / 1e3,
+                    loop_loss_MPa=p_in / 1e6 - s[y]["p_MPa"]) for y in s}
+
+
 def flags(*results):
-    f = dict(unconverged=0, choke=0, max_residual_kW=0.0)
+    f = dict(unconverged=0, choke=0, max_residual_kW=0.0, feed_floor=0, steps=0)
     for r in results:
         ts = r.ts
         f["unconverged"] += int(r.meta.get("unconverged_steps", 0))
         f["choke"] += int(np.sum(ts["choke_warning"] > 0))
+        f["feed_floor"] += int(np.sum(ts["feed_floor"] > 0))          # steps on which a temperature-specified feed was evaluated at 1.02 p_sat
+        f["steps"] += int(len(ts["t"]))
         f["max_residual_kW"] = max(f["max_residual_kW"], float(np.max(np.abs(ts["Q_wellhead"] - ts["Q_rock"] - ts["Q_res"]
                                                                               + ts["dE_fluid"] + ts["Q_ke"] + ts["Q_pe"])) / 1e3))
     return f
@@ -261,12 +288,12 @@ def t03b_dry_steam():
     geo = dict(gradient_C_per_km=(240.0 - 15.0) / 2.5)
     d = single_well("dry steam well", "production", depth, 8.535 * IN, m, rock, 15.0, geo, 30.0,
                     layers=[dict(od_in=9.625, material="steel"), dict(od_in=12.25, material="cement")],
-                    inflow=dict(h_J_kg=h_res, p_res_MPa=p_res / 1e6, PI_kg_s_per_MPa=15.0), p_wh=0.8e6)
+                    inflow=dict(h_J_kg=h_res, p_res_MPa=p_res / 1e6, PI_kg_s_per_MPa=25.0), p_wh=0.8e6)
     sim, res = run_case(d)
     s = ts_summary(res)
     po = {y: plant_options(m, s[y]["h"], s[y]["p_MPa"] * 1e6) for y in s}
     return dict(id=3.5, name="High-temperature vapour-dominated (dry steam, Geysers type)", series=ts_series(res, m, 70.0, "steam"), profile=last_profile(res),
-                assumptions=dict(depth_m=depth, T_res_C=240, p_res_MPa=p_res / 1e6, mdot=m, p_wh_MPa=0.8),
+                assumptions=dict(depth_m=depth, T_res_C=240, p_res_MPa=p_res / 1e6, mdot=m, p_wh_MPa=0.8, PI=25),
                 T_out=s, plant=po, flags=flags(res), plant_kind="dry steam")
 
 
@@ -307,6 +334,8 @@ def t05_gshp():
         seasons.append(dict(year=yr + 1, Q_mean_kW=float(np.mean(Q) / 1e3), Q_end_kW=float(Q[-1] / 1e3), T_out_mean_C=float(np.mean(To)),
                             T_out_end_C=float(To[-1])))
     last = seasons[-1]
+    loss = float(np.mean((ts["p_in"] - ts["p_out"])[on]))                           # loop loss while circulating
+    circ = dict(loop_loss_MPa=loss / 1e6, W=max(loss, 0.0) * 0.3 / 1000.0 / 0.7, note="borehole loop only, no heat-pump evaporator; not in the heat-pump consumption")
     hp = plant.heat_pump(last["Q_mean_kW"] * 1e3, 0.5 * (2.0 + last["T_out_mean_C"]), 45.0)
     tg = np.arange(1.0, ts["t"][-1] / 86400.0, 4.0) * 86400.0
     series = dict(t_yr=(tg / YEAR).tolist(), T_C=(np.interp(tg, ts["t"], ts["T_out"]) - 273.15).tolist(),
@@ -317,7 +346,7 @@ def t05_gshp():
                 seasons=seasons, heat_pump=dict(COP=hp["COP"], W_e_kW=hp["W_e"] / 1e3, Q_heat_kW=hp["Q_heat"] / 1e3, Q_ground_kW=last["Q_mean_kW"],
                                                 per_metre_W=last["Q_mean_kW"] * 1e3 / H),
                 T_out={10: dict(T_C=last["T_out_mean_C"], h=float("nan"), p_MPa=0.3, pump_kW=0.0)}, plant={}, flags=flags(res),
-                plant_kind="heat pump (consumes electricity)")
+                loop_circulation=circ, plant_kind="heat pump (consumes electricity)")
 
 
 def t06_shallow_coaxial():
@@ -332,11 +361,13 @@ def t06_shallow_coaxial():
     s = ts_summary(res, years=(1, 5, 10))
     Q = {y: 2.0 * (s[y]["h"] - _hT(5.0, 0.3e6)) / 1e3 for y in s}
     hp = plant.heat_pump(Q[10] * 1e3, 0.5 * (5.0 + s[10]["T_C"]), 45.0)
+    lc = sealed_loop_pump(res, 2.0, 5.0, list(s), dp_plant=0.0)[10]
+    circ = dict(loop_loss_MPa=lc["loop_loss_MPa"], W=lc["kW"] * 1e3, note="borehole loop only, no heat-pump evaporator; not in the heat-pump consumption")
     return dict(id=6, name="Shallow geothermal: 400 m coaxial borehole heat exchanger + heat pump", series=ts_series(res, 2.0, 5.0, None), profile=last_profile(res),
                 assumptions=dict(depth_m=depth, mdot=2.0, T_in_C=5.0, surface_T_C=10, gradient_C_per_km=30),
                 T_out=s, Q_ground_kW=Q, heat_pump=dict(COP=hp["COP"], W_e_kW=hp["W_e"] / 1e3, Q_heat_kW=hp["Q_heat"] / 1e3,
                                                         per_metre_W=Q[10] * 1e3 / depth),
-                plant={}, flags=flags(res), plant_kind="heat pump (consumes electricity)")
+                loop_circulation=circ, plant={}, flags=flags(res), plant_kind="heat pump (consumes electricity)")
 
 
 def t07_greenloop():
@@ -352,12 +383,13 @@ def t07_greenloop():
         sim, res = run_case(d)
         s = ts_summary(res)
         po = {y: plant_options(m, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=40.0) for y in s}
-        out[m] = dict(T_out=s, plant=po, flags=flags(res), series=ts_series(res, m, 40.0, "binary"), profile=last_profile(res))
+        out[m] = dict(T_out=s, plant=po, flags=flags(res), series=ts_series(res, m, 40.0, "binary"), profile=last_profile(res),
+                      loop_pump=sealed_loop_pump(res, m, 40.0, list(s)))
     m = 10.0
     return dict(id=7, name="Single-well deep coaxial retrofit in a hot field (GreenLoop type)", series=out[m]["series"], profile=out[m]["profile"],
                 assumptions=dict(depth_m=depth, gradient_C_per_km=80, T_TD_C=255, mdot=[5, 10], T_in_C=40, VIT="3-1/2 x 4-1/2, k 0.03"),
                 T_out=out[m]["T_out"], plant=out[m]["plant"], flags=out[m]["flags"], variants={str(k): v for k, v in out.items()},
-                plant_kind="binary (ORC)")
+                plant_kind="binary (ORC)", well_pump_kW={y: out[m]["loop_pump"][y]["kW"] for y in out[m]["loop_pump"]})
 
 
 def t08_eavor():
@@ -375,16 +407,19 @@ def t08_eavor():
         po = {y: plant_options(100.0, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=40.0) for y in s}
         ts_i = ch["injector"][1].ts
         ser = ts_series(res_p, 100.0, 40.0, "binary"); ser["T_toe_C"] = fn_series(ch["T_toe"], 30 * YEAR)["T_C"]
+        # closed loop: the circulation pump supplies what the loop loses between the two wellheads plus the plant (Eq. 6 without a reservoir term)
+        lp = uloop_pump(s, 100.0, 40.0)
         out[lab] = dict(T_out=s, plant=po, flags=flags(ch["injector"][1], ch["lateral"][1], res_p),
-                        T_toe={y: ch["T_toe"](y * YEAR) - 273.15 for y in s}, p_wh_MPa={y: s[y]["p_MPa"] for y in s},
-                        thermosiphon_note="injection at 2 MPa; production wellhead pressure from the march", series=ser,
+                        T_toe={y: ch["T_toe"](y * YEAR) - 273.15 for y in s}, p_wh_MPa={y: s[y]["p_MPa"] for y in s}, loop_pump=lp,
+                        thermosiphon_note="injection at 2 MPa; production wellhead pressure from the march; pump = (2 MPa - wellhead + 0.3 MPa plant) m / (rho 0.7)", series=ser,
                         profile=last_profile(res_p), profile_lat=last_profile(ch["lateral"][1]), profile_inj=last_profile(ch["injector"][1]))
     main = out["laterals 80 m apart"]
     return dict(id=8, name="Multilateral deep closed loop (Eavor-Loop 1 type)", series=main["series"], profile=main["profile"],
                 profile_lat=main["profile_lat"], profile_inj=main["profile_inj"],
                 assumptions=dict(L1_m=L1, L2_m=L2, n_laterals=n, total_km=(2 * L1 + n * L2) / 1000, gradient_C_per_km=55, T_rock_C=263, mdot=100,
                                  T_in_C=40, lateral_id_m=0.216, lateral_spacing_m=80),
-                T_out=main["T_out"], plant=main["plant"], flags=main["flags"], variants=out, plant_kind="binary (ORC)")
+                T_out=main["T_out"], plant=main["plant"], flags=main["flags"], variants=out, plant_kind="binary (ORC)",
+                well_pump_kW={y: main["loop_pump"][y]["kW"] for y in main["loop_pump"]})
 
 
 def t09_chevron_acl():
@@ -396,10 +431,12 @@ def t09_chevron_acl():
     s = ts_summary(res_p)
     po = {y: plant_options(35.0, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=40.0) for y in s}
     ser = ts_series(res_p, 35.0, 40.0, "binary"); ser["T_toe_C"] = fn_series(ch["T_toe"], 30 * YEAR)["T_C"]
+    lp = uloop_pump(s, 35.0, 40.0)                                    # closed loop: what it loses between the wellheads, plus the plant
     return dict(id=9, name="Doublet with horizontal closed-loop connections (Chevron-type, parameters assumed)", series=ser,
                 profile=last_profile(res_p), profile_lat=last_profile(ch["lateral"][1]), profile_inj=last_profile(ch["injector"][1]),
                 assumptions=dict(L1_m=L1, L2_m=L2, n_laterals=n, gradient_C_per_km=40, T_rock_C=135, mdot=35, T_in_C=40, lateral_spacing_m=120),
-                T_out=s, plant=po, flags=flags(ch["injector"][1], ch["lateral"][1], res_p), plant_kind="binary (ORC)")
+                T_out=s, plant=po, flags=flags(ch["injector"][1], ch["lateral"][1], res_p), plant_kind="binary (ORC)",
+                p_wh_MPa={y: s[y]["p_MPa"] for y in s}, loop_pump=lp, well_pump_kW={y: lp[y]["kW"] for y in lp})
 
 
 def t10_egs_doublet():
@@ -448,9 +485,12 @@ def t11_hybrid_eden():
     po = {y: plant_options(m, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=40.0) for y in s}
     Qres = Series(res.ts["t"], res.ts["Q_res"])
     ser = ts_series(res, m, 40.0, "binary"); ser["Q_res_MW"] = [float(Qres(tt * YEAR)) / 1e6 for tt in ser["t_yr"]]
+    lp = sealed_loop_pump(res, m, 40.0, list(s))                      # circulation through the coaxial well, between its two wellheads
     return dict(id=11, name="Hybrid single-well EGS with surface heat exchanger (Eden Project type)", series=ser, profile=last_profile(res),
                 assumptions=dict(depth_m=depth, gradient_C_per_km=35, T_TD_C=T_rock, mdot=m, T_in_C=40, fractures="3 x 150 m path, 30 m apart"),
-                T_out=s, Q_reservoir_MW={y: Qres(y * YEAR) / 1e6 for y in s}, plant=po, flags=flags(res), plant_kind="direct use; binary marginal")
+                T_out=s, Q_reservoir_MW={y: Qres(y * YEAR) / 1e6 for y in s}, plant=po, flags=flags(res), plant_kind="direct use; binary marginal",
+                loop_pump=lp, well_pump_kW={y: lp[y]["kW"] for y in lp},
+                loop_pump_note="wellbore only: the pressure drop of the fracture path at the toe is not specified in this example and not included")
 
 
 def t12_sage_heatroot():
@@ -631,9 +671,10 @@ def t16_abandoned_well_loop():
     sim, res = run_case(d)
     s = ts_summary(res)
     po = {y: plant_options(m, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=30.0) for y in s}
+    lp = sealed_loop_pump(res, m, 30.0, list(s))
     return dict(id=16, name="Closed loop in a single abandoned hydrocarbon well (CeraPhi / wells2watts type)", series=ts_series(res, m, 30.0, "binary"), profile=last_profile(res),
                 assumptions=dict(depth_m=depth, T_TD_C=110, mdot=m, T_in_C=30, VIT="3-1/2 x 4-1/2, k 0.03"),
-                T_out=s, plant=po, flags=flags(res), plant_kind="direct use (heat network)")
+                T_out=s, plant=po, flags=flags(res), plant_kind="direct use (heat network)", loop_pump=lp, well_pump_kW={y: lp[y]["kW"] for y in lp})
 
 
 def t17_thermal_eor():
@@ -719,15 +760,17 @@ def t20_quaise():
         sim, res = run_case(d)
         s = ts_summary(res)
         po = {y: plant_options(m, s[y]["h"], s[y]["p_MPa"] * 1e6, T_return_C=40.0) for y in s}
-        out[m] = dict(T_out=s, plant=po, flags=flags(res), series=ts_series(res, m, 40.0, "best"), profile=last_profile(res))
+        out[m] = dict(T_out=s, plant=po, flags=flags(res), series=ts_series(res, m, 40.0, "best"), profile=last_profile(res),
+                      loop_pump=sealed_loop_pump(res, m, 40.0, list(s)))
     m = 20.0
     return dict(id=20, name="Ultradeep millimetre-wave drilled closed loop (Quaise type)", series=out[m]["series"], profile=out[m]["profile"],
                 assumptions=dict(depth_m=depth, T_TD_C=500, gradient_C_per_km=24.25, bore_m=0.30, mdot=[20, 40], T_in_C=40, p_out_MPa=10,
                                  VIT="5-1/2 x 7 in, k 0.03"),
                 T_out=out[m]["T_out"], plant=out[m]["plant"], flags=out[m]["flags"], variants={str(k): v for k, v in out.items()},
-                plant_kind="flash / supercritical ORC")
+                plant_kind="flash / supercritical ORC", well_pump_kW={y: out[m]["loop_pump"][y]["kW"] for y in out[m]["loop_pump"]})
 
 
+UNAIDED = (3, 3.5, 18)        # single production wells that flow without a pump: checked for deliverability (inflow_short_MPa)
 TYPES = {1: t01_lt_hsa, 2: t02_mt_binary, 3: t03_ht_flash, 3.5: t03b_dry_steam, 4: t04_waste_heat, 5: t05_gshp, 6: t06_shallow_coaxial,
          7: t07_greenloop, 8: t08_eavor, 9: t09_chevron_acl, 10: t10_egs_doublet, 11: t11_hybrid_eden, 12: t12_sage_heatroot,
          13: t13_sage_heatcycle, 14: t14_fervo, 14.5: t14b_cape, 15: t15_coproduction, 16: t16_abandoned_well_loop, 17: t17_thermal_eor,
@@ -739,6 +782,9 @@ def _run(tid):
     try:
         out = TYPES[tid]()
         out["wall_s"] = time.time() - t0
+        if tid in UNAIDED and isinstance(out.get("flags"), dict):
+            mg = [v.get("margin_MPa") for v in out.get("T_out", {}).values() if isinstance(v, dict) and v.get("margin_MPa") is not None]
+            out["flags"]["inflow_short_MPa"] = max(0.0, -min(mg)) if mg else None
         T = out.get("T_out", {})
         key = max(T) if T else None
         print(f"type {tid}: done in {out['wall_s']:.0f} s; T_out at {key}: {T[key]['T_C'] if key is not None else 'n/a'}", flush=True)

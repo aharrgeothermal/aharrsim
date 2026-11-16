@@ -1,6 +1,6 @@
 # aharrsim — transient wellbore–reservoir–plant simulator for geothermal wells
 
-Version 2.4 (November 2026). The core is a transient heat-transfer and hydraulics model of a vertical
+Version 2.5 (November 2026). The core is a transient heat-transfer and hydraulics model of a vertical
 (or deviated / L-shaped) coaxial closed loop, 1–12+ km deep:
 
 * cold water is pumped **down the annulus** and returns hot **up the centre tubing** (or the reverse,
@@ -72,18 +72,18 @@ validation/dev_types_table.py md` prints the table):
 | 4 | Modular ORC on surface waste heat (Climeon type) | steady | 110 → 110 | 8.41 | 0.56 | 0.00 | 0.56 | 355 kWe per module; 1–2 MWe stacked |
 | 5 | Ground-source heat pump, 150 m U-tube borehole | year 10 | 5 → 5 | 0.01 | 0.00 | 0.00 | 0.00 | — |
 | 6 | Shallow geothermal: 400 m coaxial borehole heat exchanger + heat pump | year 10 | 7 → 6 | 0.01 | 0.00 | 0.00 | 0.00 | — |
-| 7 | Single-well deep coaxial retrofit in a hot field (GreenLoop type) | year 30 | 60 → 56 | 0.66 | 0.00 | 0.00 | 0.00 | 2–9 MWe claimed; 2 MWe retrofit |
-| 8 | Multilateral deep closed loop (Eavor-Loop 1 type) | year 30 | 136 → 111 | 29.85 | 2.29 → 1.16 | 0.00 | 1.16 | 2.2 MWe (independent); 8.2 MWe (company, four loops) |
+| 7 | Single-well deep coaxial retrofit in a hot field (GreenLoop type) | year 30 | 60 → 56 | 0.66 | 0.00 | 0.04 | 0.00 | 2–9 MWe claimed; 2 MWe retrofit |
+| 8 | Multilateral deep closed loop (Eavor-Loop 1 type) | year 30 | 136 → 111 | 29.85 | 2.29 → 1.16 | 0.04 → 0.16 | 1.00 | 2.2 MWe (classification, attributed to Toews and Holmes, 2021); 8.2 MWe (company, four loops) |
 | 8 | the same loop at 30 kg/s, the flow that gives most electricity at year 30 | year 30 | 212 → 191 | 19.23 | 2.93 → 2.10 | 0.00 | 2.10 | as above |
-| 9 | Doublet with horizontal closed-loop connections (Chevron-type, parameters assumed) | year 30 | 56 → 52 | 1.82 | 0.00 | 0.00 | 0.00 | undisclosed |
+| 9 | Doublet with horizontal closed-loop connections (Chevron-type, parameters assumed) | year 30 | 56 → 52 | 1.82 | 0.00 | 0.02 | 0.00 | undisclosed |
 | 10 | Doublet EGS, hot dry rock (Soultz / UDDGP type) | year 30 | 182 → 185 | 15.97 | 1.89 | 0.28 | 1.61 | 3–5 MWe |
-| 11 | Hybrid single-well EGS with surface heat exchanger (Eden Project type) | year 30 | 135 → 57 | 0.73 | 0.23 → 0.00 | 0.00 | 0.00 | small |
+| 11 | Hybrid single-well EGS with surface heat exchanger (Eden Project type) | year 30 | 135 → 57 | 0.73 | 0.23 → 0.00 | 0.02 → 0.05 | 0.00 | small |
 | 12 | Single-well cyclic fracture loop (Sage HeatRoot type) | day 365 | 84 → 72 | 0.29 | 0.01 → 0.00 | 0.00 | 0.00 | not stated |
 | 13 | Multi-well cyclic EGS with subsurface thermal storage (Sage HeatCycle / Battery+ type) | day 365 | 84 → 72 | 5.88 | 0.18 → 0.10 | 0.00 | 0.10 | up to 50 MWe |
 | 14 | Horizontal doublet EGS (Fervo Project Red type) | year 30 | 184 → 64 | 0.92 | 3.60 → 0.00 | 0.92 → 1.10 | 0.00 | 3.5 MWe pilot (63 l/s) |
 | 14b | Horizontal EGS, one producer between two injectors (Fervo Cape Station type) | year 30 | 195 → 64 | 1.66 | 7.48 → 0.00 | 1.92 → 2.26 | 0.00 | >10 MWe per production well (2024 test); about 16 MWe gross (current design) |
 | 15 | Fluid co-production from producing oil / gas wells (8 wells) | year 30 | 92 → 93 | 16.54 | 0.72 | 0.00 | 0.72 | 20–350 kWe |
-| 16 | Closed loop in a single abandoned hydrocarbon well (CeraPhi / wells2watts type) | year 30 | 42 → 39 | 0.19 | 0.00 | 0.00 | 0.00 | — |
+| 16 | Closed loop in a single abandoned hydrocarbon well (CeraPhi / wells2watts type) | year 30 | 42 → 39 | 0.19 | 0.00 | 0.01 | 0.00 | — |
 | 17 | Recovery of man-made heat after thermal EOR (SAGD chamber, HT ESP circulation) | year 5 | 112 → 58 | 0.67 | 0.24 → 0.00 | 0.00 | 0.00 | to be proven |
 | 18 | Supercritical fluid produced from below a volcanic field (IDDP-2 type) | year 30 | 311 → 311 | 48.53 | 13.39 | 0.00 | 13.39 | >30 MWe expected |
 | 19 | Superhot-rock EGS doublet (Newberry / AltaRock type) | year 30 | 264 → 264 | 35.47 | 11.93 → 5.67 | 0.00 → 0.46 | 5.21 | up to 50 MWe (??) |
@@ -94,7 +94,7 @@ or assumed blocks (front-crossing time 4.5 and 10 years at the test flows): no n
 
 A report on the development-type study as of v2.0 (code changes, benchmark charts, a schematic and parameter card per type, time
 series, depth profiles and discussion) is `aharrsim_dev_types_report.html`, built by `report/build_dt_report.py`; types 10, 11, 14 and
-19 and the basis of the type 8 figure have changed since (see above).
+19, the basis of the type 8 figure and the circulation loads of the sealed loops have changed since (see above).
 
 Reading: below about 80 °C the water is heat only; 80–120 °C gives a binary plant 10–20 % of a small exergy; 120–200 °C is the
 binary range; above 200 °C flash and steam plants take over. Anything that sweeps a convecting or fractured reservoir reaches megawatts
@@ -133,7 +133,8 @@ python3 validation/study_cl.py oat|mc|opt        # Part 1 (about an hour on two 
 python3 validation/study_open.py screen|confirm|cyclic|part3|need
 ```
 
-Multilateral-loop cases above 100 kg/s or with 6⅛ in laterals did not finish within the 240 s per-case limit and are omitted.
+Multilateral-loop cases above 100 kg/s or with 6⅛ in laterals did not finish within the 240 s per-case limit and are omitted. (v2.5: these two cases are infeasible with the 2 MPa inlet pressure of the study, since the friction of the single-bore loop exceeds its buoyancy;
+with 10 MPa (the first) or 20 MPa (both) at the inlet they run in the normal time: `validation/study_cl_timeouts.py`, `CHANGELOG.md`.)
 
 ## Rock quality and lifetime output (v2.4)
 
@@ -227,3 +228,26 @@ python ../report/build_report.py
 
 Field tests only reach 2.6 km; the 4–12 km range rests on the analytical checks (no depth limit) and the
 code-to-code comparisons.
+
+## Review calculations (v2.5)
+
+`validation/study_review.py` holds the calculations asked for in the review of the manuscript. The solver is that of v2.4. What changes in the benchmark is the circulation load of the sealed loops, now taken from the pressures at their two wellheads: the multilateral loop at 100 kg/s carries 0.04 rising to 0.16 MWe, so its net output at year 30 is 1.00 MWe in place of 1.16 MWe, the three heat-only loops (types 7, 9 and 16) show 0.04, 0.02 and 0.01 MWe of pumping, and the single-well EGS (type 11) carries 0.02 rising to 0.05 MWe, which lowers its lifetime net electricity from 7.5 to 5.5 GWh. No pumping is modelled for the cyclic examples (12, 13) and the heat store (17): their electricity is gross.
+
+```
+python3 validation/study_review.py gross      # the designs of Table 7 for the same figures as gross targets       -> results/RV1_gross_need.json
+python3 validation/study_review.py share      # a quarter and three quarters of the impedance near the wells       -> results/RV2_impedance_share.json
+python3 validation/study_review.py seeds      # 20 arrangements of the unequal flows instead of 5                  -> results/RV3_arrangements.json
+python3 validation/study_review.py red        # the Project Red fit at the produced, mean and injected rates       -> results/RV4_red_flow_basis.json
+python3 validation/study_review.py paths      # conduction along the flow path and from the surrounding rock       -> results/RV8_conduction_paths.json
+python3 validation/study_review.py paths_grid # grid and time-step check of that balance                           -> results/RV8_conduction_grid.json
+python3 validation/study_review.py outside    # earlier two-dimensional form of the surrounding-rock calculation   -> results/RV5_outside_conduction.json
+python3 validation/study_review.py boot       # bootstrap ranges of the closed-loop percentiles (descriptive)      -> results/RV6_percentiles.json
+python3 validation/study_cl_timeouts.py limit 2400  # the two multilateral-loop cases without a result, longer limit  -> results/RV7_type8_timeouts.json
+python3 validation/study_cl_timeouts.py pressure    # the same cases with 10 and 20 MPa at the inlet               -> results/RV7_type8_inlet_pressure.json
+python3 validation/study_cl_timeouts.py loads       # circulation power from those losses (no solver run)          -> the same file
+python3 validation/study_cl_timeouts.py flows       # the loop balance at 20, 30 and 50 kg/s, 2 MPa at the inlet   -> results/RV7_type8_flows.json
+```
+
+`validation/dev_types.py` now records, for every benchmark case, the number of steps on which the feed-pressure floor was active (`feed_floor`) and, for
+the wells that flow unaided, how far the stated reservoir pressure and productivity index fall short of the computed bottom-hole pressure
+(`inflow_short_MPa`). Results and findings are in `CHANGELOG.md`; `REPRODUCE.md` lists the command and the result file behind every table and figure of the manuscript.

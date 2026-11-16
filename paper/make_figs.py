@@ -264,8 +264,8 @@ def fig2():
     S = {float(r["id"]): r for r in L("DT_summary")}
     fig, (ax, st) = plt.subplots(2, 1, figsize=(5.5, 4.7), sharex=True, layout="constrained", gridspec_kw=dict(height_ratios=[5.0, 1.45]))
     fig.get_layout_engine().set(hspace=0.0, h_pad=0.035)
-    for lo, hi, col, name in ((0, 80, "#f2f2f2", "heat only"), (80, 120, "#e6eef7", "binary,\n4–7 % of\nthe heat"), (120, 200, "#d4e1f1", "binary power"),
-                              (200, 340, "#f7e3dc", "flash and steam")):
+    for lo, hi, col, name in ((0, 80, "#f2f2f2", "heat only"), (80, 120, "#e6eef7", "binary,\n4–7 % of\nthe heat"), (120, 200, "#d4e1f1", "binary"),
+                              (200, 340, "#f7e3dc", "flash")):
         for a in (ax, st):
             a.axvspan(lo, hi, color=col, lw=0, zorder=0)
         ax.text((lo + hi) / 2, 62, name, ha="center", va="top", fontsize=FS, color="#444", linespacing=1.15)
@@ -274,10 +274,14 @@ def fig2():
     for t, r in S.items():
         if r["T_last_C"] is None or not (r["net_last_MWe"] and r["net_last_MWe"] > 0):
             continue
-        ax.scatter(r["T_last_C"], r["net_last_MWe"], s=30, color=C[0], zorder=3)
+        steam = (r.get("x_last") or 0.0) > 0.01                    # steam or a two-phase mixture at the wellhead: the bands do not class it
+        ax.scatter(r["T_last_C"], r["net_last_MWe"], s=30, color=C[1] if steam else C[0], marker="s" if steam else "o", zorder=3)
         o = -4.5 if t in left else 4.5
         ax.annotate(lab(t), (r["T_last_C"], r["net_last_MWe"]), xytext=(o, 0), textcoords="offset points", fontsize=FS, color=INK, va="center", ha="left" if o > 0 else "right")
-    ax.set_yscale("log"); ax.set_ylim(0.003, 100); ax.set_ylabel("Net electricity at the horizon (MWe)")
+    ax.set_yscale("log"); ax.set_ylim(0.003, 100); ax.set_ylabel("Electrical output at the horizon (MWe)")     # net of pumping, except types 12 and 13 (pumping not modelled: gross)
+    ax.legend(handles=[Line2D([], [], marker="o", color=C[0], ms=5, ls="", label="liquid at the wellhead"),
+                       Line2D([], [], marker="s", color=C[1], ms=5, ls="", label="steam or two-phase at the wellhead")],
+              loc="lower right", title="bands: conversion route of a liquid stream", title_fontsize=FS, alignment="left", frameon=True, framealpha=1.0, edgecolor="#cccccc")
     # cases with none, in a strip of their own: each at its temperature, on the row and with the label side given here, so that none touch
     rows = {9: (0, "L"), 1: (0, "R"), 5: (0, "R"), 7: (1, "L"), 14: (1, "R"), 6: (1, "R"), 11: (2, "L"), 17: (3, "L"), 14.5: (4, "R"), 16: (4, "R")}
     for t, r in S.items():
@@ -289,7 +293,7 @@ def fig2():
                     ha="left" if side == "R" else "right")
     st.set_ylim(4.6, -0.6); st.set_yticks([]); st.grid(axis="y", visible=False)
     st.text(335, 2.0, "no net electricity at the horizon", fontsize=FS, color=MUTED, va="center", ha="right")
-    st.set_xlim(0, 340); st.set_xlabel("Produced water temperature at the horizon (°C)")
+    st.set_xlim(0, 340); st.set_xlabel("Wellhead temperature at the horizon (°C)")
     save(fig, "fig03_scatter.png")
 
 
@@ -298,7 +302,7 @@ def fig3():
     from matplotlib.legend_handler import HandlerTuple
     from matplotlib.patches import Patch
     S = {float(r["id"]): r for r in L("DT_summary")}
-    QUOTED = {1: (0.0, 2.0), 2: (2.0, 7.0), 3: (3.0, 25.0), 3.5: (3.0, 25.0), 4: (0.355, 2.0), 7: (2.0, 9.0), 8: (2.05, 2.2), 10: (3.0, 5.0), 13: (50.0, 50.0),
+    QUOTED = {1: (0.0, 2.0), 2: (2.0, 6.0), 3: (3.0, 25.0), 3.5: (3.0, 25.0), 4: (0.355, 2.0), 7: (2.0, 9.0), 8: (2.05, 2.2), 10: (3.0, 5.0), 13: (50.0, 50.0),
               14: (3.5, 3.5), 14.5: (10.0, 16.0), 15: (0.02, 0.35), 18: (30.0, 30.0), 19: (50.0, 50.0), 20: (100.0, 100.0)}
     LF = {r["m"]: r for r in L("SC_loop_flow")}
     rows = []                                           # label, quoted range, gross in year 1, gross at the horizon
@@ -307,16 +311,20 @@ def fig3():
             continue
         g1, gl = S[t]["gross_first_MWe"] or 0, S[t]["gross_last_MWe"] or 0
         if t == 8 and 30.0 in LF:                       # the same loop at the flow that suits electricity, on a row of its own
-            rows.append((f"8 {SHORT[8]}, 100 kg/s", QUOTED[t], g1, gl))
-            rows.append((f"8 {SHORT[8]}, 30 kg/s", QUOTED[t], LF[30.0]["MWe"][0], LF[30.0]["MWe"][2]))
+            rows.append((f"8 {SHORT[8]}, 100 kg/s", QUOTED[t], g1, gl, t))
+            rows.append((f"8 {SHORT[8]}, 30 kg/s", QUOTED[t], LF[30.0]["MWe"][0], LF[30.0]["MWe"][2], t))
         else:
-            rows.append((f"{lab(t)} {SHORT[t]}", QUOTED[t], g1, gl))
+            rows.append((f"{lab(t)} {SHORT[t]}", QUOTED[t], g1, gl, t))
+    OTHER = (7, 20)                                     # reported for a different system: steam-zone convection (7), an open multiwell plant (20)
     Z, QG = 0.01, "#b3b3b3"                             # where zero is drawn on the log axis; colour of the quoted figures
     fig, ax = plt.subplots(figsize=(5.5, 5.0), layout="constrained")
     ax.axvspan(0.008, 0.0126, color="#ececec", lw=0, zorder=0)
     ax.text(Z, 2.5, "no electricity", rotation=90, fontsize=FS, color=MUTED, ha="center", va="center")
-    for i, (lb, (lo, hi), g1, gl) in enumerate(rows):
-        if hi / max(lo, 1e-9) < 1.15:                   # one quoted figure: a tick tall enough to show behind a marker
+    for i, (lb, (lo, hi), g1, gl, t) in enumerate(rows):
+        if t in OTHER:                                  # hatched outline: a range as it is, one figure as a narrow box
+            a, b = (lo, hi) if hi / max(lo, 1e-9) >= 1.15 else (math.sqrt(lo * hi) / 1.16, math.sqrt(lo * hi) * 1.16)
+            ax.barh(i, b - a, left=a, height=0.44, facecolor="white", edgecolor=QG, hatch="//////", lw=0.9, zorder=1)
+        elif hi / max(lo, 1e-9) < 1.15:                 # one reported figure: a tick tall enough to show behind a marker
             ax.plot([math.sqrt(lo * hi)], [i], marker="|", ms=13, mew=2.6, color=QG, zorder=1)
         else:
             ax.plot([max(lo, Z), hi], [i, i], color=QG, lw=7, solid_capstyle="butt", zorder=1)
@@ -329,9 +337,10 @@ def fig3():
     for dx in (-0.004, 0.004):
         ax.plot([fb + dx - 0.004, fb + dx + 0.004], [-0.014, 0.014], transform=ax.transAxes, color="k", lw=0.7, clip_on=False, zorder=6)
     fig.legend(handles=[(Patch(facecolor=QG, lw=0), Line2D([], [], marker="|", ms=10, mew=2.4, color=QG, ls="")),
+                        Patch(facecolor="white", edgecolor=QG, hatch="//////", lw=0.9),
                         Line2D([], [], marker="o", mfc="none", mec=C[0], mew=1.3, ms=6.5, ls=""), Line2D([], [], marker="o", color=C[1], ms=5, ls="")],
-               labels=["quoted (bar: range; tick: one figure)", "model, year 1", "model, horizon"], handler_map={tuple: HandlerTuple(ndivide=None, pad=0.6)},
-               loc="outside lower center", ncol=3, fontsize=FS, columnspacing=1.6, handlelength=3.0)
+               labels=["reported (bar: range; tick: one figure)", "reported for a different system (types 7 and 20)", "model, year 1", "model, horizon"],
+               handler_map={tuple: HandlerTuple(ndivide=None, pad=0.6)}, loc="outside lower center", ncol=2, fontsize=FS, columnspacing=1.6, handlelength=3.0)
     save(fig, "fig04_claims.png")
 
 
@@ -460,7 +469,7 @@ def tornado_key(fig, design=False, quoted=False, sample="P10–P90 and median of
         hs.append(((Patch(facecolor=BAR_PALE[0], lw=0), Patch(facecolor=BAR_PALE[1], lw=0)), "the same for a design variable"))
     hs.append((Line2D([], [], color="k", lw=0.9, ls="--"), "base case"))
     if quoted:
-        hs.append((Line2D([], [], color="k", lw=1.0, ls=(0, (1, 1.6))), "quoted capacity"))
+        hs.append((Line2D([], [], color="k", lw=1.0, ls=(0, (1, 1.6))), "published capacity (Table 7)"))
     hs.append(((Patch(facecolor=BAND, lw=0), Line2D([], [], color="#6e6e6e", lw=1.1)), sample))
     fig.legend(handles=[h for h, _ in hs], labels=[l for _, l in hs], handler_map={tuple: HandlerTuple(ndivide=None, pad=0.3)}, loc="outside lower center", ncol=ncol,
                fontsize=FS, columnspacing=2.0, handlelength=2.6)
@@ -494,7 +503,8 @@ def fig6():
 def fig7():
     import study_open as OP
     S = L("ST2_screen")["systems"]
-    fig, axs = plt.subplots(2, 4, figsize=(7.4, 5.0), layout="constrained")
+    G = L("RV1_gross_need")["systems"]
+    fig, axs = plt.subplots(2, 4, figsize=(7.4, 5.25), layout="constrained")
     for j, sid in enumerate(("10", "14", "141", "19")):
         o = S[sid]; sy = OP.SYS[int(sid)]; q = sorted(set(sy["quoted"])); nm = sy["label"]
         ax = axs[0, j]
@@ -509,13 +519,19 @@ def fig7():
             ax.plot([r["m"] for r in v["rows"]], [r["mean_net"] for r in v["rows"]], "o-", ms=2.3, color=C[i], label=f"fractures 10 m apart, volume ×{v['vf']}")
         for qq in q:
             ax.axhline(qq, color="k", lw=1.0, ls=(0, (1, 1.6)))
+        for row in G[sid]["rows"]:                          # the designs of Table 7: the figure as a net target and as a gross target
+            for key, face in (("net_basis", "k"), ("gross_basis", "white")):
+                if row[key]:
+                    ax.plot(row[key]["m"], row[key]["mean_net"], "*", ms=9.5, mfc=face, mec="k", mew=0.9, zorder=6, clip_on=False)
         ax.set_title(f"({'efgh'[j]}) Type {nm}: fractures\n10 m apart", loc="left", fontsize=8); ax.set_xlabel("Flow (kg/s)"); ax.set_ylim(bottom=0)
         if j == 0:
             ax.set_ylabel("30-year mean net (MWe)")
     h, l = axs[1, 0].get_legend_handles_labels()
     l = [t.replace("fractures 10 m apart, ", "") for t in l]
-    h.append(Line2D([], [], color="k", lw=1.0, ls=(0, (1, 1.6)))); l.append("quoted capacity")
-    fig.legend(h, l, loc="outside lower center", ncol=7, fontsize=FS, columnspacing=1.3, handlelength=1.6, title="Bottom row", title_fontsize=FS)
+    h.append(Line2D([], [], color="k", lw=1.0, ls=(0, (1, 1.6)))); l.append("published capacity")
+    h.append(Line2D([], [], ls="", marker="*", ms=9.5, mfc="k", mec="k", mew=0.9)); l.append("net-target design of Table 7")
+    h.append(Line2D([], [], ls="", marker="*", ms=9.5, mfc="white", mec="k", mew=0.9)); l.append("gross-target design of Table 7")
+    fig.legend(h, l, loc="outside lower center", ncol=5, fontsize=FS, columnspacing=1.3, handlelength=1.6, title="Bottom row", title_fontsize=FS)
     save(fig, "fig08_fractured_sweeps.png")
 
 
@@ -553,7 +569,7 @@ def fig9():
     ax.clabel(cs, fmt={0.1: "10 %", 0.5: "50 %", 0.9: "90 %", 0.99: "99 %"}, fontsize=FS, inline_spacing=2, manual=[(0.092, 3.0), (0.0896, 4.8), (0.2, 5.25), (0.451, 12.5)])
     cb = fig.colorbar(cf, ax=ax, pad=0.02, ticks=[0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99]); cb.set_label("Retained share of the temperature rise, θ", fontsize=7.5); cb.ax.tick_params(labelsize=FS)
     ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.05, 20); ax.set_ylim(0.05, 20)
-    ax.set_xlabel("x = t / t$_s$   (share of the block's heat capacity flushed)"); ax.set_ylabel("y = (S/2) / √(αt)   (half spacing over conduction length)")
+    ax.set_xlabel("x = t / t$_s$   (dimensionless thermal throughput)"); ax.set_ylabel("y = (S/2) / √(αt)   (half spacing over conduction length)")
     note = dict(fontsize=FS, color=INK, ha="right", linespacing=1.15, bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="none", alpha=0.85))
     ax.text(17.5, 7.0, "large y: each fracture cools alone;\nθ = 90 % where x·y = 0.43", va="center", **note)        # the two regimes, written where the map is empty
     ax.text(17.5, 0.073, "small y: the block cools as a whole;\nthe front arrives at x = 1", va="center", **note)
@@ -582,7 +598,7 @@ def fig9():
     ax.scatter(cv["x_end"], cv["y_end"], s=44, marker=">", facecolor="white", edgecolor=C[1], lw=1.1, zorder=6)       # moved right: less volume, flushed sooner
     ax.annotate("30 yr", (xr[-1], yr[-1]), xytext=(6, 12), textcoords="offset points", fontsize=FS, color=INK, ha="center", va="center")
     hs = [Line2D([], [], marker="o", color="k", ls="", ms=5, label="example at 30 years, with its type number"),
-          Line2D([], [], marker="*", mfc="white", mec="k", ls="", ms=8, label="design that holds the quoted capacity"),
+          Line2D([], [], marker="*", mfc="white", mec="k", ls="", ms=8, label="net-target design of Table 7"),
           Line2D([], [], color=C[1], ls="--", lw=1.1, label="Project Red at 36 kg/s, 0.3 to 30 years"),
           Line2D([], [], marker="D", color=C[1], ls="", ms=4.5, label="Project Red at day 614, as published"),
           Line2D([], [], marker="^", mfc="white", mec=C[1], mew=1.1, ls="", ms=5.5, label="the same, 45 % of the fractures active"),
@@ -625,8 +641,8 @@ def fig10():
     eb = ax.errorbar([160], [rep["MWe_reported"] / 30.0 * 1e3], yerr=[[rep["MWe_reported"] / 30.0 * 1e3 - 0.37 / 36.0 * 1e3], [rep["MWe_reported"] / 24.0 * 1e3 - rep["MWe_reported"] / 30.0 * 1e3]],
                      xerr=10, fmt="D", ms=4.5, color=C[1], lw=0.9, capsize=2, zorder=4)
     st = ax.scatter([160], [FE["nameplate_per_loop"]["MWe"] / 72.0 * 1e3], s=60, marker="*", facecolor="white", edgecolor=C[1], lw=1.0, zorder=4)
-    ax.set_xlim(100, 400); ax.set_ylim(0, 130); ax.set_xlabel("Rock temperature at the laterals (°C)"); ax.set_ylabel("Gross electricity per km of hot hole (kWe/km)")
-    ax.set_title("(b) What a kilometre of sealed hole can give", loc="left")
+    ax.set_xlim(100, 400); ax.set_ylim(0, 130); ax.set_xlabel("Rock temperature at the laterals (°C)"); ax.set_ylabel("Gross electricity per km of lateral (kWe/km)")
+    ax.set_title("(b) Conduction limit per kilometre of lateral", loc="left")
     order = sorted(seen, key=int)
     key_legend(fig, key[0], [seen[k] for k in order], 0.075, labels=[f"type {k}" for k in order], ncol=3, columnspacing=1.6, handletextpad=0.2)
     key_legend(fig, key[1], [(c1, c30), (t1, t30), st, eb], 0.555, ncol=1, handler_map={tuple: HandlerTuple(ndivide=None, pad=0.5)}, handlelength=2.2,
@@ -649,13 +665,13 @@ def fig11():
         hs += ax.plot(tt, FE["cases"][k_]["T_C"], color=col, ls=ls, lw=1.2, label=lbl)
     try:
         cu = L("RQ_red")["fits"]["stage"]["curve"]
-        hs += ax.plot(cu["t_yr"], cu["T_C"], color=C[2], ls="-.", lw=1.2, label="uneven flow between stages, $L_c$ = 0.35")
+        hs += ax.plot(cu["t_yr"], cu["T_C"], color=C[2], ls="-.", lw=1.2, label="unequal flow between stages, $L_c$ = 0.35")
     except (KeyError, FileNotFoundError):
         pass
     ax.axvline(FE["t_end_yr"], color="#888", lw=0.7, ls=":"); ax.text(FE["t_end_yr"] - 0.07, 112, "day 614", fontsize=FS, color=MUTED, rotation=90, ha="right", va="center")
     ax.axhline(FE["T_inj_C"], color="#888", lw=0.7, ls=":"); ax.text(7.9, FE["T_inj_C"] - 2.0, "injection temperature", fontsize=FS, color=MUTED, ha="right", va="top")
     ax.set_xlim(0, 8); ax.set_ylim(55, 185); ax.set_xlabel("Time on production (years)"); ax.set_ylabel("Flowing production temperature (°C)")
-    ax.set_title("(a) Project Red: record and forecast at 36 kg/s", loc="left")
+    ax.set_title("(a) Project Red: record and model at 36 kg/s", loc="left")
     ax = axs[1]; g = FE["rms_grid"]
     Fg, Pg = np.meshgrid(g["phi"], g["f"]); Rm = np.array(g["rms_K"])
     cs = ax.contourf(Fg, Pg, Rm, levels=[0, 0.5, 1.0, 2.0, 4.0, 8.0, 100.0], colors=["#dc7245", "#eba56a", "#f3cf9a", "#f6e7c8", "#d9e6f2", "#a9c5e6"], alpha=0.9)
@@ -673,21 +689,21 @@ def fig11():
     ax.annotate("", (cV["phi"], cV["f"]), xytext=(0.607, 0.962), textcoords="data", arrowprops=dict(arrowstyle="-", color=INK, lw=0.5, shrinkA=0, shrinkB=4))    # leader
     ax.scatter(1.0, 1.0, s=30, marker="s", color="#666666", edgecolor="k", lw=0.6, zorder=4, clip_on=False)
     ax.annotate("as published", (1.0, 1.0), xytext=(0, -8), textcoords="offset points", fontsize=FS, color=INK, ha="center", va="top")
-    ax.set_xlim(0.3, 1.2); ax.set_ylim(0.2, 1.0); ax.set_xlabel("Swept share of the published volume, φ"); ax.set_ylabel("Active share of the fractures, f")
-    ax.set_title("(b) What the record constrains", loc="left"); ax.grid(False)
+    ax.set_xlim(0.3, 1.0); ax.set_ylim(0.2, 1.0); ax.set_xlabel("Swept share of the published volume, φ"); ax.set_ylabel("Active share of the fractures, f")
+    ax.set_title("(b) Misfit to the record (K)", loc="left"); ax.grid(False)
     key_legend(fig, key[0], hs, 0.03, ncol=3, columnspacing=1.5)
     save(fig, "fig13_project_red.png")
 
 
 SCEN_COL = dict(even="#666666", good="#2ca02c", moderate="#ff7f0e", poor="#d62728")
-SCEN_LAB = dict(even="Even flow", good="Good", moderate="Moderate", poor="Poor")
+SCEN_LAB = dict(even="Uniform flow", good="Low", moderate="Moderate", poor="High")
 
 
 def fig_lifetime():
     """Lifetime net electricity and heat per kilometre of hole."""
     LT = L("LT_lifetime"); rows = [r for r in LT["rows"] if r["hole_km"]]
     grp = {1: 0, 2: 0, 3: 0, 3.5: 0, 18: 0, 15: 0, 10: 1, 14: 1, 14.5: 1, 19: 1, 11: 1, 12: 3, 13: 3, 5: 2, 6: 2, 7: 2, 8: 2, 9: 2, 16: 2, 20: 2}
-    gcol = ["#1f77b4", "#d62728", "#2ca02c", "#7f7f7f"]; gname = ["wells in a convective reservoir", "flow through fractured rock", "sealed loops", "cyclic fracture"]
+    gcol = ["#1f77b4", "#d62728", "#2ca02c", "#7f7f7f"]; gname = ["wells in a convective reservoir", "flow through fractured rock", "closed loops", "cyclic fracture"]
     order = [1, 2, 3, 3.5, 18, 15, 10, 14, 14.5, 19, 11, 12, 13, 8, 20, 7, 9, 16, 6, 5]
     R = {r["id"]: r for r in rows}
     fig, ax = plt.subplots(figsize=(7.4, 5.0), layout="constrained")
@@ -710,13 +726,15 @@ def fig_lifetime():
         ax.plot([o["poor"]["GWh_per_km"], o["good"]["GWh_per_km"]], [y, y], color="#d62728", lw=0.9, zorder=2)
         ax.scatter([o["poor"]["GWh_per_km"], o["moderate"]["GWh_per_km"], o["good"]["GWh_per_km"]], [y] * 3, s=10, marker="|", color="#d62728", zorder=3)
         ax.scatter(o["even"]["GWh_per_km"], y, s=26, marker="D", facecolor="white", edgecolor="#d62728", lw=1.0, zorder=4)
+        ax.annotate(f"{o['hole_km']:.1f} km", (o["even"]["GWh_per_km"], y), xytext=(5.5, -2.0), textcoords="offset points", fontsize=FS, ha="left", va="center",
+                    color="#d62728")                                   # the resized design has more hole than the example of its row; set just below the heat marker of the row
     ax.set_yticks(range(len(order))); ax.set_yticklabels(ylab[::-1], fontsize=FS)
     ax.set_xscale("log"); ax.set_xlim(0.3, 8000); ax.set_ylim(-0.7, len(order) - 0.4)
     ax.set_xlabel("Energy over the simulated life per kilometre of hole (GWh/km)")
     ax.grid(axis="y", visible=False)
     h = [Line2D([], [], marker="o", ls="", color="#333", ms=5.5, label="net electricity"), Line2D([], [], marker="s", ls="", mfc="white", mec="#333", ms=5, label="heat"),
-         Line2D([], [], marker="D", ls="", mfc="white", mec="#d62728", ms=5, label="net electricity, design sized to hold its quoted capacity (even flow)"),
-         Line2D([], [], marker="|", ls="-", color="#d62728", ms=5, lw=0.9, label="the same design in Poor, Moderate and Good rock")]
+         Line2D([], [], marker="D", ls="", mfc="white", mec="#d62728", ms=5, label="net electricity, net-target design of Table 7 (uniform flow)"),
+         Line2D([], [], marker="|", ls="-", color="#d62728", ms=5, lw=0.9, label="the same design with high, moderate and low flow heterogeneity")]
     h += [Line2D([], [], marker="o", ls="", color=c, ms=5.5, label=n) for c, n in zip(gcol, gname)]
     fig.legend(handles=h, fontsize=FS, loc="outside lower center", ncol=2, columnspacing=2.0)
     save(fig, "fig05_lifetime.png")
@@ -743,8 +761,8 @@ def fig_rock():
     ax.legend(loc="lower right", borderaxespad=0.3, borderpad=0.3, handlelength=0.8, handletextpad=0.35, labelspacing=0.22, frameon=True, framealpha=1.0, edgecolor="#c4c4c4",
               fancybox=False).get_frame().set_linewidth(0.5)
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.set_xlabel("Share of the fractures, fastest first"); ax.set_ylabel("Share of the flow")
-    ax.set_title("(a) Flow allocation", loc="left")
-    along(ax, "even flow", (0.70, 0.70), (0.9, 0.9), side=-1)
+    ax.set_title("(a) Flow heterogeneity", loc="left")
+    along(ax, "uniform flow", (0.70, 0.70), (0.9, 0.9), side=-1, gap=10.5)
     ax = axs[1]
     yrs = np.array(ND["years"]); o = ND["systems"]["141"]
     for key in ("even", "good", "moderate", "poor"):
@@ -754,7 +772,7 @@ def fig_rock():
             ax.fill_between(yrs, T - sd, T + sd, color=SCEN_COL[key], alpha=0.18, lw=0)
         ax.text(30.5, T[-1], SCEN_LAB[key], fontsize=FS, color=INK, va="center")
     ax.set_xlim(0, 30); ax.set_ylim(100, 205); ax.set_xlabel("Time (years)"); ax.set_ylabel("Reservoir outlet temperature (°C)")
-    ax.set_title("(b) A design sized for even flow", loc="left")
+    ax.set_title("(b) Net-target design of type 14b", loc="left")
     ax = axs[2]
     S2 = L("RQ_scale"); T_r, T_i = 200.0, 60.0; y2 = np.array(S2["years"])
     th = lambda T: float(np.trapezoid((np.array(T) - T_i) / (T_r - T_i), y2) / (y2[-1] - y2[0]))
@@ -769,12 +787,12 @@ def fig_rock():
         if lim:
             ax.plot([560, 1000], [end] * 2, color=SCEN_COL[key], lw=1.6, ls=":")
         ax.text(1080, end, SCEN_LAB[key], fontsize=FS, color=INK, va="center")
-    ax.axhline(th(S2["even"]), color=SCEN_COL["even"], lw=1.0, ls="--"); ax.text(1080, th(S2["even"]) + 0.012, "Even flow", fontsize=FS, color=INK, va="center")
+    ax.axhline(th(S2["even"]), color=SCEN_COL["even"], lw=1.0, ls="--"); ax.text(1080, th(S2["even"]) + 0.012, "Uniform flow", fontsize=FS, color=INK, va="center")
     ax.axvline(33.7, color="#888", lw=0.7, ls=":"); ax.text(37.5, 0.03, "conduction\nlength, 30 yr", fontsize=FS, color=MUTED, ha="left", va="bottom", linespacing=1.1)
     ax.text(960, 0.46, "dotted:\nseparate\nzones", fontsize=FS, color=MUTED, ha="right", va="center", linespacing=1.1)
     ax.set_xscale("log"); ax.set_xlim(8, 1000); ax.set_ylim(0, 1.08)
     ax.set_xlabel("Width over which the flow varies (m)"); ax.set_ylabel("30-year mean of the\nretained temperature rise")
-    ax.set_title("(c) Scale of the unevenness", loc="left")
+    ax.set_title("(c) Scale of the heterogeneity", loc="left")
     save(fig, "fig10_rock_quality.png")
 
 

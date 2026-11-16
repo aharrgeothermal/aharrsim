@@ -1,0 +1,260 @@
+{
+ "note": "time [yr] at which the outlet has lost a tenth of its temperature rise; scaled temperature drop at 30 years (8 years for Project Red)",
+ "cases": {
+  "10": {
+   "label": "10 net-target design",
+   "S_m": 10.093927574261569,
+   "L": 448.17038429721373,
+   "B": 400.0,
+   "t_s": 36.71879159695574,
+   "Pe": 130.14800230492145,
+   "x_end": 0.8170203510315743,
+   "element": {
+    "t10": 31.863002081906114,
+    "TD_end": 0.034466240190626274
+   },
+   "resolved_as_element": {
+    "t10": 31.796512254209606,
+    "TD_end": 0.038137529432660223,
+    "cells": 16800,
+    "cooled_zone_mark": 0.8155400105631092,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.999248494846229,
+    "cooled_outside": 0.0,
+    "T_min": 0.9778565092573134,
+    "T_max": 1.0178590472536402,
+    "t_at_element_end": 29.833221114223104
+   },
+   "with_path": {
+    "t10": 29.425151311699505,
+    "TD_end": 0.12203041566468617,
+    "cells": 16800,
+    "cooled_zone_mark": 0.8093471693860202,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9915807143381786,
+    "cooled_outside": 0.0,
+    "T_min": 0.907370390653456,
+    "T_max": 0.9999999999999785,
+    "t_at_element_end": 26.89970571328729
+   },
+   "with_path_and_surroundings": {
+    "t10": 31.011609839736728,
+    "TD_end": 0.07257061294264636,
+    "cells": 46305,
+    "cooled_zone_mark": 0.6850644114126678,
+    "cooled_outside_mark": 0.12740689342091774,
+    "cooled_zone": 0.8634595936783446,
+    "cooled_outside": 0.21193932686351138,
+    "T_min": 1.8807069648363096e-07,
+    "T_max": 0.9644221587335475,
+    "t_at_element_end": 28.0459648730817,
+    "heat_from_outside_at_end": 0.12740689342091774
+   },
+   "wall_s": 84.6
+  },
+  "14": {
+   "label": "14 net-target design",
+   "S_m": 10.0,
+   "L": 272.53439641778215,
+   "B": 143.0,
+   "t_s": 36.687321064610295,
+   "Pe": 51.609475462168014,
+   "x_end": 0.8177211943921114,
+   "element": {
+    "t10": 31.71378562049362,
+    "TD_end": 0.03887717839228104
+   },
+   "resolved_as_element": {
+    "t10": 31.64843018574617,
+    "TD_end": 0.04240502521830188,
+    "cells": 8064,
+    "cooled_zone_mark": 0.8160157793806192,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9991139945197784,
+    "cooled_outside": 0.0,
+    "T_min": 0.9751415126892656,
+    "T_max": 1.0174050442520897,
+    "t_at_element_end": 29.850877727593645
+   },
+   "with_path": {
+    "t10": 26.977854192389206,
+    "TD_end": 0.21098805275901725,
+    "cells": 8064,
+    "cooled_zone_mark": 0.7981473441766379,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9771414360120476,
+    "cooled_outside": 0.0,
+    "T_min": 0.8471921657120619,
+    "T_max": 0.999999969876063,
+    "t_at_element_end": 24.241496853159866
+   },
+   "with_path_and_surroundings": {
+    "t10": 31.10347104449934,
+    "TD_end": 0.0802517068421164,
+    "cells": 49140,
+    "cooled_zone_mark": 0.5591894357463989,
+    "cooled_outside_mark": 0.25114927815551613,
+    "cooled_zone": 0.7093838598353781,
+    "cooled_outside": 0.41394176598120347,
+    "T_min": 4.3823364906575525e-07,
+    "T_max": 0.9421710141232634,
+    "t_at_element_end": 27.09532690780987,
+    "heat_from_outside_at_end": 0.25114927815551613
+   },
+   "wall_s": 72.7
+  },
+  "141": {
+   "label": "14b net-target design",
+   "S_m": 10.026315789473685,
+   "L": 489.63810772203624,
+   "B": 143.0,
+   "t_s": 37.10756347871208,
+   "Pe": 164.69893235686567,
+   "x_end": 0.8084605182232039,
+   "element": {
+    "t10": 32.091065975518674,
+    "TD_end": 0.030925665384322634
+   },
+   "resolved_as_element": {
+    "t10": 32.025784106589505,
+    "TD_end": 0.03430749134318247,
+    "cells": 8064,
+    "cooled_zone_mark": 0.8071321673859218,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9988061810228445,
+    "cooled_outside": 0.0,
+    "T_min": 0.9677167514156982,
+    "T_max": 1.0175517546888517,
+    "t_at_element_end": 29.828100230528346
+   },
+   "with_path": {
+    "t10": 30.08443829299649,
+    "TD_end": 0.09692749993935738,
+    "cells": 8064,
+    "cooled_zone_mark": 0.8029107105368675,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9921101850273595,
+    "cooled_outside": 0.0,
+    "T_min": 0.9059317460176037,
+    "T_max": 1.0000000000000087,
+    "t_at_element_end": 27.39257415205979
+   },
+   "with_path_and_surroundings": {
+    "t10": 32.77983804690275,
+    "TD_end": 0.04194399119291037,
+    "cells": 39039,
+    "cooled_zone_mark": 0.601061412037974,
+    "cooled_outside_mark": 0.20497868711483816,
+    "cooled_zone": 0.7629091689080914,
+    "cooled_outside": 0.3476386257816744,
+    "T_min": 3.893936983283505e-08,
+    "T_max": 0.9658708721936218,
+    "t_at_element_end": 29.214801981221168,
+    "heat_from_outside_at_end": 0.20497868711483816
+   },
+   "wall_s": 59.7
+  },
+  "19": {
+   "label": "19 net-target design",
+   "S_m": 10.005413532738018,
+   "L": 634.0930826372718,
+   "B": 400.0,
+   "t_s": 38.13247127827175,
+   "Pe": 342.81078201250847,
+   "x_end": 0.7867310718226198,
+   "element": {
+    "t10": 32.414176204820116,
+    "TD_end": 0.029955747041014398
+   },
+   "resolved_as_element": {
+    "t10": 32.355936292005005,
+    "TD_end": 0.03252767719867296,
+    "cells": 16800,
+    "cooled_zone_mark": 0.7853901091817722,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9959342825632954,
+    "cooled_outside": 0.0,
+    "T_min": 0.917598616511905,
+    "T_max": 1.0152149329650018,
+    "t_at_element_end": 29.849918361042842
+   },
+   "with_path": {
+    "t10": 31.40159003777094,
+    "TD_end": 0.05666569972047762,
+    "cells": 16800,
+    "cooled_zone_mark": 0.7839467074033007,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.991536009609695,
+    "cooled_outside": 0.0,
+    "T_min": 0.8850223546752005,
+    "T_max": 1.0000000000000429,
+    "t_at_element_end": 28.658797083003254
+   },
+   "with_path_and_surroundings": {
+    "t10": 32.38571717448602,
+    "TD_end": 0.040226146974484775,
+    "cells": 41580,
+    "cooled_zone_mark": 0.6965685327163846,
+    "cooled_outside_mark": 0.08817656856782423,
+    "cooled_zone": 0.8943843931070158,
+    "cooled_outside": 0.14827487551921062,
+    "T_min": 1.6375532401048246e-09,
+    "T_max": 0.9767706853682903,
+    "t_at_element_end": 29.351407117550234,
+    "heat_from_outside_at_end": 0.08817656856782423
+   },
+   "wall_s": 69.7
+  },
+  "red": {
+   "label": "Project Red block at 36 kg/s",
+   "S_m": 11.079545454545455,
+   "L": 110.0,
+   "B": 143.0,
+   "t_s": 7.207613854337218,
+   "Pe": 42.79535764181595,
+   "x_end": 1.1099373747923469,
+   "element": {
+    "t10": 4.835797107500795,
+    "TD_end": 0.6825217288496773
+   },
+   "resolved_as_element": {
+    "t10": 4.835463515424119,
+    "TD_end": 0.6822898441455457,
+    "cells": 8064,
+    "cooled_zone_mark": 0.9357112297950598,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9865520756275274,
+    "cooled_outside": 0.0,
+    "T_min": 0.8842343910924013,
+    "T_max": 1.0058398130077266,
+    "t_at_element_end": 8.001354322062753
+   },
+   "with_path": {
+    "t10": 4.368146350996628,
+    "TD_end": 0.6741674722096658,
+    "cells": 8064,
+    "cooled_zone_mark": 0.9084300910736206,
+    "cooled_outside_mark": 0.0,
+    "cooled_zone": 0.9681470424695151,
+    "cooled_outside": 0.0,
+    "T_min": 0.8576145275089297,
+    "T_max": 0.9999920277665177,
+    "t_at_element_end": 8.062258199621196
+   },
+   "with_path_and_surroundings": {
+    "t10": 4.914694923220219,
+    "TD_end": 0.4146916850139322,
+    "cells": 83538,
+    "cooled_zone_mark": 0.7309347398590484,
+    "cooled_outside_mark": 0.2579907381425421,
+    "cooled_zone": 0.7944794582266498,
+    "cooled_outside": 0.33429664183561825,
+    "T_min": 2.269919210096811e-16,
+    "T_max": 0.9647253642281374,
+    "t_at_element_end": null,
+    "heat_from_outside_at_end": 0.2579907381425421
+   },
+   "wall_s": 109.9
+  }
+ }
+}
